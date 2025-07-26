@@ -1,0 +1,33 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.scrollbar-hide {
+  scrollbar-width: none;
+}
+
+/* .custom-quill-editor {
+  min-height: calc(5 * 20px); 
+  max-height: calc(15 * 20px);
+  overflow-y: auto; 
+}
+
+.custom-quill-editor .ql-editor {
+  font-size: 16px;
+  line-height: 1.5;
+} */
+
+/* For Dynamic rows */
+/* .custom-quill-editor {
+  height: 10em; 
+}
+
+.custom-quill-editor .ql-editor {
+  font-size: 16px;
+  line-height: 1.5;
+} */

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://www.smartbus360.com/</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.smartbus360.com/home/join-us</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.smartbus360.com/home/about</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.smartbus360.com/home/mission-vision</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.smartbus360.com/home/core-values</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.smartbus360.com/home/founder-message</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.smartbus360.com/home/why-smartbus360</loc>
+    <priority>0.8</priority>
+  </url>
+</urlset>

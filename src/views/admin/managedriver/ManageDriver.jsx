@@ -1,0 +1,861 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  DataGrid,
+  Column,
+  Paging,
+  Pager,
+  Lookup,
+  Editing,
+  SearchPanel,
+  Toolbar,
+  Item,
+  Export,
+  Selection,
+  GridButton,
+  RequiredRule,
+} from "devextreme-react/data-grid";
+import "devextreme/dist/css/dx.material.blue.light.css";
+import {
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  Snackbar,
+  Alert,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tooltip,
+  FormControl,
+  InputLabel,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+import { AddCircleOutline, RemoveCircleOutline } from "@mui/icons-material";
+import axiosInstance from "../../../api/axios";
+import { getUser } from "../../../config/authService";
+
+const convertUrlToFile = async (url, fileName = "logo.png") => {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const file = new File([blob], fileName, { type: blob.type });
+  return file;
+};
+
+const ManageDriver = () => {
+  const [drivers, setDrivers] = useState([]);
+  const [institutes, setInstitutes] = useState([]);
+  const [routes, setRoutes] = useState([]);
+  const [instituteId, setInstituteId] = useState("");
+  const [newDriver, setNewDriver] = useState({
+    name: "",
+    licenseNumber: "",
+    email: "",
+    password: "",
+    phone: "",
+    emergencyContact: "",
+    aadhaarNumber: "",
+    licenseExpiry: "",
+    experienceYears: "",
+    startDate: "",
+    endDate: "",
+    dateOfBirth: "",
+    profilePicture: "",
+    shiftType: "morning",
+    vehicleAssigned: "",
+    rating: "",
+    lastLogin: "",
+    isVerified: "no",
+    availabilityStatus: "Available",
+    assignedRoutes: [],
+  });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+  const [openDriverModal, setOpenDriverModal] = useState(false);
+  const [profilePicturePreview, setProfilePicturePreview] = useState(null);
+  const handleSnackbarClose = () => setSnackbar({ ...snackbar, open: false });
+  const token = sessionStorage.getItem("authToken");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const user = getUser();
+  useEffect(() => {
+    fetchInitialData();
+  }, []);
+
+  const fetchInitialData = async () => {
+    try {
+      const [institutesResponse, driversResponse] =
+        await Promise.all([
+          axiosInstance.get("institutes"),
+          axiosInstance.get("drivers"),
+        ]);
+      setInstitutes(institutesResponse.data);
+      setDrivers(driversResponse.data);
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: "Failed to load data.",
+        severity: "error",
+      });
+    }
+  };
+
+  // Handle case when drivers length reduces and currentPage is now out of bounds
+  useEffect(() => {
+    const maxPage = Math.ceil(drivers.length / pageSize) - 1;
+    if (drivers.length > 0 && currentPage > maxPage) {
+      setCurrentPage(maxPage);
+    }
+  }, [drivers, pageSize]);
+
+  // Calculate paginated drivers using safe page index
+  const maxPage = Math.max(Math.ceil(drivers.length / pageSize) - 1, 0);
+  const safePage = Math.min(currentPage, maxPage);
+  const paginatedDrivers = drivers.length > 0
+    ? drivers.slice(safePage * pageSize, safePage * pageSize + pageSize)
+    : [];
+
+
+
+  const handleInstituteChange = async (event) => {
+    const selectedInstituteId = event.target.value;
+    setInstituteId(selectedInstituteId);
+    try {
+      const response = await axiosInstance.get(
+        `routes/institute/${selectedInstituteId}`
+      );
+      setRoutes(response.data);
+    } catch (err) {}
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewDriver((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setNewDriver((prev) => ({ ...prev, profilePicture: file }));
+    setProfilePicturePreview(URL.createObjectURL(file));
+  };
+
+  const handleAddDriver = async () => {
+    if (
+      !newDriver.name ||
+      !newDriver.licenseNumber ||
+      !newDriver.email ||
+      !newDriver.phone ||
+      !instituteId
+    ) {
+      setSnackbar({
+        open: true,
+        message: "Please fill in all required fields.",
+        severity: "error",
+      });
+      return;
+    }
+
+    const role = user?.role || "";
+    if (role === "viewer") {
+      setSnackbar({
+        open: true,
+        message: "You do not have the necessary permissions to perform this action",
+        severity: "error",
+      });
+      return;
+    }
+
+    // const payload = { ...newDriver,  instituteId };
+    const formData = new FormData();
+    Object.entries({ ...newDriver, instituteId }).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    try {
+      const response = await axiosInstance.post(
+        "drivers",
+        formData
+      );
+
+      // Log the response to ensure it is successful
+      console.log("Driver added response:", response.data);
+
+      if (response.data.success) {
+        const addedDriver = {
+          id: response.data.driver.id,
+          ...response.data.driver,
+        };
+        setDrivers([...drivers, addedDriver]);
+
+        // Now update DriverRoutes if there are assigned routes
+        if (newDriver.assignedRoutes.length > 0) {
+          const driverRoutesPayload = newDriver.assignedRoutes.map((route) => ({
+            driverId: addedDriver.id,
+            routeName: route.routeName,
+          }));
+
+          await axiosInstance.post(
+            "drivers/routes",
+            driverRoutesPayload
+          );
+        }
+
+        setNewDriver({
+          name: "",
+          licenseNumber: "",
+          email: "",
+          password: "",
+          phone: "",
+          emergencyContact: "",
+          aadhaarNumber: "",
+          licenseExpiry: "",
+          experienceYears: "",
+          startDate: "",
+          endDate: "",
+          dateOfBirth: "",
+          profilePicture: "",
+          shiftType: "morning",
+          vehicleAssigned: "",
+          rating: "",
+          lastLogin: "",
+          isVerified: "no",
+          availabilityStatus: "Available",
+          assignedRoutes: [],
+        });
+        setInstituteId("");
+        setSnackbar({
+          open: true,
+          message: "Driver added successfully!",
+          severity: "success",
+        });
+        // setOpenModal(false);
+      } else {
+        setSnackbar({
+          open: true,
+          message: `${response.data.message || "Failed to add driver."}`,
+          severity: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: `${error.response?.data?.message || "Failed to add driver."}`,
+        severity: "error",
+      });
+    }
+  };
+
+  const handleUpdateDriver = async (driverId, updatedDriver = {}) => {
+
+    const role = user?.role || "";
+    if (role === "viewer") {
+      setSnackbar({
+        open: true,
+        message: "You do not have the necessary permissions to perform this action",
+        severity: "error",
+      });
+      return;
+    }
+
+    // Fetch the driver data from `drivers` as a fallback for missing fields
+    const selectedDriver = drivers.find((driver) => driver.id === driverId);
+    if (!selectedDriver) {
+      setSnackbar({
+        open: true,
+        message: "Driver not found.",
+        severity: "error",
+      });
+      return;
+    }
+
+    // Validate required fields using fallback values
+    if (
+      (!updatedDriver.name && !selectedDriver.name) ||
+      (!updatedDriver.licenseNumber && !selectedDriver.licenseNumber) ||
+      (!updatedDriver.email && !selectedDriver.email) ||
+      (!updatedDriver.phone && !selectedDriver.phone)
+    ) {
+      setSnackbar({
+        open: true,
+        message: "Please fill in all required fields.",
+        severity: "error",
+      });
+      return;
+    }
+    
+    let formData = new FormData();
+    formData.append("name", updatedDriver.name || selectedDriver.name || "");
+    formData.append("email", updatedDriver.email || selectedDriver.email || "");
+    formData.append("phone", updatedDriver.phone || selectedDriver.phone || "");
+    formData.append(
+      "licenseNumber",
+      updatedDriver.licenseNumber || selectedDriver.licenseNumber || ""
+    );
+    formData.append(
+      "experienceYears",
+      updatedDriver.experienceYears || selectedDriver.experienceYears || 0
+    );
+    formData.append(
+      "availabilityStatus",
+      updatedDriver.availabilityStatus ||
+        selectedDriver.availabilityStatus ||
+        "Unavailable"
+    );
+  
+    formData.append(
+      "aadhaarNumber",
+      updatedDriver.aadhaarNumber || selectedDriver.aadhaarNumber || ""
+    );
+    formData.append(
+      "licenseExpiry",
+      updatedDriver.licenseExpiry || selectedDriver.licenseExpiry || ""
+    );
+    formData.append("startDate", updatedDriver.startDate || selectedDriver.startDate || "");
+    formData.append("endDate", updatedDriver.endDate || selectedDriver.endDate || "");
+    formData.append("dateOfBirth", updatedDriver.dateOfBirth || selectedDriver.dateOfBirth || "");
+    formData.append("shiftType", updatedDriver.shiftType || selectedDriver.shiftType || "day");
+    formData.append("vehicleAssigned", updatedDriver.vehicleAssigned || selectedDriver.vehicleAssigned || "");
+    formData.append("rating", updatedDriver.rating || selectedDriver.rating || 0);
+    formData.append("password", updatedDriver.password || selectedDriver.password || "");
+    formData.append("lastLogin", updatedDriver.lastLogin || selectedDriver.lastLogin || "");
+    formData.append("isVerified", updatedDriver.isVerified || selectedDriver.isVerified || false);
+    formData.append("instituteId", updatedDriver.instituteId || selectedDriver.instituteId);
+    formData.append("assignedRoutes", JSON.stringify(updatedDriver.assignedRoutes || selectedDriver.assignedRoutes || []));
+  
+    // Handle profile picture update
+    let file = null;
+    if (updatedDriver.profilePicture instanceof File) {
+      file = updatedDriver.profilePicture;
+    } else if (typeof updatedDriver.profilePicture === "string") {
+      file = await convertUrlToFile(updatedDriver.profilePicture);
+    }
+
+    if (file) {
+      formData.append("profilePicture", file);
+    }
+
+    try {
+      // Make API call to update the driver
+      const response = await axiosInstance.put(
+        `drivers/${driverId}`,
+        formData
+      );
+
+      // Check if the response indicates success
+      if (response.data.success) {
+        const updatedDriverData = response.data.driver;
+
+        // Update the driver in the state
+        setDrivers(
+          drivers.map((driver) =>
+            driver.id === updatedDriverData.id ? updatedDriverData : driver
+          )
+        );
+        setSnackbar({
+          open: true,
+          message: "Driver updated successfully!",
+          severity: "success",
+        });
+      } else {
+        setSnackbar({
+          open: true,
+          message: "Failed to update driver.",
+          severity: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Failed to update driver.",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleDeleteDriver = async (driverId) => {
+
+    const role = user?.role || "";
+    if (role === "viewer") {
+      setSnackbar({
+        open: true,
+        message: "You do not have the necessary permissions to perform this action",
+        severity: "error",
+      });
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.delete(
+        `drivers/${driverId}`
+      );
+      if (response.data.message === "Driver deleted successfully.") {
+        // Remove the deleted driver from the state
+        setDrivers(drivers.filter((driver) => driver.id !== driverId));
+        setSnackbar({
+          open: true,
+          message: "Driver deleted successfully!",
+          severity: "success",
+        });
+      } else {
+        setSnackbar({
+          open: true,
+          message: "Failed to delete driver!",
+          severity: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Failed to delete driver!",
+        severity: "error",
+      });
+    }
+  };
+
+  return (
+    <div className="mx-auto mt-4 max-w-full rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 p-6 shadow-2xl">
+      <h2 className="mb-6 text-3xl font-semibold text-gray-800">
+        Manage Drivers
+      </h2>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setOpenDriverModal(true)}
+        >
+          Add Driver
+        </Button>
+        {/* New Driver Form */}
+        <Dialog
+          open={openDriverModal}
+          onClose={() => setOpenDriverModal(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle>Add New Driver</DialogTitle>
+          <DialogContent>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Driver input fields */}
+              <TextField
+                label="Driver Name"
+                name="name"
+                value={newDriver.name}
+                onChange={handleInputChange}
+                required
+              />
+              <TextField
+                label="License Number"
+                name="licenseNumber"
+                value={newDriver.licenseNumber}
+                onChange={handleInputChange}
+                required
+              />
+              <TextField
+                label="Aadhaar Number"
+                name="aadhaarNumber"
+                value={newDriver.aadhaarNumber}
+                onChange={handleInputChange}
+              />
+              <TextField
+                label="License Expiry"
+                type="date"
+                name="licenseExpiry"
+                value={newDriver.licenseExpiry}
+                onChange={handleInputChange}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label="Job Start Date"
+                type="date"
+                name="startDate"
+                value={newDriver.startDate}
+                onChange={handleInputChange}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label="Job End Date"
+                type="date"
+                name="endDate"
+                value={newDriver.endDate}
+                onChange={handleInputChange}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label="Date of Birth"
+                type="date"
+                name="dateOfBirth"
+                value={newDriver.dateOfBirth}
+                onChange={handleInputChange}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label="Driver Email"
+                type="email"
+                name="email"
+                value={newDriver.email}
+                onChange={handleInputChange}
+                required
+              />
+              <TextField
+                label="Driver Phone"
+                name="phone"
+                value={newDriver.phone}
+                onChange={handleInputChange}
+                required
+              />
+              <TextField
+                label="Password"
+                name="password"
+                required
+                value={newDriver.password}
+                onChange={handleInputChange}
+              />
+              <TextField
+                label="Experience (Years)"
+                type="number"
+                name="experienceYears"
+                value={newDriver.experienceYears}
+                onChange={handleInputChange}
+              />
+              <TextField
+                label="Emergency Contact"
+                name="emergencyContact"
+                value={newDriver.emergencyContact}
+                onChange={handleInputChange}
+              />
+              {/* Profile Picture Upload */}
+              <FormControl fullWidth className="col-span-2">
+                <InputLabel shrink>Upload Profile Picture</InputLabel>
+                <input
+                  accept="image/*"
+                  type="file"
+                  onChange={handleImageChange}
+                  style={{ display: "block", marginTop: "8px" }}
+                />
+                {profilePicturePreview && (
+                  <img
+                    src={profilePicturePreview}
+                    alt="Profile Preview"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      marginTop: "8px",
+                      borderRadius: "4px",
+                    }}
+                  />
+                )}
+              </FormControl>
+
+              {/* Additional Driver Fields */}
+
+              <FormControl>
+              <InputLabel>Shift Type</InputLabel>
+              <Select
+                label="Shift Type"
+                name="shiftType"
+                value={newDriver.shiftType}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="morning">Morning</MenuItem>
+                <MenuItem value="evening">Evening</MenuItem>
+                <MenuItem value="both">Both</MenuItem>
+              </Select>
+            </FormControl>
+              <TextField
+                label="Rating"
+                name="rating"
+                type="number"
+                value={newDriver.rating}
+                onChange={handleInputChange}
+              />
+              <FormControl>
+              <InputLabel>Is Verified</InputLabel>
+              <Select
+                label="Is Verified"
+                name="isVerified"
+                value={newDriver.isVerified}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="yes">Yes</MenuItem>
+                <MenuItem value="no">No</MenuItem>
+              </Select>
+            </FormControl>
+
+              <FormControl>
+              <InputLabel>Availability Status</InputLabel>
+              <Select
+                label="Availability Status"
+                name="availabilityStatus"
+                value={newDriver.availabilityStatus}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="Available">Available</MenuItem>
+                <MenuItem value="Unavailable">Unavailable</MenuItem>
+              </Select>
+            </FormControl>
+
+              <FormControl required>
+                <InputLabel>Select Institute</InputLabel>
+                <Select
+                  label="Select Institute"
+                  value={newDriver.instituteId}
+                  onChange={handleInstituteChange}
+                  className="col-span-2"
+                >
+                  <MenuItem value="">Select Institute</MenuItem>
+                  {institutes.map((institute) => (
+                    <MenuItem key={institute.id} value={institute.id}>
+                      {institute.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <div className="col-span-2">
+                <h4 className="mb-2 text-lg">Assign Routes</h4>
+                {routes.length > 0 && (
+                <FormControl required>
+                <InputLabel>Select Route</InputLabel>
+                <Select
+                    label="Select Route"
+                    name="assignedRoutes"
+                    value={newDriver.assignedRoutes}
+                    onChange={handleInputChange}
+                    className="col-span-2"
+                  >
+                    <MenuItem value="">Select Route</MenuItem>
+                    {routes.map((route) => (
+                      <MenuItem key={route.id} value={route.id}>
+                        {route.routeName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDriverModal(false)} color="secondary">
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddDriver}
+            >
+              Add Driver
+            </Button>
+          </DialogActions>
+        </Dialog>
+      <div style={{ minHeight: "600px", height: "auto", width: "100%", marginTop: "16px" }}>
+        {/* <DataGrid
+          rows={drivers}
+          columns={columns}
+          pageSize={5}
+          checkboxSelection
+          onRowEditCommit={(params) => handleUpdateDriver(params.id, params)}
+          getRowClassName={(params) => "hover:bg-gray-100"}
+          disableSelectionOnClick
+          sortingOrder={["asc", "desc"]}
+          sx={{
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: "#f5f5f5",
+              fontWeight: "bold",
+              fontSize: "16px",
+            },
+            "& .MuiDataGrid-row": {
+              "&:hover": {
+                backgroundColor: "#f0f0f0",
+              },
+            },
+          }}
+        /> */}
+        <DataGrid
+          dataSource={paginatedDrivers}
+          keyExpr="id"
+          showBorders={true}
+          rowAlternationEnabled={true}
+          allowColumnResizing={true}
+          onRowUpdating={(e) => handleUpdateDriver(e.oldData.id, e.newData)}
+          onRowRemoving={(e) => handleDeleteDriver(e.data.id)}
+          scrolling={{ mode: 'virtual', useNative: true }}
+        >
+          <Editing
+            mode="cell"
+            allowUpdating={true}
+            allowDeleting={true}
+            useIcons={true}
+          />
+          <SearchPanel visible={true} highlightCaseSensitive={true} />
+          <Paging defaultPageSize={10} />
+          <Pager showPageSizeSelector={false} showInfo={true} />
+
+          {/* Columns */}
+          <Column dataField="name" caption="Driver Name" minWidth={150}/>
+          <Column
+            dataField="instituteName"
+            caption="Institute Name"
+            allowEditing={false}
+          minWidth={150}/>
+          <Column
+            dataField="assignedRoutes"
+            caption="Assigned Route"
+            allowEditing={false}
+            minWidth={150}
+            cellRender={({ value }) => {
+              if (Array.isArray(value) && value.length > 0) {
+                const routeNames = value.map((route) => route.routeName).join(', ');
+                return <span className="cursor-not-allowed">{routeNames}</span>;
+              }
+              return <span className="cursor-not-allowed">No routes assigned</span>;
+            }}
+          />
+          <Column dataField="licenseNumber" caption="License Number" minWidth={150}/>
+          <Column dataField="aadhaarNumber" caption="Aadhaar Number" minWidth={150}/>
+          <Column
+            dataField="licenseExpiry"
+            caption="License Expiry"
+            dataType="date"
+          minWidth={150}/>
+          <Column dataField="startDate" caption="Start Date" dataType="date" minWidth={150}/>
+          <Column dataField="endDate" caption="End Date" dataType="date" minWidth={150}/>
+          <Column
+            dataField="dateOfBirth"
+            caption="Date of Birth"
+            dataType="date"
+          minWidth={150}/>
+          <Column dataField="email" caption="Email" minWidth={150}/>
+          <Column dataField="phone" caption="Phone" minWidth={150}/>
+          <Column
+            dataField="experienceYears"
+            caption="Experience (Years)"
+            dataType="number"
+          minWidth={150}/>
+          <Column
+            dataField="profilePicture"
+            caption="Profile Picture"
+            cellRender={(cellData) =>
+              cellData.value ? (
+                <img
+                  src={cellData.value}
+                  alt="Profile"
+                  style={{ width: "50px", height: "50px", borderRadius: "4px" }}
+                />
+              ) : (
+                "No Image"
+              )
+            }
+            editCellComponent={({ data }) => (
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => data.setValue(reader.result);
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+            )}
+          minWidth={150}/>
+          <Column
+            dataField="shiftType"
+            caption="Shift Type"
+            lookup={{
+              dataSource: ["morning", "evening", "both"],
+              valueExpr: "this",
+              displayExpr: "this",
+            }}
+          minWidth={150}/>
+          <Column dataField="rating" caption="Rating" dataType="number" minWidth={150}/>
+          <Column dataField="password" caption="Password" minWidth={150}/>
+          <Column
+            dataField="isVerified"
+            caption="Verified"
+            lookup={{
+              dataSource: ["yes", "no"],
+              valueExpr: "this",
+              displayExpr: "this",
+            }}
+          minWidth={150}/>
+          <Column
+            dataField="availabilityStatus"
+            caption="Availability"
+            lookup={{
+              dataSource: ["Available", "Unavailable"],
+              valueExpr: "this",
+              displayExpr: "this",
+            }}
+          minWidth={150}/>
+          <Column
+            type="buttons"
+            buttons={[
+              "edit",
+              "delete",
+              {
+                hint: "Save Changes",
+                icon: "save",
+                onClick: (e) => handleUpdateDriver(e.row.data.id, e.row.data),
+              },
+            ]}
+          />
+        </DataGrid>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            margin: "10px 0",
+          }}
+        >
+        <Button
+          variant="contained"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+          disabled={safePage === 0}
+        >
+          Previous
+        </Button>
+        <span>
+          Page {safePage + 1} of {maxPage + 1}
+        </span>
+        <Button
+          variant="contained"
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, maxPage))
+          }
+          disabled={safePage >= maxPage}
+        >
+          Next
+        </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ManageDriver;

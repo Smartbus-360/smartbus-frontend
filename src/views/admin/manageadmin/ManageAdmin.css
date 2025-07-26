@@ -1,0 +1,11 @@
+/* Overlay styling to prevent shifting */
+.custom-calendar-overlay .react-datepicker-popper {
+    position: absolute !important;
+    z-index: 1050; /* Higher z-index to overlay other content */
+  }
+  
+  /* Optional: Control width of calendar overlay */
+  .custom-calendar-overlay .react-datepicker {
+    max-width: 300px;
+  }
+  
