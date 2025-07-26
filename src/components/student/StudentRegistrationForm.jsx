@@ -98,7 +98,7 @@ const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/check-userna
     try {
       await validateForm();
 
-      const res = await fetch('${import.meta.env.VITE_API_BASE_URL}/admin/self-register', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/self-register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

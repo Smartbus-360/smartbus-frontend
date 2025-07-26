@@ -35,7 +35,7 @@ const UserVerificationPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('${import.meta.env.VITE_API_BASE_URL}/login/user', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/login/user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
