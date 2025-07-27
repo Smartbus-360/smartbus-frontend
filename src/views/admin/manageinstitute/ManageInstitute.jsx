@@ -1112,6 +1112,7 @@ const ManageInstitute = () => {
           {/* Columns */}
           {/* <Column dataField="id" caption="ID" allowEditing={false} width={70} /> */}
           <Column dataField="name" caption="Institute Name" minWidth={150}/>
+          <Column dataField="instituteCode" caption="Institute Code" minWidth={150} />
           <Column dataField="contactNumber" caption="Contact Number" minWidth={150}/>
           <Column dataField="email" caption="Email" minWidth={150}/>
           <Column dataField="website" caption="Website" minWidth={150}/>
