@@ -93,39 +93,39 @@ const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/check-userna
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await validateForm();
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await validateForm();
 
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/self-register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await res.json();
-
-try {
-  if (res.ok) {
-    setSnackbar({
-      open: true,
-      message: `
-        You have successfully registered with SMART BUS 360.\n
-        Your email id: ${formData.email}\n
-        Password: ${formData.password}\n
-        Note: Please verify this in the 3rd step.
-      `,
-      severity: 'success',
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/self-register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
     });
-    setTimeout(() => navigate('/verify'), 4000);
-    return;
-  }
 
-  throw new Error(result.message || 'Registration failed');
-} catch (err) {
-  setSnackbar({ open: true, message: err.message, severity: 'error' });
-}
+    const result = await res.json();
+
+    if (res.ok) {
+      setSnackbar({
+        open: true,
+        message: `
+          You have successfully registered with SMART BUS 360.\n
+          Your email id: ${formData.email}\n
+          Password: ${formData.password}\n
+          Note: Please verify this in the 3rd step.
+        `,
+        severity: 'success',
+      });
+      setTimeout(() => navigate('/verify'), 4000);
+    } else {
+      throw new Error(result.message || 'Registration failed');
+    }
+
+  } catch (err) {
+    setSnackbar({ open: true, message: err.message, severity: 'error' });
+  }
+};
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 500, mx: 'auto', mt: 4 }}>
