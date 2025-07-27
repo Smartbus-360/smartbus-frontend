@@ -106,9 +106,19 @@ const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/check-userna
 
       const result = await res.json();
 
-      if (res.ok) {
-        setSnackbar({ open: true, message: 'Registration successful!', severity: 'success' });
-        setTimeout(() => navigate('/verify'), 2000);
+if (res.ok) {
+  setSnackbar({
+    open: true,
+    message: `
+      You have successfully registered with SMART BUS 360.\n
+      Your email id: ${formData.email}\n
+      Password: ${formData.password}\n
+      Note: Please verify this in the 3rd step.
+    `,
+    severity: 'success',
+  });
+  setTimeout(() => navigate('/verify'), 4000); // delay to allow user to read
+}
       } else {
         throw new Error(result.message || 'Registration failed');
       }
