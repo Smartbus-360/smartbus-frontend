@@ -16,6 +16,8 @@ const StudentRegistrationForm = () => {
     username: '',
     password: '',
     email: '',
+    full_name: '',
+  address: '',
     phone: '',
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +31,12 @@ const StudentRegistrationForm = () => {
 
 const handleChange = (e) => {
   const { name, value } = e.target;
-
+if (name === 'username' || name === 'password') {
+  const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '');
+  setFormData((prev) => ({
+    ...prev,
+    [name]: sanitizedValue,
+  }));
   if (name === 'username') {
     // Don't sanitize the actual username
     const emailUsername = value.replace(/[^a-zA-Z0-9]/g, '');
@@ -197,6 +204,25 @@ const handleSubmit = async (e) => {
         margin="normal"
         type="email"
       />
+<TextField
+  fullWidth
+  label="Full Name"
+  name="full_name"
+  value={formData.full_name}
+  onChange={handleChange}
+  margin="normal"
+  required
+/>
+
+<TextField
+  fullWidth
+  label="Address"
+  name="address"
+  value={formData.address}
+  onChange={handleChange}
+  margin="normal"
+  required
+/>
 
       <TextField
         fullWidth
