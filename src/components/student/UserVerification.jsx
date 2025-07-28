@@ -60,7 +60,7 @@ const UserVerificationPage = () => {
   setTimeout(() => {
     navigate('/'); // change '/home' to your actual route if different
   }, 3000);
-}
+
 
       } else {
         throw new Error(result.message || 'Login failed');
