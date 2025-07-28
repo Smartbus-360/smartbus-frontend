@@ -84,7 +84,7 @@ const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/check-userna
   }, [formData.username]);
 
   const validateForm = async () => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
     if (!regex.test(formData.username)) {
       throw new Error('Username must include uppercase, lowercase, number, special character & be 8+ characters.');
@@ -182,7 +182,7 @@ const handleSubmit = async (e) => {
         onChange={handleChange}
         margin="normal"
         required
-        helperText="Must contain uppercase, lowercase, number, special character (8+ chars)"
+        helperText="Must contain uppercase, lowercase, number(8+ chars)"
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
