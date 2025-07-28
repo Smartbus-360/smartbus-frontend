@@ -31,21 +31,20 @@ const StudentRegistrationForm = () => {
 
 const handleChange = (e) => {
   const { name, value } = e.target;
-if (name === 'username' || name === 'password') {
-  const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '');
-  setFormData((prev) => ({
-    ...prev,
-    [name]: sanitizedValue,
-  }));
-  if (name === 'username') {
-    // Don't sanitize the actual username
-    const emailUsername = value.replace(/[^a-zA-Z0-9]/g, '');
-    const email = `${emailUsername}@smartbus360.com`;
 
+  if (name === 'username') {
+    const sanitized = value.replace(/[^a-zA-Z0-9]/g, '');
+    const email = `${sanitized}@smartbus360.com`;
     setFormData((prev) => ({
       ...prev,
-      username: value,
+      username: sanitized,
       email,
+    }));
+  } else if (name === 'password') {
+    const sanitized = value.replace(/[^a-zA-Z0-9]/g, '');
+    setFormData((prev) => ({
+      ...prev,
+      password: sanitized,
     }));
   } else {
     setFormData((prev) => ({
