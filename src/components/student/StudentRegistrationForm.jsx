@@ -87,11 +87,11 @@ const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/check-userna
 const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
     if (!regex.test(formData.username)) {
-      throw new Error('Username must include uppercase, lowercase, number, special character & be 8+ characters.');
+throw new Error('Username must include uppercase, lowercase, number & be 8+ characters.');
     }
 
     if (!regex.test(formData.password)) {
-      throw new Error('Password must include uppercase, lowercase, number, special character & be 8+ characters.');
+throw new Error('Password must include uppercase, lowercase, number & be 8+ characters.');
     }
 
     if (!usernameAvailable) {
