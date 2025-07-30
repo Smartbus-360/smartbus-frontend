@@ -130,7 +130,7 @@ function Navbar() {
     Android
   </a>
   <a
-    href="https://play.google.com/store/apps/details?id=com.smartbus360.app"
+    href="https://apps.apple.com/us/app/smartbus360/id6742678067"
     target="_blank"
     rel="noreferrer"
     className="bg-black flex items-center rounded-lg px-6 py-3 text-gray-700 transition-all duration-300 hover:bg-gray-800 hover:text-white" 
