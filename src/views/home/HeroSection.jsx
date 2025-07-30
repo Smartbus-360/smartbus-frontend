@@ -205,7 +205,7 @@ useEffect(() => {
         >
           <span style={{ marginLeft: 20 }}>
             <i className="fas fa-exclamation-circle" style={{ marginRight: 8 }}></i>
-            ATTENTION PARENTS: Please arrive at the stop 2 minutes before the bus arrives.
+            ATTENTION PARENTS: Please arrive at the stop 2 minutes before the bus arrives.This ensures smooth operations and prevents delays for the next stop. Thank you for your cooperation.
           </span>
         </div>
         <style>
