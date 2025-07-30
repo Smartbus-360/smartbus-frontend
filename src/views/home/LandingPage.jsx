@@ -24,7 +24,7 @@ const LandingPage = () => {
       <footer className="bg-gray-100 py-8 text-center text-gray-900">
         <div className="max-w-7xl mx-auto px-4">
           <p className="text-xl font-semibold mb-2">
-            © {new Date().getFullYear()} Smart Bus 360. All rights reserved.
+            © Smart Bus 360. All rights reserved.
           </p>
           <p className="text-md text-gray-600 mb-4">
             Delivering smarter transportation solutions for a more connected world.
