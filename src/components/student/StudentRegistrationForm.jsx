@@ -22,12 +22,6 @@ const StudentRegistrationForm = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-  // const [usernameAvailable, setUsernameAvailable] = useState(true);
-  // const [usernameChecking, setUsernameChecking] = useState(false);
-
-  // const handleCloseSnackbar = () => {
-  //   setSnackbar({ ...snackbar, open: false });
-  // };
 
 const handleChange = (e) => {
   const { name, value } = e.target;
@@ -51,77 +45,6 @@ const handleChange = (e) => {
       const payload = { ...formData };
 
 
-//   if (name === 'username') {
-//     const sanitized = value.replace(/[^a-zA-Z0-9]/g, '');
-//     const email = `${sanitized}@smartbus360.com`;
-//     setFormData((prev) => ({
-//       ...prev,
-//       username: sanitized,
-//       email,
-//     }));
-//   } else if (name === 'password') {
-//     const sanitized = value.replace(/[^a-zA-Z0-9]/g, '');
-//     setFormData((prev) => ({
-//       ...prev,
-//       password: sanitized,
-//     }));
-//   } else {
-//     setFormData((prev) => ({
-//       ...prev,
-//       [name]: value,
-//     }));
-//   }
-// };
-
-  // useEffect(() => {
-  //   const checkUsername = async () => {
-  //     const username = formData.username.trim();
-  //     if (!username || username.length < 3) {
-  //       setUsernameAvailable(true);
-  //       return;
-  //     }
-
-  //     setUsernameChecking(true);
-
-  //     try {
-// const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/check-username?username=${username}`);
-//         const data = await res.json();
-//         setUsernameAvailable(!data.exists);
-//       } catch (err) {
-//         console.error('Username check failed:', err);
-//         setUsernameAvailable(true); // Fail open
-//       }
-
-//       setUsernameChecking(false);
-//     };
-
-//     const debounce = setTimeout(() => {
-//       checkUsername();
-//     }, 500);
-
-//     return () => clearTimeout(debounce);
-//   }, [formData.username]);
-
-//   const validateForm = async () => {
-// const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-
-//     if (!regex.test(formData.username)) {
-// throw new Error('Username must include uppercase, lowercase, number & be 8+ characters.');
-//     }
-
-//     if (!regex.test(formData.password)) {
-// throw new Error('Password must include uppercase, lowercase, number & be 8+ characters.');
-//     }
-
-//     if (!usernameAvailable) {
-//       throw new Error('Username already exists. Choose another.');
-//     }
-//   };
-
-// const handleSubmit = async (e) => {
-//   e.preventDefault();
-//   try {
-//     await validateForm();
 
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/self-register`, {
       method: 'POST',
@@ -168,25 +91,6 @@ const handleChange = (e) => {
         margin="normal"
       />
 
-      // <TextField
-      //   fullWidth
-      //   label="Username"
-      //   name="username"
-      //   value={formData.username}
-      //   onChange={handleChange}
-      //   margin="normal"
-      //   required
-      //   error={!usernameAvailable && formData.username !== ''}
-      //   helperText={
-      //     usernameChecking ? (
-      //       <span><CircularProgress size={14} sx={{ mr: 1 }} />Checking...</span>
-      //     ) : !usernameAvailable ? (
-      //       '❌ Username already taken'
-      //     ) : (
-      //       '✅ Must include uppercase, lowercase, number, special character (8+ chars)'
-      //     )
-      //   }
-      // />
 
       <TextField
         fullWidth
