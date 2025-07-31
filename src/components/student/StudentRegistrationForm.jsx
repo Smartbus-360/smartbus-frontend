@@ -134,11 +134,8 @@ const handleChange = (e) => {
     if (res.ok) {
       setSnackbar({
         open: true,
-        message: `
-          You have successfully registered with SMART BUS 360.\n
-          Username: ${formData.username}\nPassword: ${formData.password}`,
-          Note: Please verify this in the 3rd step.
-        `,
+        message:`You have successfully registered with SMART BUS 360.\nUsername: ${formData.username}\nPassword: ${formData.password}\nNote: Please verify this in the 3rd step.`,
+
         severity: 'success',
       });
       setTimeout(() => navigate('/verify'), 4000);
