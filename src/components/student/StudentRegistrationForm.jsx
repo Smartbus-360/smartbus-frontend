@@ -13,96 +13,115 @@ const StudentRegistrationForm = () => {
   const [formData, setFormData] = useState({
     registrationNumber: initialRegNo || '',
     instituteCode: initialInstituteCode || '',
-    username: '',
+    username: initialRegNo,
     password: '',
-    email: '',
+    email: initialRegNo,
     full_name: '',
   address: '',
     phone: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-  const [usernameAvailable, setUsernameAvailable] = useState(true);
-  const [usernameChecking, setUsernameChecking] = useState(false);
+  // const [usernameAvailable, setUsernameAvailable] = useState(true);
+  // const [usernameChecking, setUsernameChecking] = useState(false);
+
+  // const handleCloseSnackbar = () => {
+  //   setSnackbar({ ...snackbar, open: false });
+  // };
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+  const validateForm = () => {
+    if (!formData.password) {
+      throw new Error('Password is required');
+    }
+  };
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
-const handleChange = (e) => {
-  const { name, value } = e.target;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      validateForm();
 
-  if (name === 'username') {
-    const sanitized = value.replace(/[^a-zA-Z0-9]/g, '');
-    const email = `${sanitized}@smartbus360.com`;
-    setFormData((prev) => ({
-      ...prev,
-      username: sanitized,
-      email,
-    }));
-  } else if (name === 'password') {
-    const sanitized = value.replace(/[^a-zA-Z0-9]/g, '');
-    setFormData((prev) => ({
-      ...prev,
-      password: sanitized,
-    }));
-  } else {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
-};
+      const payload = { ...formData };
 
-  useEffect(() => {
-    const checkUsername = async () => {
-      const username = formData.username.trim();
-      if (!username || username.length < 3) {
-        setUsernameAvailable(true);
-        return;
-      }
 
-      setUsernameChecking(true);
+//   if (name === 'username') {
+//     const sanitized = value.replace(/[^a-zA-Z0-9]/g, '');
+//     const email = `${sanitized}@smartbus360.com`;
+//     setFormData((prev) => ({
+//       ...prev,
+//       username: sanitized,
+//       email,
+//     }));
+//   } else if (name === 'password') {
+//     const sanitized = value.replace(/[^a-zA-Z0-9]/g, '');
+//     setFormData((prev) => ({
+//       ...prev,
+//       password: sanitized,
+//     }));
+//   } else {
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: value,
+//     }));
+//   }
+// };
 
-      try {
-const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/check-username?username=${username}`);
-        const data = await res.json();
-        setUsernameAvailable(!data.exists);
-      } catch (err) {
-        console.error('Username check failed:', err);
-        setUsernameAvailable(true); // Fail open
-      }
+  // useEffect(() => {
+  //   const checkUsername = async () => {
+  //     const username = formData.username.trim();
+  //     if (!username || username.length < 3) {
+  //       setUsernameAvailable(true);
+  //       return;
+  //     }
 
-      setUsernameChecking(false);
-    };
+  //     setUsernameChecking(true);
 
-    const debounce = setTimeout(() => {
-      checkUsername();
-    }, 500);
+  //     try {
+// const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/check-username?username=${username}`);
+//         const data = await res.json();
+//         setUsernameAvailable(!data.exists);
+//       } catch (err) {
+//         console.error('Username check failed:', err);
+//         setUsernameAvailable(true); // Fail open
+//       }
 
-    return () => clearTimeout(debounce);
-  }, [formData.username]);
+//       setUsernameChecking(false);
+//     };
 
-  const validateForm = async () => {
-const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+//     const debounce = setTimeout(() => {
+//       checkUsername();
+//     }, 500);
 
-    if (!regex.test(formData.username)) {
-throw new Error('Username must include uppercase, lowercase, number & be 8+ characters.');
-    }
+//     return () => clearTimeout(debounce);
+//   }, [formData.username]);
 
-    if (!regex.test(formData.password)) {
-throw new Error('Password must include uppercase, lowercase, number & be 8+ characters.');
-    }
+//   const validateForm = async () => {
+// const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-    if (!usernameAvailable) {
-      throw new Error('Username already exists. Choose another.');
-    }
-  };
+//     if (!regex.test(formData.username)) {
+// throw new Error('Username must include uppercase, lowercase, number & be 8+ characters.');
+//     }
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    await validateForm();
+//     if (!regex.test(formData.password)) {
+// throw new Error('Password must include uppercase, lowercase, number & be 8+ characters.');
+//     }
+
+//     if (!usernameAvailable) {
+//       throw new Error('Username already exists. Choose another.');
+//     }
+//   };
+
+// const handleSubmit = async (e) => {
+//   e.preventDefault();
+//   try {
+//     await validateForm();
 
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/self-register`, {
       method: 'POST',
@@ -117,8 +136,7 @@ const handleSubmit = async (e) => {
         open: true,
         message: `
           You have successfully registered with SMART BUS 360.\n
-          Your email id: ${formData.email}\n
-          Password: ${formData.password}\n
+          Username: ${formData.username}\nPassword: ${formData.password}`,
           Note: Please verify this in the 3rd step.
         `,
         severity: 'success',
@@ -153,26 +171,34 @@ const handleSubmit = async (e) => {
         margin="normal"
       />
 
+      // <TextField
+      //   fullWidth
+      //   label="Username"
+      //   name="username"
+      //   value={formData.username}
+      //   onChange={handleChange}
+      //   margin="normal"
+      //   required
+      //   error={!usernameAvailable && formData.username !== ''}
+      //   helperText={
+      //     usernameChecking ? (
+      //       <span><CircularProgress size={14} sx={{ mr: 1 }} />Checking...</span>
+      //     ) : !usernameAvailable ? (
+      //       '❌ Username already taken'
+      //     ) : (
+      //       '✅ Must include uppercase, lowercase, number, special character (8+ chars)'
+      //     )
+      //   }
+      // />
+
       <TextField
         fullWidth
         label="Username"
         name="username"
         value={formData.username}
-        onChange={handleChange}
+        disabled
         margin="normal"
-        required
-        error={!usernameAvailable && formData.username !== ''}
-        helperText={
-          usernameChecking ? (
-            <span><CircularProgress size={14} sx={{ mr: 1 }} />Checking...</span>
-          ) : !usernameAvailable ? (
-            '❌ Username already taken'
-          ) : (
-            '✅ Must include uppercase, lowercase, number, special character (8+ chars)'
-          )
-        }
       />
-
       <TextField
         fullWidth
         type={showPassword ? 'text' : 'password'}
@@ -182,7 +208,7 @@ const handleSubmit = async (e) => {
         onChange={handleChange}
         margin="normal"
         required
-        helperText="Must contain uppercase, lowercase, number(8+ chars)"
+        helperText="Enter a password of Your own choice."
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -193,19 +219,18 @@ const handleSubmit = async (e) => {
           )
         }}
       />
-
       <TextField
         fullWidth
         label="Email"
         name="email"
         value={formData.email}
-        onChange={handleChange}
+        disabled
         margin="normal"
-        type="email"
       />
+
 <TextField
   fullWidth
-  label="Full Name"
+  label="Full Name(optional)"
   name="full_name"
   value={formData.full_name}
   onChange={handleChange}
@@ -215,7 +240,7 @@ const handleSubmit = async (e) => {
 
 <TextField
   fullWidth
-  label="Address"
+  label="Address(optional)"
   name="address"
   value={formData.address}
   onChange={handleChange}
@@ -232,14 +257,7 @@ const handleSubmit = async (e) => {
         margin="normal"
       />
 
-      <Button
-        variant="contained"
-        color="primary"
-        type="submit"
-        fullWidth
-        sx={{ mt: 2 }}
-        disabled={!usernameAvailable || usernameChecking}
-      >
+      <Button variant="contained" color="primary" type="submit" fullWidth sx={{ mt: 2 }}>
         Register
       </Button>
 
