@@ -136,7 +136,7 @@ const handleChange = (e) => {
   value={formData.full_name}
   onChange={handleChange}
   margin="normal"
-  required
+
 />
 
 <TextField
@@ -146,7 +146,7 @@ const handleChange = (e) => {
   value={formData.address}
   onChange={handleChange}
   margin="normal"
-  required
+
 />
 
       <TextField
