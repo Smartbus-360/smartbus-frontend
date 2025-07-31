@@ -81,15 +81,15 @@ const UserVerificationPage = () => {
       </Typography>
 
       <TextField
-        fullWidth
-        label="Email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        margin="normal"
-        required
-        type="email"
-      />
+  fullWidth
+  label="Email / Username"
+  name="email"
+  value={formData.email}
+  onChange={handleChange}
+  margin="normal"
+  required
+  type="text"
+/>
 
       <TextField
         fullWidth
