@@ -61,10 +61,9 @@ const handleChange = (e) => {
         // ✅ Show top popup
         setPopupMessage(`✅ You have successfully registered with SMART BUS 360.
 Username: ${formData.username}
-Password: ${formData.password}
-Note: Please verify this in the 3rd step.`);
+Password: ${formData.password}`);
         setPopupVisible(true);
-      setTimeout(() => navigate('/verify'), 100000);
+      setTimeout(() => navigate('/'), 100000);
     } else {
       throw new Error(result.message || 'Registration failed');
     }
