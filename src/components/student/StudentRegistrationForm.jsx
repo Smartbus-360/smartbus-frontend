@@ -104,6 +104,8 @@ Note: Please verify this in the 3rd step.`);
           </IconButton>
           {popupMessage}
         </Box>
+    
+      
       )}
 
       
@@ -207,6 +209,7 @@ Note: Please verify this in the 3rd step.`);
 </Alert>
       </Snackbar>
     </Box>
+    </>
   );
 };
 
