@@ -64,7 +64,7 @@ Username: ${formData.username}
 Password: ${formData.password}
 Note: Please verify this in the 3rd step.`);
         setPopupVisible(true);
-      setTimeout(() => navigate('/verify'), 4000);
+      setTimeout(() => navigate('/verify'), 100000);
     } else {
       throw new Error(result.message || 'Registration failed');
     }
@@ -93,7 +93,10 @@ Note: Please verify this in the 3rd step.`);
             textAlign: 'center',
             zIndex: 9999,
             boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
-            whiteSpace: 'pre-line'
+            whiteSpace: 'pre-line',
+            fontSize : '18px',
+            fontWeight:'bold'
+            
           }}
         >
           <IconButton
