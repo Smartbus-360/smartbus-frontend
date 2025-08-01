@@ -22,6 +22,9 @@ const StudentRegistrationForm = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
 
 const handleChange = (e) => {
   const { name, value } = e.target;
@@ -54,13 +57,13 @@ const handleChange = (e) => {
 
     const result = await res.json();
 
-    if (res.ok) {
-      setSnackbar({
-        open: true,
-        message:`You have successfully registered with SMART BUS 360.\nUsername: ${formData.username}\nPassword: ${formData.password}\nNote: Please verify this in the 3rd step.`,
-
-        severity: 'success',
-      });
+      if (res.ok) {
+        // ✅ Show top popup
+        setPopupMessage(`✅ You have successfully registered with SMART BUS 360.
+Username: ${formData.username}
+Password: ${formData.password}
+Note: Please verify this in the 3rd step.`);
+        setPopupVisible(true);
       setTimeout(() => navigate('/verify'), 4000);
     } else {
       throw new Error(result.message || 'Registration failed');
@@ -72,6 +75,38 @@ const handleChange = (e) => {
 };
 
   return (
+    <>
+      {/* ✅ Top Popup */}
+      {popupVisible && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: '#4caf50',
+            color: '#fff',
+            padding: '15px 20px',
+            borderRadius: '0 0 8px 8px',
+            width: '100%',
+            maxWidth: '500px',
+            textAlign: 'center',
+            zIndex: 9999,
+            boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
+            whiteSpace: 'pre-line'
+          }}
+        >
+          <IconButton
+            onClick={() => setPopupVisible(false)}
+            sx={{ position: 'absolute', right: 10, top: 10, color: '#fff' }}
+          >
+            ✖
+          </IconButton>
+          {popupMessage}
+        </Box>
+      )}
+
+      
     <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 500, mx: 'auto', mt: 4 }}>
       <TextField
         fullWidth
