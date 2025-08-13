@@ -96,7 +96,8 @@ const [showCompletionPopup, setShowCompletionPopup] = useState(false);
   useEffect(() => {
     if (mapRef.current) return;
 
-    const map = L.map("map").setView(stops[0].coords, 13);
+      const map = L.map("map", { attributionControl: false }).setView(stops[0].coords, 13);
+
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "",
