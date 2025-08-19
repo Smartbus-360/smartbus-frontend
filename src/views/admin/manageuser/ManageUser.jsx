@@ -169,7 +169,7 @@ const handleAddUser = async () => {
   try {
     const response = await axiosInstance.post("add-student-direct", {
       registrationNumber:newUser.registrationNumber,
-      password:newUser.password
+      password:newUser.password,
       instituteCode:newUser.instituteCode,
       stopId: newUser.stop,
     });
