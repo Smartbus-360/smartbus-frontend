@@ -558,7 +558,7 @@ const handleAddUser = async () => {
           <Column dataField="address" caption="Address" minWidth={150}/>
           <Column
             dataField="emergency_contact_info"
-            caption="mergency Contact"
+            caption="emergency Contact"
           minWidth={150}/>
           <Column
             dataField="dateOfBirth"
