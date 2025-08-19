@@ -1,104 +1,56 @@
-import React, { useState } from 'react';
-import {
-  TextField,
-  Button,
-  Box,
-  Alert,
-  Snackbar,
-  Typography,
-  Container,
-  Paper
-} from '@mui/material';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import axios from "axios";
 
-const OneTimeLoginForm = () => {
-  const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({
-    registrationNumber: '',
-    instituteCode: ''
-  });
-
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'error'
-  });
+export default function StudentLogin() {
+  const [formData, setFormData] = useState({ studentId: "", password: "" });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleOneTimeLogin = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/one-time-login`, credentials);
+      const res = await axios.post("https://api.smartbus360.com/api/student/login", formData);
 
-      const { token } = res.data;
-      localStorage.setItem('accessToken', token);
-      setSnackbar({ open: true, message: 'One-time login successful!', severity: 'success' });
-
-      // Navigate to register page or dashboard
-      navigate('/register',{
-          state: {
-    registrationNumber: credentials.registrationNumber,
-    instituteCode: credentials.instituteCode
-  }
-});
-// or wherever the student should go
+      if (res.data.success) {
+        localStorage.setItem("token", res.data.token); // save token
+        localStorage.setItem("student", JSON.stringify(res.data.student));
+        window.location.href = "/dashboard"; // redirect
+      } else {
+        setError("Invalid ID or Password");
+      }
     } catch (err) {
-      const message = err?.response?.data?.message || 'One-time login failed';
-      setSnackbar({ open: true, message, severity: 'error' });
+      setError("Login failed. Try again.");
     }
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
-
   return (
-    <Container maxWidth="sm">
-      <Paper elevation={3} sx={{ padding: 4, marginTop: 8 }}>
-        <Typography variant="h5" gutterBottom>
-          One-Time Student Login
-        </Typography>
-        <TextField
-          fullWidth
-          margin="normal"
-          label="Registration Number"
-          name="registrationNumber"
-          value={credentials.registrationNumber}
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-80">
+        <h2 className="text-xl font-bold mb-4">Student Login</h2>
+        {error && <p className="text-red-500">{error}</p>}
+        <input
+          type="text"
+          name="studentId"
+          placeholder="Student ID"
+          value={formData.studentId}
           onChange={handleChange}
-          required
+          className="w-full p-2 border mb-3"
         />
-        <TextField
-          fullWidth
-          margin="normal"
-          label="Institute Code"
-          name="instituteCode"
-          value={credentials.instituteCode}
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
           onChange={handleChange}
-          required
+          className="w-full p-2 border mb-3"
         />
-        <Box mt={4} textAlign="right">
-          <Button variant="contained" onClick={handleOneTimeLogin}>
-            One-Time Login
-          </Button>
-        </Box>
-      </Paper>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </Container>
+        <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded">
+          Login
+        </button>
+      </form>
+    </div>
   );
-};
-
-export default OneTimeLoginForm;
+}
