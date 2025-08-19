@@ -127,7 +127,7 @@ const [newUser, setNewUser] = useState({
   };
 
 const handleAddUser = async () => {
-  const { registrationNumber, instituteCode,stop } = newUser;
+  const { registrationNumber,password, instituteCode,stop } = newUser;
 
   if (!registrationNumber || !password || !instituteCode ||!stop) {
     setSnackbar({
@@ -139,6 +139,7 @@ const handleAddUser = async () => {
   }
     console.log("Sending data:", {
     registrationNumber,
+      password,
     instituteCode,
     stopId: stop,
   });
@@ -168,10 +169,10 @@ const handleAddUser = async () => {
 
   try {
     const response = await axiosInstance.post("add-student-direct", {
-      registrationNumber:newUser.registrationNumber,
-      password:newUser.password,
-      instituteCode:newUser.instituteCode,
-      stopId: newUser.stop,
+      registrationNumber,
+      password,
+      instituteCode,
+      stopId: stop,
     });
 
     if (response.data.success) {
