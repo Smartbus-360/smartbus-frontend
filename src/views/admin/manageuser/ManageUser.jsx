@@ -117,7 +117,7 @@ const [newUser, setNewUser] = useState({
 
   const handleInstituteChange = (event) => {
     setInstituteId(event.target.value);
-    setNewUser((prev) => ({ ...prev, institute: event.target.value }));
+    setNewUser((prev) => ({ ...prev, instituteCode: event.target.value }));
   };
 
   const handleImageChange = (e) => {
@@ -394,6 +394,7 @@ const handleAddUser = async () => {
   label="Password"
   name="password"
   type="password"
+  autoComplete="new-password"
   value={newUser.password}
   onChange={handleInputChange}
   fullWidth
