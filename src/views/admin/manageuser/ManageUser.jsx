@@ -139,7 +139,6 @@ const handleAddUser = async () => {
   }
     console.log("Sending data:", {
     registrationNumber,
-      password,
     instituteCode,
     stopId: stop,
   });
@@ -586,7 +585,9 @@ const handleAddUser = async () => {
               displayExpr: "this",
             }}
           minWidth={150}/>
-          <Column dataField="password" caption="Password" minWidth={150}/>
+{/*           <Column dataField="password" caption="Password" minWidth={150}/>
+           */}
+          
           <Column
             dataField="status"
             caption="Status"
