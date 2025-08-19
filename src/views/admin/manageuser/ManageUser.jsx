@@ -129,7 +129,7 @@ const [newUser, setNewUser] = useState({
 const handleAddUser = async () => {
   const { registrationNumber, instituteCode,stop } = newUser;
 
-  if (!registrationNumber || !instituteCode ||!stop) {
+  if (!registrationNumber || !password || !instituteCode ||!stop) {
     setSnackbar({
       open: true,
       message: "Please provide both registration number and institute code,Stoppage",
@@ -182,7 +182,7 @@ const handleAddUser = async () => {
         severity: "success",
       });
       setOpenModal(false);
-      setNewUser({ registrationNumber: "",password : "" instituteCode: "" ,stop:""});
+      setNewUser({ registrationNumber: "",password : "", instituteCode: "" ,stop:""});
     } else {
       setSnackbar({
         open: true,
