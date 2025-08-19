@@ -167,21 +167,22 @@ const handleAddUser = async () => {
     // formData.append("status", "active");
 
   try {
-    const response = await axiosInstance.post("pending-student", {
-      registrationNumber,
-      instituteCode,
-      stopId: stop,
+    const response = await axiosInstance.post("add-student-direct", {
+      registrationNumber:newUser.registrationNumber,
+      password:newUser.password
+      instituteCode:newUser.instituteCode,
+      stopId: newUser.stop,
     });
 
     if (response.data.success) {
       fetchInitialData();
       setSnackbar({
         open: true,
-        message: `Student added! Temp password: ${response.data.tempPassword}`,
+        message: `Student added successfully and can log in now`,
         severity: "success",
       });
       setOpenModal(false);
-      setNewUser({ registrationNumber: "", instituteCode: "" ,stop:""});
+      setNewUser({ registrationNumber: "",password : "" instituteCode: "" ,stop:""});
     } else {
       setSnackbar({
         open: true,
