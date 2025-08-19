@@ -53,6 +53,7 @@ const ManageUser = () => {
   const [instituteId, setInstituteId] = useState("");
 const [newUser, setNewUser] = useState({
   registrationNumber: "",
+  password: "",
   instituteCode: "",
   stop:"",
 });
