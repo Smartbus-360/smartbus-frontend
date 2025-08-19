@@ -263,7 +263,10 @@ const handleAddUser = async () => {
     formData.append("emergency_contact_info", updatedData.emergency_contact_info ?? selectedUser.emergency_contact_info ?? "");
     formData.append("dateOfBirth", updatedData.dateOfBirth ?? selectedUser.dateOfBirth ?? "");
     formData.append("nationality", updatedData.nationality ?? selectedUser.nationality ?? "");
-    formData.append("password", updatedData.password ?? selectedUser.password ?? "");
+    // formData.append("password", updatedData.password ?? selectedUser.password ?? "");
+    if (typeof updatedData.password === "string" && updatedData.password.trim().length > 0) {
+  formData.append("password", updatedData.password.trim());
+}
     formData.append("status", updatedData.status ?? selectedUser.status ?? "");
     formData.append("verified", "yes");
     formData.append("accountType", updatedData.accountType ?? selectedUser.accountType ?? "");
