@@ -132,7 +132,7 @@ const handleAddUser = async () => {
   if (!registrationNumber || !password || !instituteCode ||!stop) {
     setSnackbar({
       open: true,
-      message: "Please provide both registration number ,password , institute code,andStoppage",
+      message: "Please provide both registration number ,password , institute code,and stoppage",
       severity: "error",
     });
     return;
