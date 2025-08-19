@@ -389,6 +389,15 @@ const handleAddUser = async () => {
       required
     />
     <TextField
+  label="Password"
+  name="password"
+  type="password"
+  value={newUser.password}
+  onChange={handleInputChange}
+  fullWidth
+  required
+/>
+   <TextField
       label="Institute Code"
       name="instituteCode"
       value={newUser.instituteCode}
