@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Snackbar, Alert, Box, CircularProgress,IconButton,InputAdornment,Collapse } from '@mui/material';
+import { TextField, Button, Snackbar, Alert, Box,IconButton,InputAdornment,Collapse } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,6 +17,7 @@ const StudentRegistrationForm = () => {
     address: '',
     phone: '',
   });
+  const [ready, setReady] = useState(false);
   useEffect(() => {
   (async () => {
     try {
@@ -111,6 +112,7 @@ Password: ${formData.password}`);
 };
   const handlePasswordUpdate = async () => {
     try {
+      if (!formData.username) throw new Error('Session expired. Please login again.');
       if (!pwFields.oldPassword || !pwFields.newPassword || !pwFields.confirmNewPassword) {
         throw new Error('Please fill all password fields');
       }
@@ -270,7 +272,7 @@ Password: ${formData.password}`);
         margin="normal"
       />
 
-      <Button variant="contained" color="primary" type="submit" fullWidth sx={{ mt: 2 }}>
+      <Button variant="contained" color="primary" type="submit" fullWidth sx={{ mt: 2 }} disabled={!ready || !formData.username}>
         Register
       </Button>
 
