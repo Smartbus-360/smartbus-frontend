@@ -43,6 +43,8 @@ const StudentRegistrationForm = () => {
       setReady(true);
     } catch {
       // optional toast/snackbar
+      setReady(true);
+
     }
   })();
 }, [navigate]);
