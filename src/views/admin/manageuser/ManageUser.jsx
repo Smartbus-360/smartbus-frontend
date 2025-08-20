@@ -37,6 +37,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import axiosInstance from "../../../api/axios";
 import { getUser } from "../../../config/authService";
+import InputAdornment from "@mui/material/InputAdornment";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
 
 const convertUrlToFile = async (url, fileName = "logo.png") => {
   const response = await fetch(url);
@@ -72,6 +76,9 @@ const [pwDialogOpen, setPwDialogOpen] = useState(false);
 const [pwTargetUser, setPwTargetUser] = useState(null);
 const [newPw, setNewPw] = useState("");
 const [newPw2, setNewPw2] = useState("");
+  const [showPw, setShowPw] = useState(false);
+const [showPw2, setShowPw2] = useState(false);
+
 
 const openPwDialog = (rowUser) => {
   setPwTargetUser(rowUser);
@@ -690,26 +697,44 @@ const handleAddUser = async () => {
       </div>
       <Dialog open={pwDialogOpen} onClose={() => setPwDialogOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Set New Password</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="New Password"
-            type="password"
-            fullWidth
-            margin="dense"
-            value={newPw}
-            onChange={(e) => setNewPw(e.target.value)}
-            autoComplete="new-password"
-          />
-          <TextField
-            label="Confirm Password"
-            type="password"
-            fullWidth
-            margin="dense"
-            value={newPw2}
-            onChange={(e) => setNewPw2(e.target.value)}
-            autoComplete="new-password"
-          />
-        </DialogContent>
+<DialogContent>
+  <TextField
+    label="New Password"
+    type={showPw ? "text" : "password"}
+    fullWidth
+    margin="dense"
+    value={newPw}
+    onChange={(e) => setNewPw(e.target.value)}
+    autoComplete="new-password"
+    InputProps={{
+      endAdornment: (
+        <InputAdornment position="end">
+          <IconButton onClick={() => setShowPw((prev) => !prev)} edge="end">
+            {showPw ? <VisibilityOff /> : <Visibility />}
+          </IconButton>
+        </InputAdornment>
+      ),
+    }}
+  />
+  <TextField
+    label="Confirm Password"
+    type={showPw2 ? "text" : "password"}
+    fullWidth
+    margin="dense"
+    value={newPw2}
+    onChange={(e) => setNewPw2(e.target.value)}
+    autoComplete="new-password"
+    InputProps={{
+      endAdornment: (
+        <InputAdornment position="end">
+          <IconButton onClick={() => setShowPw2((prev) => !prev)} edge="end">
+            {showPw2 ? <VisibilityOff /> : <Visibility />}
+          </IconButton>
+        </InputAdornment>
+      ),
+    }}
+  />
+</DialogContent>
         <DialogActions>
           <Button onClick={() => setPwDialogOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={submitNewPassword}>Update</Button>
