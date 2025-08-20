@@ -25,6 +25,35 @@ const StudentRegistrationForm = () => {
   
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
+  useEffect(() => {
+  (async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return navigate('/home/student-login');
+
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/admin/auth/me/basic`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.status === 401) return navigate('/home/student-login');
+
+      const me = await res.json();
+      const uname = me.username || me.registrationNumber || '';
+
+      setFormData(prev => ({
+        ...prev,
+        username: uname,
+        email: uname,  // email = username
+        registrationNumber: me.registrationNumber || '',
+        instituteCode: me.instituteCode || ''
+      }));
+    } catch (e) {
+      // optional: handle fetch error
+    }
+  })();
+}, [navigate]);
+
 
     const [pwOpen, setPwOpen] = useState(false);
   const [pwFields, setPwFields] = useState({
@@ -101,8 +130,7 @@ Password: ${formData.password}`);
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          registrationNumber: formData.registrationNumber,
-          instituteCode: formData.instituteCode,
+          username: formData.username,
           oldPassword: pwFields.oldPassword,
           newPassword: pwFields.newPassword,
           confirmNewPassword: pwFields.confirmNewPassword,
