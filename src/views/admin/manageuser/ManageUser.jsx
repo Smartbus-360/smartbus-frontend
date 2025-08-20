@@ -55,6 +55,7 @@ const ManageUser = () => {
   const [stoppages, setStoppages] = useState([]);
   const [stoppageId, setStoppageId] = useState("");
   const [instituteId, setInstituteId] = useState("");
+  const [showNewUserPw, setShowNewUserPw] = useState(false);
 const [newUser, setNewUser] = useState({
   registrationNumber: "",
   password: "",
@@ -425,15 +426,24 @@ const handleAddUser = async () => {
       fullWidth
       required
     />
-    <TextField
+<TextField
   label="Password"
   name="password"
-  type="password"
+  type={showNewUserPw ? "text" : "password"}
   autoComplete="new-password"
   value={newUser.password}
   onChange={handleInputChange}
   fullWidth
   required
+  InputProps={{
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton onClick={() => setShowNewUserPw((prev) => !prev)} edge="end">
+          {showNewUserPw ? <VisibilityOff /> : <Visibility />}
+        </IconButton>
+      </InputAdornment>
+    ),
+  }}
 />
    <TextField
       label="Institute Code"
