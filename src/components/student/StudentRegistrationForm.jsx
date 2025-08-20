@@ -26,6 +26,18 @@ const StudentRegistrationForm = () => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
 
+    const [pwOpen, setPwOpen] = useState(false);
+  const [pwFields, setPwFields] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  });
+  const [pwLoading, setPwLoading] = useState(false);
+  const [showNewPw, setShowNewPw] = useState(false);
+  const [showOldPw, setShowOldPw] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
+
+
 const handleChange = (e) => {
   const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -63,7 +75,7 @@ const handleChange = (e) => {
 Username: ${formData.username}
 Password: ${formData.password}`);
         setPopupVisible(true);
-      setTimeout(() => navigate('/'), 100000);
+      setTimeout(() => navigate('/'), 10000);
     } else {
       throw new Error(result.message || 'Registration failed');
     }
@@ -72,6 +84,43 @@ Password: ${formData.password}`);
     setSnackbar({ open: true, message: err.message, severity: 'error' });
   }
 };
+  const handlePasswordUpdate = async () => {
+    try {
+      if (!pwFields.oldPassword || !pwFields.newPassword || !pwFields.confirmNewPassword) {
+        throw new Error('Please fill all password fields');
+      }
+      if (pwFields.newPassword.length < 6) {
+        throw new Error('New password must be at least 6 characters');
+      }
+      if (pwFields.newPassword !== pwFields.confirmNewPassword) {
+        throw new Error('New password and confirmation do not match');
+      }
+
+      setPwLoading(true);
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/change-student-password`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          registrationNumber: formData.registrationNumber,
+          instituteCode: formData.instituteCode,
+          oldPassword: pwFields.oldPassword,
+          newPassword: pwFields.newPassword,
+          confirmNewPassword: pwFields.confirmNewPassword,
+        }),
+      });
+      const result = await res.json();
+
+      if (!res.ok) throw new Error(result.message || 'Password update failed');
+
+      setSnackbar({ open: true, message: 'Password updated successfully', severity: 'success' });
+      setPwFields({ oldPassword: '', newPassword: '', confirmNewPassword: '' });
+      setPwOpen(false);
+    } catch (err) {
+      setSnackbar({ open: true, message: err.message, severity: 'error' });
+    } finally {
+      setPwLoading(false);
+    }
+  };
 
   return (
     <>
@@ -200,6 +249,82 @@ Password: ${formData.password}`);
       <Button variant="contained" color="primary" type="submit" fullWidth sx={{ mt: 2 }}>
         Register
       </Button>
+
+              <Box sx={{ mt: 4 }}>
+          <Button variant="outlined" fullWidth onClick={() => setPwOpen((o) => !o)}>
+            {pwOpen ? 'Hide Password Update' : 'Update Password'}
+          </Button>
+          <Collapse in={pwOpen}>
+            <Box sx={{ mt: 2 }}>
+              <TextField
+                fullWidth
+                label="Old Password"
+                type={showOldPw ? 'text' : 'password'}
+                value={pwFields.oldPassword}
+                onChange={(e) => setPwFields((p) => ({ ...p, oldPassword: e.target.value }))}
+                margin="normal"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowOldPw((v) => !v)} edge="end">
+                        {showOldPw ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <TextField
+                fullWidth
+                label="New Password"
+                type={showNewPw ? 'text' : 'password'}
+                value={pwFields.newPassword}
+                onChange={(e) => setPwFields((p) => ({ ...p, newPassword: e.target.value }))}
+                margin="normal"
+                helperText="Min 6 characters"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowNewPw((v) => !v)} edge="end">
+                        {showNewPw ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <TextField
+                fullWidth
+                label="Confirm New Password"
+                type={showConfirmPw ? 'text' : 'password'}
+                value={pwFields.confirmNewPassword}
+                onChange={(e) => setPwFields((p) => ({ ...p, confirmNewPassword: e.target.value }))}
+                margin="normal"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowConfirmPw((v) => !v)} edge="end">
+                        {showConfirmPw ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                sx={{ mt: 2 }}
+                onClick={handlePasswordUpdate}
+                disabled={pwLoading}
+              >
+                {pwLoading ? 'Updating…' : 'Update Password'}
+              </Button>
+            </Box>
+          </Collapse>
+        </Box>
+
 
       <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={handleCloseSnackbar}>
 <Alert
