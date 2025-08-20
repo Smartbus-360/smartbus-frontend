@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Snackbar, Alert, Box, CircularProgress,IconButton,InputAdornment,Collapse } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const StudentRegistrationForm = () => {
   const navigate = useNavigate();
