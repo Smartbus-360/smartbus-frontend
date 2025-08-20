@@ -27,7 +27,7 @@ export default function StudentLogin() {
         localStorage.setItem("userId", res.data.userId);
         localStorage.setItem("username", res.data.userName);
         localStorage.setItem("email", res.data.email);
-  navigate("/student-registration"); 
+  navigate("/register"); 
       } else {
         setError("Invalid username or password");
       }
