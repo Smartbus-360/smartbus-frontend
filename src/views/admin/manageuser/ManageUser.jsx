@@ -408,6 +408,36 @@ const handleAddUser = async () => {
         fullWidth
       >
         <DialogTitle>Add New User</DialogTitle>
+
+        {/* --- Set Password Dialog --- */}
+<Dialog open={pwDialogOpen} onClose={() => setPwDialogOpen(false)} maxWidth="xs" fullWidth>
+  <DialogTitle>Set New Password</DialogTitle>
+  <DialogContent>
+    <TextField
+      label="New Password"
+      type="password"
+      fullWidth
+      margin="dense"
+      value={newPw}
+      onChange={(e) => setNewPw(e.target.value)}
+      autoComplete="new-password"
+    />
+    <TextField
+      label="Confirm Password"
+      type="password"
+      fullWidth
+      margin="dense"
+      value={newPw2}
+      onChange={(e) => setNewPw2(e.target.value)}
+      autoComplete="new-password"
+    />
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setPwDialogOpen(false)}>Cancel</Button>
+    <Button variant="contained" onClick={submitNewPassword}>Update</Button>
+  </DialogActions>
+</Dialog>
+
 <DialogContent>
   <div className="grid grid-cols-1 gap-4 p-2">
     <TextField
