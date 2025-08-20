@@ -97,7 +97,7 @@ Password: ${formData.password}`);
       }
 
       setPwLoading(true);
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/change-student-password`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/auth/change-student-password`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
