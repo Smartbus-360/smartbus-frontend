@@ -23,7 +23,7 @@ export default function StudentLogin() {
       );
 
       if (res.data?.success) {
-        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("accessToken", res.data.token);
         localStorage.setItem("userId", res.data.userId);
         localStorage.setItem("username", res.data.userName);
         localStorage.setItem("email", res.data.email);
