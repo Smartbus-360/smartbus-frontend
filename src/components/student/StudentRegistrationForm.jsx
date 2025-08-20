@@ -40,6 +40,7 @@ const StudentRegistrationForm = () => {
         registrationNumber: me.registrationNumber || '',
         instituteCode: me.instituteCode || ''
       }));
+      setReady(true);
     } catch {
       // optional toast/snackbar
     }
@@ -82,8 +83,12 @@ const handleChange = (e) => {
     e.preventDefault();
     try {
       validateForm();
+      if (!formData.username || !formData.registrationNumber || !formData.instituteCode) {
+       throw new Error('Missing required fields. Please refresh or login again.');
+     }
 
-      const payload = { ...formData };
+
+      // const payload = { ...formData };
 
 
 
@@ -126,7 +131,10 @@ Password: ${formData.password}`);
       setPwLoading(true);
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/auth/change-student-password`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+   'Content-Type': 'application/json',
+   Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}`
+ },
         body: JSON.stringify({
           username: formData.username,
           oldPassword: pwFields.oldPassword,
@@ -187,24 +195,9 @@ Password: ${formData.password}`);
 
       
     <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 500, mx: 'auto', mt: 4 }}>
-      <TextField
-        fullWidth
-        label="Registration Number"
-        name="registrationNumber"
-        value={formData.registrationNumber}
-        disabled
-        margin="normal"
-      />
+      
 
-      <TextField
-        fullWidth
-        label="Institute Code"
-        name="instituteCode"
-        value={formData.instituteCode}
-        disabled
-        margin="normal"
-      />
-
+      
 
       <TextField
         fullWidth
