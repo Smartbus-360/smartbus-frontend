@@ -1,10 +1,14 @@
 // Loginform.jsx
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // 👈 add this
+
 
 export default function StudentLogin() {
   const [formData, setFormData] = useState({ username: "", password: "" }); // 👈 use 'username'
   const [error, setError] = useState("");
+    const navigate = useNavigate(); 
+
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,7 +27,7 @@ export default function StudentLogin() {
         localStorage.setItem("userId", res.data.userId);
         localStorage.setItem("username", res.data.userName);
         localStorage.setItem("email", res.data.email);
-        window.location.href = "/dashboard";
+  navigate("/student-registration"); 
       } else {
         setError("Invalid username or password");
       }
