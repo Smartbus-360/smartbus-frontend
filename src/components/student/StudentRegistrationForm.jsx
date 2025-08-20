@@ -5,26 +5,18 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const StudentRegistrationForm = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-
-    const initialRegNo = location.state?.registrationNumber || '';
-  const initialInstituteCode = location.state?.instituteCode || '';
+  
 
   const [formData, setFormData] = useState({
-    registrationNumber: initialRegNo || '',
-    instituteCode: initialInstituteCode || '',
-    username: initialRegNo,
+   registrationNumber: '',
+    instituteCode: '',
+    username: '',
     password: '',
-    email: initialRegNo,
+   email: '',
     full_name: '',
-  address: '',
+    address: '',
     phone: '',
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-  
-  const [popupVisible, setPopupVisible] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
   useEffect(() => {
   (async () => {
     try {
@@ -35,7 +27,6 @@ const StudentRegistrationForm = () => {
         `${import.meta.env.VITE_API_BASE_URL}/admin/auth/me/basic`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       if (res.status === 401) return navigate('/home/student-login');
 
       const me = await res.json();
@@ -44,16 +35,21 @@ const StudentRegistrationForm = () => {
       setFormData(prev => ({
         ...prev,
         username: uname,
-        email: uname,  // email = username
+        email: uname, // email = username
         registrationNumber: me.registrationNumber || '',
         instituteCode: me.instituteCode || ''
       }));
-    } catch (e) {
-      // optional: handle fetch error
+    } catch {
+      // optional toast/snackbar
     }
   })();
 }, [navigate]);
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
 
     const [pwOpen, setPwOpen] = useState(false);
   const [pwFields, setPwFields] = useState({
