@@ -67,6 +67,32 @@ const [newUser, setNewUser] = useState({
   const handleSnackbarClose = () => setSnackbar({ ...snackbar, open: false });
   const token = sessionStorage.getItem("authToken");
   const [editedUsers, setEditedUsers] = useState({});
+  // --- Password dialog state/handlers ---
+const [pwDialogOpen, setPwDialogOpen] = useState(false);
+const [pwTargetUser, setPwTargetUser] = useState(null);
+const [newPw, setNewPw] = useState("");
+const [newPw2, setNewPw2] = useState("");
+
+const openPwDialog = (rowUser) => {
+  setPwTargetUser(rowUser);
+  setNewPw("");
+  setNewPw2("");
+  setPwDialogOpen(true);
+};
+
+const submitNewPassword = async () => {
+  if (newPw.length < 6) {
+    setSnackbar({ open: true, message: "Password must be ≥ 6 chars", severity: "error" });
+    return;
+  }
+  if (newPw !== newPw2) {
+    setSnackbar({ open: true, message: "Passwords do not match", severity: "error" });
+    return;
+  }
+  await handleUpdateUser(pwTargetUser.id, { password: newPw });
+  setPwDialogOpen(false);
+};
+
   useEffect(() => {
     fetchInitialData();
   }, []);
@@ -601,18 +627,23 @@ const handleAddUser = async () => {
             }}
           minWidth={150}/>
 
-          <Column
-            type="buttons"
-            buttons={[
-              "edit",
-              "delete",
-              {
-                hint: "Save Changes",
-                icon: "save",
-                onClick: (e) => handleUpdateUser(e.row.data.id, e.row.data),
-              },
-            ]}
-          />
+<Column
+  type="buttons"
+  buttons={[
+    "edit",
+    "delete",
+    {
+      hint: "Save Changes",
+      icon: "save",
+      onClick: (e) => handleUpdateUser(e.row.data.id, e.row.data),
+    },
+    {
+      hint: "Set Password",
+      icon: "key",               // DevExtreme icon
+      onClick: (e) => openPwDialog(e.row.data),
+    },
+  ]}
+/>
         </DataGrid>
       <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0" }}>
         <Button
