@@ -22,6 +22,7 @@ import {
   Select,
   MenuItem,
   Snackbar,
+  Switch,
   Alert,
   IconButton,
   InputAdornment,
@@ -1116,6 +1117,22 @@ const ManageInstitute = () => {
           <Column dataField="contactNumber" caption="Contact Number" minWidth={150}/>
           <Column dataField="email" caption="Email" minWidth={150}/>
           <Column dataField="website" caption="Website" minWidth={150}/>
+          <Column
+  dataField="mapAccess"
+  caption="Map Access"
+  width={140}
+  allowEditing={false}
+  cellRender={(cell) => {
+    const row = cell.data;
+    return (
+      <Switch
+        checked={Boolean(row.mapAccess)}
+        onChange={() => handleToggleMapAccess(row.id, Boolean(row.mapAccess))}
+        inputProps={{ "aria-label": "toggle-map-access" }}
+      />
+    );
+  }}
+/>
           <Column
             dataField="logo"
             caption="Logo"
