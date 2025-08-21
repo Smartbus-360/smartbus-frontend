@@ -321,7 +321,26 @@ const ManageInstitute = () => {
       });
     }
   };
-  
+    const handleToggleMapAccess = async (instituteId, currentValue) => {
+  try {
+    const resp = await axiosInstance.put(
+      `institutes/${instituteId}/map-access`,   // maps to PUT /institutes/:id/map-access
+      { mapAccess: !currentValue }
+    );
+    // Optimistically update the row
+    setInstitutes(prev =>
+      prev.map(i => (i.id === instituteId ? { ...i, mapAccess: !currentValue } : i))
+    );
+    setSnackbar({ open: true, message: "Map access updated", severity: "success" });
+  } catch (e) {
+    setSnackbar({
+      open: true,
+      message: e?.response?.data?.message || "Failed to update map access",
+      severity: "error",
+    });
+  }
+};
+
 
   const handleDeleteInstitute = async (id) => {
     try {
