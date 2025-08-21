@@ -92,6 +92,7 @@ const ManageInstitute = () => {
   // };
   const [editedInstitutes, setEditedInstitutes] = useState({});
   const [logoPreview, setLogoPreview] = useState(null);
+  const asBool = (v) => v === true || v === 1 || v === "1";
   const token = sessionStorage.getItem("authToken");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -101,7 +102,7 @@ const ManageInstitute = () => {
         const response = await axiosInstance.get(
           "institutes"
         );
-        setInstitutes(response.data);
+setInstitutes(Array.isArray(response.data) ? response.data : (response.data?.institutes ?? []));
       } catch (error) {
         console.error("Error fetching institutes:", error);
         setSnackbar({
@@ -321,16 +322,23 @@ const ManageInstitute = () => {
       });
     }
   };
-    const handleToggleMapAccess = async (instituteId, currentValue) => {
+const handleToggleMapAccess = async (instituteId, currentValue) => {
   try {
-    const resp = await axiosInstance.put(
-      `institutes/${instituteId}/map-access`,   // maps to PUT /institutes/:id/map-access
+    // 1) Update on server
+    await axiosInstance.put(
+      `institutes/${instituteId}/map-access`,
       { mapAccess: !currentValue }
     );
-    // Optimistically update the row
+
+    // (Optional) optimistic flip for instant feedback
     setInstitutes(prev =>
       prev.map(i => (i.id === instituteId ? { ...i, mapAccess: !currentValue } : i))
     );
+
+    // 2) Pull DB truth so we don't get stuck with null/old values
+    const { data } = await axiosInstance.get("institutes");
+    setInstitutes(Array.isArray(data) ? data : (data?.institutes ?? []));
+
     setSnackbar({ open: true, message: "Map access updated", severity: "success" });
   } catch (e) {
     setSnackbar({
@@ -1145,8 +1153,8 @@ const ManageInstitute = () => {
     const row = cell.data;
     return (
       <Switch
-        checked={Boolean(row.mapAccess)}
-        onChange={() => handleToggleMapAccess(row.id, Boolean(row.mapAccess))}
+        checked={asBool(row.mapAccess)}
+  onChange={() => handleToggleMapAccess(row.id, asBool(row.mapAccess))}
         inputProps={{ "aria-label": "toggle-map-access" }}
       />
     );
