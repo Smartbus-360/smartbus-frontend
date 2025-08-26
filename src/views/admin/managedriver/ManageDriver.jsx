@@ -146,6 +146,7 @@ const [busy, setBusy] = useState(false);
 
 
 
+
   const handleInstituteChange = async (event) => {
     const selectedInstituteId = event.target.value;
     setInstituteId(selectedInstituteId);
@@ -728,13 +729,14 @@ setExpandedRowId(driverId);
                 {routes.length > 0 && (
                 <FormControl required>
                 <InputLabel>Select Route</InputLabel>
-                <Select
-                    label="Select Route"
-                    name="assignedRoutes"
-                    value={newDriver.assignedRoutes}
-                    onChange={handleInputChange}
-                    className="col-span-2"
-                  >
+<Select
+  multiple
+  name="assignedRoutes"
+  value={newDriver.assignedRoutes}
+  onChange={(e) =>
+    setNewDriver((prev) => ({ ...prev, assignedRoutes: e.target.value }))
+  }
+>
                     <MenuItem value="">Select Route</MenuItem>
                     {routes.map((route) => (
                       <MenuItem key={route.id} value={route.id}>
