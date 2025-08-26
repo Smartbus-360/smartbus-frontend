@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import {
-  DataGrid,
-  Column,
-  Paging,
-  Pager,
-  Lookup,
-  Editing,
-  SearchPanel,
-  Toolbar,
-  Item,
-  Export,
-  Selection,
-  GridButton,
-  RequiredRule,
-} from "devextreme-react/data-grid";
+// import {
+//   DataGrid,
+//   Column,
+//   Paging,
+//   Pager,
+//   Lookup,
+//   Editing,
+//   SearchPanel,
+//   Toolbar,
+//   Item,
+//   Export,
+//   Selection,
+//   GridButton,
+//   RequiredRule,
+// } from "devextreme-react/data-grid";
 import "devextreme/dist/css/dx.material.blue.light.css";
 import {
   Button,
@@ -34,6 +34,10 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
+import {
+  DataGrid, Column, Paging, Pager, Lookup, Editing, SearchPanel,
+  Toolbar, Item, Export, Selection, GridButton, RequiredRule, MasterDetail
+} from "devextreme-react/data-grid";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
@@ -49,6 +53,7 @@ const convertUrlToFile = async (url, fileName = "logo.png") => {
 };
 
 const ManageDriver = () => {
+  const gridRef = useRef(null);
   const [drivers, setDrivers] = useState([]);
   const [institutes, setInstitutes] = useState([]);
   const [routes, setRoutes] = useState([]);
@@ -87,6 +92,21 @@ const ManageDriver = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const user = getUser();
+  // Expand + subdriver
+const [expandedRowId, setExpandedRowId] = useState(null);
+const [subDrivers, setSubDrivers] = useState({});     // { [driverId]: [ ...subdriverRows ] }
+const [newSub, setNewSub] = useState({ name: "", phone: "", email: "", password: "" });
+
+// QR modal
+const [qrOpen, setQrOpen] = useState(false);
+const [qrPng, setQrPng] = useState("");
+const [qrExpiresAt, setQrExpiresAt] = useState("");
+const [qrDurationHrs, setQrDurationHrs] = useState(6); // default 6 hrs
+const [qrFor, setQrFor] = useState({ originalDriverId: null, subDriverId: null });
+
+// Busy flags
+const [busy, setBusy] = useState(false);
+
   useEffect(() => {
     fetchInitialData();
   }, []);
@@ -421,6 +441,75 @@ const ManageDriver = () => {
     }
   };
 
+  // Fetch all subdrivers for one main driver
+const fetchSubDrivers = async (driverId) => {
+  try {
+    const { data } = await axiosInstance.get(`drivers/${driverId}/subdrivers`);
+    setSubDrivers(prev => ({ ...prev, [driverId]: data.subDrivers || [] }));
+  } catch (e) {
+    setSnackbar({ open: true, message: "Failed to load sub-drivers.", severity: "error" });
+  }
+};
+
+// Create a sub-driver under a main driver
+const handleCreateSubDriver = async (driverId) => {
+  if (!newSub.name || !newSub.phone || !newSub.email || !newSub.password) {
+    setSnackbar({ open: true, message: "Fill all sub-driver fields", severity: "warning" });
+    return;
+  }
+  try {
+const { data } = await axiosInstance.post(`drivers/${driverId}/subdriver`, newSub);
+    setNewSub({ name: "", phone: "", email: "", password: "" });
+    setSnackbar({ open: true, message: "Sub-driver created", severity: "success" });
+    fetchSubDrivers(driverId);
+  } catch {
+    setSnackbar({ open: true, message: "Failed to create sub-driver", severity: "error" });
+  }
+};
+
+// Generate a QR for a (main driver, sub-driver, durationHours)
+const handleGenerateQR = async (originalDriverId, subDriverId) => {
+  try {
+    setBusy(true);
+    const { data } = await axiosInstance.post(`driver-qr/generate`, {
+      originalDriverId,
+      subDriverId,
+      durationHours: Number(qrDurationHrs || 1),
+    });
+    setQrPng(data.png);
+    setQrExpiresAt(data.expiresAt);
+    setQrFor({ originalDriverId, subDriverId });
+    setQrOpen(true);
+  } catch {
+    setSnackbar({ open: true, message: "Failed to generate QR", severity: "error" });
+  } finally { setBusy(false); }
+};
+
+// Revoke a QR by id (optional list shows active QRs)
+const handleRevokeQR = async (qrId) => {
+  try {
+    await axiosInstance.post(`driver-qr/revoke/${qrId}`);
+    setSnackbar({ open: true, message: "QR revoked", severity: "success" });
+  } catch {
+    setSnackbar({ open: true, message: "Failed to revoke QR", severity: "error" });
+  }
+};
+
+// Row expand toggle
+const toggleExpand = (driverId) => {
+  const grid = gridRef.current?.instance;
+if (!grid) return;
+if (expandedRowId === driverId) {
+  grid.collapseRow(driverId);
+ setExpandedRowId(null);
+ } else {
+ grid.expandRow(driverId);
+setExpandedRowId(driverId);
+ fetchSubDrivers(driverId);
+ }
+ };
+
+
   return (
     <div className="mx-auto mt-4 max-w-full rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 p-6 shadow-2xl">
       <h2 className="mb-6 text-3xl font-semibold text-gray-800">
@@ -671,8 +760,7 @@ const ManageDriver = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      <div style={{ minHeight: "600px", height: "auto", width: "100%", marginTop: "16px" }}>
-        {/* <DataGrid
+<div style={{ height: "600px", width: "100%", marginTop: "16px" }}>        {/* <DataGrid
           rows={drivers}
           columns={columns}
           pageSize={5}
@@ -694,7 +782,39 @@ const ManageDriver = () => {
             },
           }}
         /> */}
+        <Dialog open={qrOpen} onClose={() => setQrOpen(false)} maxWidth="xs" fullWidth>
+  <DialogTitle>Driver QR</DialogTitle>
+  <DialogContent>
+    {qrPng ? (
+      <div className="flex flex-col items-center gap-3">
+        <img src={qrPng} alt="QR Code" style={{ width: 260, height: 260 }} />
+        <div className="text-sm text-gray-600">
+          Expires at: {new Date(qrExpiresAt).toLocaleString()}
+        </div>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            const a = document.createElement("a");
+            a.href = qrPng;
+            a.download = `driver-qr-${qrFor.originalDriverId}-${qrFor.subDriverId}.png`;
+            a.click();
+          }}
+        >
+          Download / Share
+        </Button>
+      </div>
+    ) : (
+      <div>Generating…</div>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setQrOpen(false)}>Close</Button>
+  </DialogActions>
+</Dialog>
+
         <DataGrid
+        height="100%"
+        ref={gridRef}
           dataSource={paginatedDrivers}
           keyExpr="id"
           showBorders={true}
@@ -710,6 +830,68 @@ const ManageDriver = () => {
             allowDeleting={true}
             useIcons={true}
           />
+          <MasterDetail
+  enabled={true}
+  component={({ data }) => {
+    const main = data.data; // current driver row
+    const list = subDrivers[main.id] || [];
+    return (
+      <div className="p-4">
+        <div className="mb-2 font-semibold">Sub-Drivers for: {main.name}</div>
+
+        {/* New sub-driver mini form */}
+        <div className="grid grid-cols-5 gap-2 mb-3">
+          <TextField size="small" label="Name" value={newSub.name}
+            onChange={e => setNewSub(s => ({ ...s, name: e.target.value }))}/>
+          <TextField size="small" label="Phone" value={newSub.phone}
+            onChange={e => setNewSub(s => ({ ...s, phone: e.target.value }))}/>
+          <TextField size="small" label="Email" value={newSub.email}
+            onChange={e => setNewSub(s => ({ ...s, email: e.target.value }))}/>
+          <TextField size="small" label="Password" type="password" value={newSub.password}
+            onChange={e => setNewSub(s => ({ ...s, password: e.target.value }))}/>
+          <Button size="small" variant="contained"
+            onClick={() => handleCreateSubDriver(main.id)}>Add Sub-Driver</Button>
+        </div>
+
+        {/* Existing sub-drivers */}
+        {list.length === 0 ? (
+          <div className="text-sm text-gray-600">No sub-drivers yet.</div>
+        ) : (
+          <div className="space-y-2">
+            {list.map(sd => (
+              <div key={sd.id}
+                className="flex items-center justify-between rounded border bg-white px-3 py-2">
+                <div className="text-sm">
+                  <div className="font-medium">{sd.name}</div>
+                  <div className="text-gray-600">{sd.email} • {sd.phone}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <TextField
+                    size="small"
+                    type="number"
+                    label="Hours"
+                    value={qrDurationHrs}
+                    onChange={(e) => setQrDurationHrs(e.target.value)}
+                    style={{ width: 90 }}
+                  />
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    disabled={busy}
+                    onClick={() => handleGenerateQR(main.id, sd.id)}
+                  >
+                    Generate QR
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }}
+/>
+
           <SearchPanel visible={true} highlightCaseSensitive={true} />
           <Paging defaultPageSize={10} />
           <Pager showPageSizeSelector={false} showInfo={true} />
@@ -813,6 +995,22 @@ const ManageDriver = () => {
               displayExpr: "this",
             }}
           minWidth={150}/>
+
+        <Column
+  caption="QR / Sub-Driver"
+  minWidth={220}
+  cellRender={({ data }) => {
+    const isOpen = expandedRowId === data.id;
+    return (
+      <div className="flex items-center gap-2">
+        <Button size="small" variant="outlined" onClick={() => toggleExpand(data.id)}>
+          {isOpen ? "Hide" : "Manage"}
+        </Button>
+      </div>
+    );
+  }}
+/>
+
           <Column
             type="buttons"
             buttons={[
