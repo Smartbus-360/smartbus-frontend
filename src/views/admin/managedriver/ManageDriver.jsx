@@ -147,16 +147,26 @@ const [busy, setBusy] = useState(false);
 
 
 
+  // const handleInstituteChange = async (event) => {
+  //   const selectedInstituteId = event.target.value;
+  //   setInstituteId(selectedInstituteId);
+  //   try {
+  //     const response = await axiosInstance.get(
+  //       `routes/institute/${selectedInstituteId}`
+  //     );
+  //     setRoutes(response.data);
+  //   } catch (err) {}
+  // };
   const handleInstituteChange = async (event) => {
-    const selectedInstituteId = event.target.value;
-    setInstituteId(selectedInstituteId);
-    try {
-      const response = await axiosInstance.get(
-        `routes/institute/${selectedInstituteId}`
-      );
-      setRoutes(response.data);
-    } catch (err) {}
-  };
+  const selectedInstituteId = event.target.value;
+  setInstituteId(selectedInstituteId);
+  setNewDriver(prev => ({ ...prev, instituteId: selectedInstituteId })); // <-- add this
+  try {
+    const response = await axiosInstance.get(`routes/institute/${selectedInstituteId}`);
+    setRoutes(response.data);
+  } catch (err) {}
+};
+
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -453,13 +463,16 @@ const fetchSubDrivers = async (driverId) => {
 };
 
 // Create a sub-driver under a main driver
-const handleCreateSubDriver = async (driverId) => {
+const handleCreateSubDriver = async (driverId, instituteId) => {
   if (!newSub.name || !newSub.phone || !newSub.email || !newSub.password) {
     setSnackbar({ open: true, message: "Fill all sub-driver fields", severity: "warning" });
     return;
   }
   try {
-const { data } = await axiosInstance.post(`drivers/${driverId}/subdriver`, newSub);
+    const { data } = await axiosInstance.post(
+      `drivers/${driverId}/subdriver`,
+      { ...newSub, instituteId }                // 👈 send instituteId
+    );
     setNewSub({ name: "", phone: "", email: "", password: "" });
     setSnackbar({ open: true, message: "Sub-driver created", severity: "success" });
     fetchSubDrivers(driverId);
@@ -469,19 +482,21 @@ const { data } = await axiosInstance.post(`drivers/${driverId}/subdriver`, newSu
 };
 
 // Generate a QR for a (main driver, sub-driver, durationHours)
-const handleGenerateQR = async (originalDriverId, subDriverId) => {
+const handleGenerateQR = async (originalDriverId, subDriverId,hours = 6) => {
   try {
     setBusy(true);
     const { data } = await axiosInstance.post(`driver-qr/generate`, {
       originalDriverId,
       subDriverId,
-      durationHours: Number(qrDurationHrs || 1),
+      durationHours: hours,
     });
     setQrPng(data.png);
     setQrExpiresAt(data.expiresAt);
     setQrFor({ originalDriverId, subDriverId });
     setQrOpen(true);
-  } catch {
+    setSnackbar({ open: true, severity: "success", message: "QR generated" });
+
+  } catch (e) {
     setSnackbar({ open: true, message: "Failed to generate QR", severity: "error" });
   } finally { setBusy(false); }
 };
@@ -712,7 +727,7 @@ setExpandedRowId(driverId);
                 <InputLabel>Select Institute</InputLabel>
                 <Select
                   label="Select Institute"
-                  value={newDriver.instituteId}
+                  value={instituteId}
                   onChange={handleInstituteChange}
                   className="col-span-2"
                 >
@@ -852,7 +867,7 @@ setExpandedRowId(driverId);
           <TextField size="small" label="Password" type="password" value={newSub.password}
             onChange={e => setNewSub(s => ({ ...s, password: e.target.value }))}/>
           <Button size="small" variant="contained"
-            onClick={() => handleCreateSubDriver(main.id)}>Add Sub-Driver</Button>
+            onClick={() => handleCreateSubDriver(main.id,main.instituteId)}>Add Sub-Driver</Button>
         </div>
 
         {/* Existing sub-drivers */}
@@ -866,6 +881,30 @@ setExpandedRowId(driverId);
                 <div className="text-sm">
                   <div className="font-medium">{sd.name}</div>
                   <div className="text-gray-600">{sd.email} • {sd.phone}</div>
+                    {sd.overlapRoutes?.length > 0 ? (
+    <div className="mt-1">
+      <span className="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700">
+        Eligible
+      </span>
+      <span className="ml-2 text-xs text-gray-700">
+        Overlap: {sd.overlapRoutes.map(r => r.name).join(", ")}
+      </span>
+    </div>
+  ) : (
+    <div className="mt-1">
+      <span className="rounded bg-red-100 px-2 py-0.5 text-xs text-red-700">
+        Not eligible (no shared routes)
+      </span>
+    </div>
+  )}
+
+  {/* optional: show all routes of this sub-driver */}
+  {sd.routes?.length > 0 && (
+    <div className="mt-1 text-xs text-gray-600">
+      Sub routes: {sd.routes.map(r => r.name).join(", ")}
+    </div>
+  )}
+
                 </div>
                 <div className="flex items-center gap-2">
                   <TextField
@@ -876,14 +915,27 @@ setExpandedRowId(driverId);
                     onChange={(e) => setQrDurationHrs(e.target.value)}
                     style={{ width: 90 }}
                   />
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    disabled={busy}
-                    onClick={() => handleGenerateQR(main.id, sd.id)}
-                  >
-                    Generate QR
-                  </Button>
+<Button
+  size="small"
+  variant="outlined"
+disabled={busy || !sd.eligible}
+    title={!sd.eligible ? "No shared routes with main driver" : ""}
+  onClick={() => handleGenerateQR(main.id, sd.id, Number(qrDurationHrs || 6))}
+>
+  Generate QR
+</Button>
+{sd.activeQrId && (
+  <Button
+    size="small"
+    color="error"
+  onClick={() => handleRevokeQR(sd.activeQrId)}
+      title={sd.activeQrExpiresAt ? `Expires: ${new Date(sd.activeQrExpiresAt).toLocaleString()}` : ""}
+    >
+
+    Revoke QR
+  </Button>
+)}
+
                 </div>
               </div>
             ))}
