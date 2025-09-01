@@ -763,13 +763,13 @@ const handleRevokeQR = async (qrId) => {
                 <FormControl required>
                 <InputLabel>Select Route</InputLabel>
 <Select
-  multiple
+  label="Select Route"
   name="assignedRoutes"
   value={newDriver.assignedRoutes}
-  onChange={(e) =>
-    setNewDriver((prev) => ({ ...prev, assignedRoutes: e.target.value.filter(Boolean) }))
-  }
->
+  onChange={handleInputChange}
+  className="col-span-2"
+    >
+                    <MenuItem value="">Select Route</MenuItem>
                     {routes.map((route) => (
                       <MenuItem key={route.id} value={route.id}>
                         {route.routeName}
