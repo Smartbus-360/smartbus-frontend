@@ -228,17 +228,17 @@ const [busy, setBusy] = useState(false);
         setDrivers([...drivers, addedDriver]);
 
         // Now update DriverRoutes if there are assigned routes
-        // if (newDriver.assignedRoutes.length > 0) {
-        //   const driverRoutesPayload = newDriver.assignedRoutes.map((routeId) => ({
-        //     driverId: addedDriver.id,
-        //     routeId,
-        //   }));
+        if (newDriver.assignedRoutes.length > 0) {
+          const driverRoutesPayload = newDriver.assignedRoutes.map((route) => ({
+            driverId: addedDriver.id,
+            routeName: route.routeName,
+          }));
 
-        //   await axiosInstance.post(
-        //     "drivers/routes",
-        //     driverRoutesPayload
-        //   );
-        // }
+          await axiosInstance.post(
+            "drivers/routes",
+            driverRoutesPayload
+          );
+        }
 
         setNewDriver({
           name: "",
