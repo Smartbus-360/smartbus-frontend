@@ -229,7 +229,7 @@ const [busy, setBusy] = useState(false);
 
         // Now update DriverRoutes if there are assigned routes
         if (newDriver.assignedRoutes.length > 0) {
-          const driverRoutesPayload = newDriver.assignedRoutes.map((route) => ({
+          const driverRoutesPayload = newDriver.assignedRoutes.map((routeId) => ({
             driverId: addedDriver.id,
             routeId,
           }));
