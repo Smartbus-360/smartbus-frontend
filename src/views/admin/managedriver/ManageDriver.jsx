@@ -231,7 +231,7 @@ const [busy, setBusy] = useState(false);
         if (newDriver.assignedRoutes.length > 0) {
           const driverRoutesPayload = newDriver.assignedRoutes.map((route) => ({
             driverId: addedDriver.id,
-            routeName: route.routeName,
+            routeId,
           }));
 
           await axiosInstance.post(
@@ -767,10 +767,9 @@ const handleRevokeQR = async (qrId) => {
   name="assignedRoutes"
   value={newDriver.assignedRoutes}
   onChange={(e) =>
-    setNewDriver((prev) => ({ ...prev, assignedRoutes: e.target.value }))
+    setNewDriver((prev) => ({ ...prev, assignedRoutes: e.target.value.filter(Boolean) }))
   }
 >
-                    <MenuItem value="">Select Route</MenuItem>
                     {routes.map((route) => (
                       <MenuItem key={route.id} value={route.id}>
                         {route.routeName}
