@@ -239,7 +239,17 @@ const [busy, setBusy] = useState(false);
         //     driverRoutesPayload
         //   );
         // }
+if (newDriver.assignedRoutes.length > 0) {
+          const driverRoutesPayload = newDriver.assignedRoutes.map((route) => ({
+            driverId: addedDriver.id,
+            routeName: route.routeName,
+          }));
 
+          await axiosInstance.post(
+            "drivers/routes",
+            driverRoutesPayload
+          );
+        }
         setNewDriver({
           name: "",
           licenseNumber: "",
