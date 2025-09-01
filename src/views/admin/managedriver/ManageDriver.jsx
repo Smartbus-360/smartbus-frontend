@@ -231,7 +231,7 @@ const [busy, setBusy] = useState(false);
         if (newDriver.assignedRoutes.length > 0) {
           const driverRoutesPayload = newDriver.assignedRoutes.map((route) => ({
             driverId: addedDriver.id,
-            routeName: route.routeName,
+            routeId: route.id,
           }));
 
           await axiosInstance.post(
