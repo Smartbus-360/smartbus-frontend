@@ -1049,7 +1049,9 @@ onChange={(e) =>
 
 
           <SearchPanel visible={true} highlightCaseSensitive={true} />
-          <Paging defaultPageSize={10} />
+{/*           <Paging defaultPageSize={10} />
+           */}
+          <Paging enabled={!showAll} defaultPageSize={10} />
           <Pager showPageSizeSelector={false} showInfo={true} />
 
           {/* Columns */}
@@ -1180,6 +1182,7 @@ onChange={(e) =>
             ]}
           />
         </DataGrid>
+  {!showAll && (
         <div
           style={{
             display: "flex",
@@ -1207,6 +1210,8 @@ onChange={(e) =>
           Next
         </Button>
         </div>
+  )}
+
       </div>
     </div>
   );
