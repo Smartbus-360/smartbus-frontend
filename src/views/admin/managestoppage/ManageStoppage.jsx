@@ -96,6 +96,8 @@ const ManageStoppage = () => {
   const token = sessionStorage.getItem("authToken");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
+
   const user = getUser();
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -131,11 +133,14 @@ const ManageStoppage = () => {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  const dataForGrid = showAll ? stoppages : paginatedStoppages;
+
 
   // const paginatedStoppages = stoppages.slice(
   //   currentPage * pageSize,
   //   currentPage * pageSize + pageSize
   // );
+  
 
   // Function to get the visible page numbers based on the current page
   const getPageNumbers = () => {
@@ -629,6 +634,17 @@ const ManageStoppage = () => {
       >
         Add New Stoppage
       </Button>
+<div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+  <Button
+    variant="outlined"
+    onClick={() => {
+      setShowAll(prev => !prev);
+      setCurrentPage(1); // reset to page 1 when toggling
+    }}
+  >
+    {showAll ? "Show by pages" : "Show all stoppages"}
+  </Button>
+</div>
 
       <Dialog
         open={openModal}
@@ -945,7 +961,7 @@ const ManageStoppage = () => {
           }}
         /> */}
         <DataGrid
-          dataSource={paginatedStoppages}
+          dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
@@ -961,8 +977,8 @@ const ManageStoppage = () => {
             useIcons={true}
           />
           <SearchPanel visible={true} highlightCaseSensitive={true} />
-          <Paging defaultPageSize={10} />
-          <Pager showPageSizeSelector={false} showInfo={true} />
+          <Paging enabled={!showAll} defaultPageSize={10} />
+          {!showAll && <Pager showPageSizeSelector={false} showInfo={true} />}
 
           {/* Columns */}
           <Column
@@ -1497,6 +1513,7 @@ const ManageStoppage = () => {
             ]}
           />
         </DataGrid>
+        {!showAll && (
         <div
           style={{
             display: "flex",
@@ -1506,7 +1523,7 @@ const ManageStoppage = () => {
         >
           <Button
             variant="contained"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
           >
             Previous
@@ -1533,6 +1550,8 @@ const ManageStoppage = () => {
             Next
           </Button>
         </div>
+        )}
+        {!showAll && (
         <div style={{ textAlign: "center" }}>
           <div
             style={{
@@ -1559,6 +1578,7 @@ const ManageStoppage = () => {
           </div>
         </div>
       </div>
+        )}
       <Dialog
         open={roundsModalOpen}
         onClose={() => setRoundsModalOpen(false)}
