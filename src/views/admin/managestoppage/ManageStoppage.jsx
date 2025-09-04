@@ -1577,7 +1577,7 @@ const ManageStoppage = () => {
             )}
           </div>
         </div>
-      // </div>
+      </div>
         )}
       <Dialog
         open={roundsModalOpen}
