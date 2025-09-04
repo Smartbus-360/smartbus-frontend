@@ -873,15 +873,17 @@ const handleRevokeQR = async (qrId) => {
         size="small"
         type="number"
         label="Hours"
-        value={qrDurationHrs}
-        onChange={(e) => setQrDurationHrs(e.target.value)}
+        value={qrHours[data.id] || 6}
+onChange={(e) =>
+          setQrHours(prev => ({ ...prev, [data.id]: e.target.value }))
+        }
         style={{ width: 90 }}
       />
       <Button
         size="small"
         variant="outlined"
         disabled={busy}
-        onClick={() => handleGenerateQR(data.id, Number(qrDurationHrs || 6))}
+        onClick={() => handleGenerateQR(data.id, Number(qrHours[data.id] || 6))}
       >
         Generate QR
       </Button>
