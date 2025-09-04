@@ -106,6 +106,7 @@ const submitNewPassword = async () => {
   }, []);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
   const user = getUser();
   const fetchInitialData = async () => {
     try {
@@ -133,6 +134,7 @@ const submitNewPassword = async () => {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+const dataForGrid = showAll ? users : paginatedUsers;
 
   // const paginatedUsers = users.slice(
   //   currentPage * pageSize,
@@ -508,7 +510,7 @@ const handleAddUser = async () => {
           }}
         /> */}
         <DataGrid
-          dataSource={paginatedUsers}
+          dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
