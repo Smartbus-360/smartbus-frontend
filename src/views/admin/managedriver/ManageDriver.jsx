@@ -104,6 +104,10 @@ const [qrExpiresAt, setQrExpiresAt] = useState("");
 // const [qrDurationHrs, setQrDurationHrs] = useState(6); // default 6 hrs
   const [qrHours, setQrHours] = useState({}); // e.g. { [driverId]: 6 }
 const [qrFor, setQrFor] = useState({ driverId: null });
+  const [qrHistoryOpen, setQrHistoryOpen] = useState(false);
+const [qrHistory, setQrHistory] = useState([]);
+const [qrHistoryFor, setQrHistoryFor] = useState(null);
+
 
 // Busy flags
 const [busy, setBusy] = useState(false);
@@ -529,6 +533,21 @@ const handleRevokeQR = async (qrId) => {
     setSnackbar({ open: true, message: "Failed to revoke QR", severity: "error" });
   }
 };
+  const fetchQrHistory = async (driverId, status = "all") => {
+  try {
+    const { data } = await axiosInstance.get("driver-qr/history", {
+      params: { driverId, limit: 100, status },
+    });
+    setQrHistory(data.items || []);
+  } catch {
+    setSnackbar({
+      open: true,
+      message: "Failed to load QR history",
+      severity: "error",
+    });
+  }
+};
+
 
 // Row expand toggle
 // const toggleExpand = (driverId) => {
@@ -891,6 +910,48 @@ onChange={(e) =>
     </div>
   )}
 />
+          <Column
+  caption="QR"
+  minWidth={320}
+  cellRender={({ data }) => (
+    <div className="flex items-center gap-3">
+      {/* Hours input + Generate button (your existing code) */}
+      <TextField
+        size="small"
+        type="number"
+        label="Hours"
+        value={qrHours[data.id] ?? 6}
+        onChange={(e) =>
+          setQrHours((prev) => ({ ...prev, [data.id]: e.target.value }))
+        }
+        inputProps={{ min: 1 }}
+        style={{ width: 90 }}
+      />
+      <Button
+        size="small"
+        variant="outlined"
+        disabled={busy}
+        onClick={() => handleGenerateQR(data.id, Number(qrHours[data.id] ?? 6))}
+      >
+        Generate QR
+      </Button>
+
+      {/* NEW: History button */}
+      <Button
+        size="small"
+        variant="text"
+        onClick={async () => {
+          setQrHistoryFor(data.id);
+          await fetchQrHistory(data.id, "all");
+          setQrHistoryOpen(true);
+        }}
+      >
+        QR History
+      </Button>
+    </div>
+  )}
+/>
+
 
           <SearchPanel visible={true} highlightCaseSensitive={true} />
           <Paging defaultPageSize={10} />
