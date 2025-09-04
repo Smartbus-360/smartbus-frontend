@@ -106,6 +106,8 @@ const submitNewPassword = async () => {
   }, []);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
+
   const user = getUser();
   const fetchInitialData = async () => {
     try {
@@ -133,6 +135,8 @@ const submitNewPassword = async () => {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  const dataForGrid = showAll ? users : paginatedUsers;
+
 
   // const paginatedUsers = users.slice(
   //   currentPage * pageSize,
@@ -507,8 +511,20 @@ const handleAddUser = async () => {
             },
           }}
         /> */}
+        <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+  <Button
+    variant="outlined"
+    onClick={() => {
+      setShowAll(prev => !prev);
+      setCurrentPage(1); // reset to first page when toggling
+    }}
+  >
+    {showAll ? "Show by pages" : "Show all users"}
+  </Button>
+</div>
+
         <DataGrid
-          dataSource={paginatedUsers}
+          dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
@@ -524,8 +540,8 @@ const handleAddUser = async () => {
             useIcons={true}
           />
           <SearchPanel visible={true} highlightCaseSensitive={true} />
-          <Paging defaultPageSize={10} />
-          <Pager showPageSizeSelector={false} showInfo={true} />
+          <Paging  enabled={!showAll} defaultPageSize={10} />
+          {!showAll &&<Pager showPageSizeSelector={false} showInfo={true} />}
 
           {/* Define your columns with editable fields */}
           <Column dataField="full_name" caption="Full Name" minWidth={150}/>
