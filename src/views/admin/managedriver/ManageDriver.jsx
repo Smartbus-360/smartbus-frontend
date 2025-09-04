@@ -91,6 +91,7 @@ const ManageDriver = () => {
   const token = sessionStorage.getItem("authToken");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
   const user = getUser();
   // Expand + subdriver
 // const [expandedRowId, setExpandedRowId] = useState(null);
@@ -150,6 +151,7 @@ const [busy, setBusy] = useState(false);
   const paginatedDrivers = drivers.length > 0
     ? drivers.slice(safePage * pageSize, safePage * pageSize + pageSize)
     : [];
+const dataForGrid = showAll ? drivers : paginatedDrivers;
 
 
 
@@ -601,6 +603,18 @@ const handleRevokeQR = async (qrId) => {
         >
           Add Driver
         </Button>
+      <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+  <Button
+    variant="outlined"
+    onClick={() => {
+      setShowAll((prev) => !prev);
+      setCurrentPage(0);
+    }}
+  >
+    {showAll ? "Show by pages" : "Show all drivers"}
+  </Button>
+</div>
+
         {/* New Driver Form */}
         <Dialog
           open={openDriverModal}
@@ -943,7 +957,7 @@ const handleRevokeQR = async (qrId) => {
         <DataGrid
         height="100%"
         ref={gridRef}
-          dataSource={paginatedDrivers}
+          dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
