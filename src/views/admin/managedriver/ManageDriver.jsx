@@ -101,7 +101,8 @@ const ManageDriver = () => {
 const [qrOpen, setQrOpen] = useState(false);
 const [qrPng, setQrPng] = useState("");
 const [qrExpiresAt, setQrExpiresAt] = useState("");
-const [qrDurationHrs, setQrDurationHrs] = useState(6); // default 6 hrs
+// const [qrDurationHrs, setQrDurationHrs] = useState(6); // default 6 hrs
+  const [qrHours, setQrHours] = useState({}); // e.g. { [driverId]: 6 }
 const [qrFor, setQrFor] = useState({ driverId: null });
 
 // Busy flags
