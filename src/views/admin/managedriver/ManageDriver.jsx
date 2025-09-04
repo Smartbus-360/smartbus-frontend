@@ -875,6 +875,70 @@ const handleRevokeQR = async (qrId) => {
     <Button onClick={() => setQrOpen(false)}>Close</Button>
   </DialogActions>
 </Dialog>
+  <Dialog
+  open={qrHistoryOpen}
+  onClose={() => setQrHistoryOpen(false)}
+  maxWidth="md"
+  fullWidth
+>
+  <DialogTitle>QR History — Driver #{qrHistoryFor}</DialogTitle>
+  <DialogContent>
+    <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+      <Button size="small" onClick={() => { setQrHistoryFilter('all');     fetchQrHistory(qrHistoryFor, 'all'); }}>All</Button>
+      <Button size="small" onClick={() => { setQrHistoryFilter('active');  fetchQrHistory(qrHistoryFor, 'active'); }}>Active</Button>
+      <Button size="small" onClick={() => { setQrHistoryFilter('used');    fetchQrHistory(qrHistoryFor, 'used'); }}>Used</Button>
+      <Button size="small" onClick={() => { setQrHistoryFilter('revoked'); fetchQrHistory(qrHistoryFor, 'revoked'); }}>Revoked</Button>
+      <Button size="small" onClick={() => { setQrHistoryFilter('expired'); fetchQrHistory(qrHistoryFor, 'expired'); }}>Expired</Button>
+    </div>
+
+    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <thead>
+        <tr>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>QR ID</th>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>Expires</th>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>Status</th>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>Used / Max</th>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>Created By</th>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {qrHistory.map((r) => (
+          <tr key={r.id}>
+            <td style={{ padding: 8 }}>{r.id}</td>
+            <td style={{ padding: 8 }}>{r.expiresAt ? new Date(r.expiresAt).toLocaleString() : '-'}</td>
+            <td style={{ padding: 8 }}>{r.status}</td>
+            <td style={{ padding: 8 }}>{(r.usedCount ?? 0)} / {(r.maxUses ?? 1)}</td>
+            <td style={{ padding: 8 }}>{r.createdByName ?? r.createdBy ?? '-'}</td>
+            <td style={{ padding: 8 }}>
+              {r.status === 'active' && (
+                <Button
+                  size="small"
+                  color="error"
+                  variant="outlined"
+                  onClick={() => revokeFromHistory(r)}
+                >
+                  Revoke
+                </Button>
+              )}
+            </td>
+          </tr>
+        ))}
+        {qrHistory.length === 0 && (
+          <tr>
+            <td colSpan={6} style={{ padding: 16, opacity: 0.7 }}>
+              No QR history found for this filter.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setQrHistoryOpen(false)}>Close</Button>
+  </DialogActions>
+</Dialog>
+
 
         <DataGrid
         height="100%"
@@ -894,7 +958,7 @@ const handleRevokeQR = async (qrId) => {
             allowDeleting={true}
             useIcons={true}
           />
-<Column
+{/* <Column
   caption="QR"
   minWidth={240}
   cellRender={({ data }) => (
@@ -916,6 +980,53 @@ onChange={(e) =>
         onClick={() => handleGenerateQR(data.id, Number(qrHours[data.id] || 6))}
       >
         Generate QR
+      </Button>
+    </div>
+  )}
+/>
+ */}
+          <Column
+  caption="QR"
+  minWidth={320}
+  cellRender={({ data }) => (
+    <div className="flex items-center gap-3">
+      <TextField
+        size="small"
+        type="number"
+        label="Hours"
+        value={qrHours[data.id] ?? 6}
+        onChange={(e) =>
+          setQrHours((prev) => ({
+            ...prev,
+            [data.id]: e.target.value === "" ? "" : Number(e.target.value),
+          }))
+        }
+        inputProps={{ min: 1 }}
+        style={{ width: 90 }}
+      />
+
+      <Button
+        size="small"
+        variant="outlined"
+        disabled={busy}
+        onClick={() =>
+          handleGenerateQR(data.id, Number(qrHours[data.id] ?? 6))
+        }
+      >
+        Generate QR
+      </Button>
+
+      <Button
+        size="small"
+        variant="text"
+        onClick={async () => {
+          setQrHistoryFor(data.id);
+          setQrHistoryFilter("all");
+          await fetchQrHistory(data.id, "all");
+          setQrHistoryOpen(true);
+        }}
+      >
+        QR History
       </Button>
     </div>
   )}
