@@ -106,7 +106,6 @@ const submitNewPassword = async () => {
   }, []);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [showAll, setShowAll] = useState(false);
   const user = getUser();
   const fetchInitialData = async () => {
     try {
@@ -134,7 +133,6 @@ const submitNewPassword = async () => {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
-const dataForGrid = showAll ? users : paginatedUsers;
 
   // const paginatedUsers = users.slice(
   //   currentPage * pageSize,
@@ -410,17 +408,6 @@ const handleAddUser = async () => {
       >
         Add New User
       </Button>
-<div style={{ marginTop: 12, display: "flex", gap: 8 }}>
-  <Button
-    variant="outlined"
-    onClick={() => {
-      setShowAll(prev => !prev);
-      setCurrentPage(1);           // reset to page 1 when toggling
-    }}
-  >
-    {showAll ? "Show by pages" : "Show all users"}
-  </Button>
-</div>
 
       <Dialog
         open={openModal}
@@ -521,7 +508,7 @@ const handleAddUser = async () => {
           }}
         /> */}
         <DataGrid
-          dataSource={dataForGrid}
+          dataSource={paginatedUsers}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
@@ -537,8 +524,8 @@ const handleAddUser = async () => {
             useIcons={true}
           />
           <SearchPanel visible={true} highlightCaseSensitive={true} />
-          <Paging enabled={!showAll} defaultPageSize={10} />
-         {!showAll &&  <Pager showPageSizeSelector={false} showInfo={true} />}
+          <Paging defaultPageSize={10} />
+          <Pager showPageSizeSelector={false} showInfo={true} />
 
           {/* Define your columns with editable fields */}
           <Column dataField="full_name" caption="Full Name" minWidth={150}/>
@@ -675,11 +662,10 @@ const handleAddUser = async () => {
   ]}
 />
         </DataGrid>
-        {!showAll && (
       <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0" }}>
         <Button
           variant="contained"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
           disabled={currentPage === 1}
         >
           Previous
@@ -704,8 +690,6 @@ const handleAddUser = async () => {
           Next
         </Button>
       </div>
-  )}
-        {!showAll && (
       <div style={{ textAlign: "center" }}>
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", margin: "0 10px" }}>
           {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
@@ -720,8 +704,7 @@ const handleAddUser = async () => {
           ))}
         </div>
       </div>
-      
-  )}
+      </div>
       <Dialog open={pwDialogOpen} onClose={() => setPwDialogOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Set New Password</DialogTitle>
 <DialogContent>
