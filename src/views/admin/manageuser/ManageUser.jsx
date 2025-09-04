@@ -678,6 +678,7 @@ const handleAddUser = async () => {
   ]}
 />
         </DataGrid>
+        {!showAll && (
       <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0" }}>
         <Button
           variant="contained"
@@ -706,6 +707,8 @@ const handleAddUser = async () => {
           Next
         </Button>
       </div>
+      )}
+        {!showAll && (
       <div style={{ textAlign: "center" }}>
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", margin: "0 10px" }}>
           {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
@@ -721,6 +724,7 @@ const handleAddUser = async () => {
         </div>
       </div>
       </div>
+      )}
       <Dialog open={pwDialogOpen} onClose={() => setPwDialogOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Set New Password</DialogTitle>
 <DialogContent>
