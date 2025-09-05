@@ -75,8 +75,6 @@ const ManageRoute = () => {
   const token = sessionStorage.getItem("authToken");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  // below other useState hooks
-const [showAll, setShowAll] = useState(false);
   const user = getUser();
   useEffect(() => {
     fetchInitialData();
@@ -389,15 +387,6 @@ const [showAll, setShowAll] = useState(false);
           Add Route
         </Button>
 
-
-<Button
-  variant="outlined"
-  onClick={() => setShowAll((prev) => !prev)}
->
-  {showAll ? "Show Page-wise" : "Show All"}
-</Button>
-
-
         {/* New Route Form */}
         <Dialog
           open={openRouteModal}
@@ -571,7 +560,7 @@ const [showAll, setShowAll] = useState(false);
 
       <div style={{ minHeight: "600px", height: "auto", width: "100%", marginTop: "16px" }}>
         <DataGrid
-          dataSource={allRoutes}
+          dataSource={paginatedRoutes}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
@@ -587,7 +576,7 @@ const [showAll, setShowAll] = useState(false);
             useIcons={true}
           />
           <SearchPanel visible={true} highlightCaseSensitive={true} />
-          <Paging enabled={!showAll} defaultPageSize={10} />
+          <Paging defaultPageSize={10} />
           <Pager showPageSizeSelector={false} showInfo={true} />
 
           {/* Columns */}
@@ -658,7 +647,6 @@ const [showAll, setShowAll] = useState(false);
             ]}
           />
         </DataGrid>
-        
         <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0" }}>
           <Button
             variant="contained"
@@ -682,7 +670,6 @@ const [showAll, setShowAll] = useState(false);
             Next
           </Button>
         </div>
-  
       </div>
     </div>
   );
