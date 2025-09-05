@@ -75,6 +75,10 @@ const ManageRoute = () => {
   const token = sessionStorage.getItem("authToken");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
+const dataForGrid = showAll ? allRoutes : paginatedRoutes;
+
+
   const user = getUser();
   useEffect(() => {
     fetchInitialData();
@@ -378,6 +382,7 @@ const ManageRoute = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+<div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
 
         <Button
           variant="contained"
@@ -386,7 +391,16 @@ const ManageRoute = () => {
         >
           Add Route
         </Button>
-
+<Button
+    variant="outlined"
+    onClick={() => {
+      setShowAll(prev => !prev);
+      setCurrentPage(0);
+    }}
+  >
+    {showAll ? "Show by pages" : "Show all routes"}
+  </Button>
+      </div>
         {/* New Route Form */}
         <Dialog
           open={openRouteModal}
@@ -560,7 +574,7 @@ const ManageRoute = () => {
 
       <div style={{ minHeight: "600px", height: "auto", width: "100%", marginTop: "16px" }}>
         <DataGrid
-          dataSource={paginatedRoutes}
+          dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
@@ -576,7 +590,7 @@ const ManageRoute = () => {
             useIcons={true}
           />
           <SearchPanel visible={true} highlightCaseSensitive={true} />
-          <Paging defaultPageSize={10} />
+          <Paging enabled={!showAll}  defaultPageSize={10} />
           <Pager showPageSizeSelector={false} showInfo={true} />
 
           {/* Columns */}
@@ -647,6 +661,7 @@ const ManageRoute = () => {
             ]}
           />
         </DataGrid>
+        {!showAll && (
         <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0" }}>
           <Button
             variant="contained"
@@ -670,6 +685,7 @@ const ManageRoute = () => {
             Next
           </Button>
         </div>
+  )}
       </div>
     </div>
   );
