@@ -50,18 +50,6 @@ const ManageRoute = () => {
   });
   const [openRouteModal, setOpenRouteModal] = useState(false);
   const [allRoutes, setAllRoutes] = useState([]);
-  // Safe paging math
-const maxPage = Math.max(0, Math.ceil(allRoutes.length / pageSize) - 1);
-const safePage = Math.min(Math.max(currentPage, 0), maxPage);
-
-// Slice using safePage to avoid out-of-range
-const paginatedRoutes = allRoutes.slice(
-  safePage * pageSize,
-  safePage * pageSize + pageSize
-);
-
-// IMPORTANT: define this AFTER paginatedRoutes
-const dataForGrid = showAll ? allRoutes : paginatedRoutes;
 
   const [newRoute, setNewRoute] = useState({
     routeName: "",
@@ -89,6 +77,18 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [showAll, setShowAll] = useState(false);
+    // Safe paging math
+const maxPage = Math.max(0, Math.ceil(allRoutes.length / pageSize) - 1);
+const safePage = Math.min(Math.max(currentPage, 0), maxPage);
+
+// Slice using safePage to avoid out-of-range
+const paginatedRoutes = allRoutes.slice(
+  safePage * pageSize,
+  safePage * pageSize + pageSize
+);
+
+// IMPORTANT: define this AFTER paginatedRoutes
+const dataForGrid = showAll ? allRoutes : paginatedRoutes;
   
 
 
@@ -115,10 +115,6 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
     }
   };
 
-  const paginatedRoutes = allRoutes.slice(
-    currentPage * pageSize,
-    currentPage * pageSize + pageSize
-  );
 
   const handleRouteInputChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -679,22 +675,18 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
           <Button
             variant="contained"
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-            disabled={currentPage === 0}
+            disabled={safePage === 0}
           >
             Previous
           </Button>
           <span>
-            Page {currentPage + 1} of {Math.ceil(allRoutes.length / pageSize)}
+                  Page {safePage + 1} of {maxPage + 1}
           </span>
           <Button
             variant="contained"
-            onClick={() =>
-              setCurrentPage((prev) =>
-                Math.min(prev + 1, Math.ceil(allRoutes.length / pageSize) - 1)
-              )
-            }
-            disabled={(currentPage + 1) * pageSize >= allRoutes.length}
-          >
+onClick={() => setCurrentPage(prev => Math.min(prev + 1, maxPage))}
+      disabled={safePage >= maxPage}
+    >
             Next
           </Button>
         </div>
