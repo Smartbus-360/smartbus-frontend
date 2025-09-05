@@ -100,14 +100,10 @@ const [showAll, setShowAll] = useState(false);
     }
   };
 
-  // const paginatedRoutes = allRoutes.slice(
-  //   currentPage * pageSize,
-  //   currentPage * pageSize + pageSize
-  // );
-// replace your paginatedRoutes with this:
-const paginatedRoutes = showAll
-  ? allRoutes
-  : allRoutes.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
+  const paginatedRoutes = allRoutes.slice(
+    currentPage * pageSize,
+    currentPage * pageSize + pageSize
+  );
 
   const handleRouteInputChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -385,33 +381,22 @@ const paginatedRoutes = showAll
         </Alert>
       </Snackbar>
 
-{/*         <Button
+        <Button
           variant="contained"
           color="primary"
           onClick={() => setOpenRouteModal(true)}
         >
           Add Route
         </Button>
- */}
-      <div className="flex gap-3 mt-2">
-  <Button
-    variant="contained"
-    color="primary"
-    onClick={() => setOpenRouteModal(true)}
-  >
-    Add Route
-  </Button>
 
-  <Button
-    variant="outlined"
-    onClick={() => {
-      setShowAll((s) => !s);
-      setCurrentPage(0);
-    }}
-  >
-    {showAll ? "Show Page-wise" : "Show All"}
-  </Button>
-</div>
+
+<Button
+  variant="outlined"
+  onClick={() => setShowAll((prev) => !prev)}
+>
+  {showAll ? "Show Page-wise" : "Show All"}
+</Button>
+
 
         {/* New Route Form */}
         <Dialog
@@ -586,7 +571,7 @@ const paginatedRoutes = showAll
 
       <div style={{ minHeight: "600px", height: "auto", width: "100%", marginTop: "16px" }}>
         <DataGrid
-          dataSource={paginatedRoutes}
+          dataSource={allRoutes}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
@@ -602,8 +587,8 @@ const paginatedRoutes = showAll
             useIcons={true}
           />
           <SearchPanel visible={true} highlightCaseSensitive={true} />
-          { !showAll && <Paging defaultPageSize={10} />}
-          { !showAll &&<Pager showPageSizeSelector={false} showInfo={true} />}
+          <Paging enabled={!showAll} defaultPageSize={10} />
+          <Pager showPageSizeSelector={false} showInfo={true} />
 
           {/* Columns */}
           <Column dataField="routeName" caption="Route Name" minWidth={150}/>
@@ -673,7 +658,7 @@ const paginatedRoutes = showAll
             ]}
           />
         </DataGrid>
-        {!showAll && (
+        
         <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0" }}>
           <Button
             variant="contained"
@@ -697,7 +682,7 @@ const paginatedRoutes = showAll
             Next
           </Button>
         </div>
-  )}
+  
       </div>
     </div>
   );
