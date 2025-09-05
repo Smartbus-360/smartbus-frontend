@@ -50,6 +50,19 @@ const ManageRoute = () => {
   });
   const [openRouteModal, setOpenRouteModal] = useState(false);
   const [allRoutes, setAllRoutes] = useState([]);
+  // Safe paging math
+const maxPage = Math.max(0, Math.ceil(allRoutes.length / pageSize) - 1);
+const safePage = Math.min(Math.max(currentPage, 0), maxPage);
+
+// Slice using safePage to avoid out-of-range
+const paginatedRoutes = allRoutes.slice(
+  safePage * pageSize,
+  safePage * pageSize + pageSize
+);
+
+// IMPORTANT: define this AFTER paginatedRoutes
+const dataForGrid = showAll ? allRoutes : paginatedRoutes;
+
   const [newRoute, setNewRoute] = useState({
     routeName: "",
     description: "",
@@ -76,7 +89,7 @@ const ManageRoute = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [showAll, setShowAll] = useState(false);
-const dataForGrid = showAll ? allRoutes : paginatedRoutes;
+  
 
 
   const user = getUser();
