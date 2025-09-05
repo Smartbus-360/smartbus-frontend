@@ -106,6 +106,21 @@ const submitNewPassword = async () => {
   }, []);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
+
+// Safe paging math
+const maxPage = Math.max(0, Math.ceil(users.length / pageSize) - 1);
+const safePage = Math.min(Math.max(currentPage, 0), maxPage);
+
+// Slice using safePage (avoids OOB when data changes)
+const paginatedUsers = users.slice(
+  safePage * pageSize,
+  safePage * pageSize + pageSize
+);
+
+// Feed the grid either the slice or everything
+const dataForGrid = showAll ? users : paginatedUsers;
+
   const user = getUser();
   const fetchInitialData = async () => {
     try {
@@ -129,11 +144,7 @@ const submitNewPassword = async () => {
   const totalPages = Math.ceil(users.length / pageSize);
 
   // Paginated data
-  const paginatedUsers = users.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
+  
   // const paginatedUsers = users.slice(
   //   currentPage * pageSize,
   //   currentPage * pageSize + pageSize
@@ -400,6 +411,7 @@ const handleAddUser = async () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+      <div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
       <Button
         variant="contained"
         color="primary"
@@ -408,6 +420,16 @@ const handleAddUser = async () => {
       >
         Add New User
       </Button>
+<Button
+    variant="outlined"
+    onClick={() => {
+      setShowAll(prev => !prev);
+      setCurrentPage(0);
+    }}
+  >
+    {showAll ? "Show by pages" : "Show all users"}
+  </Button>
+</div>
 
       <Dialog
         open={openModal}
@@ -508,7 +530,7 @@ const handleAddUser = async () => {
           }}
         /> */}
         <DataGrid
-          dataSource={paginatedUsers}
+          dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
@@ -524,7 +546,7 @@ const handleAddUser = async () => {
             useIcons={true}
           />
           <SearchPanel visible={true} highlightCaseSensitive={true} />
-          <Paging defaultPageSize={10} />
+          <Paging enabled={!showAll}  defaultPageSize={10} />
           <Pager showPageSizeSelector={false} showInfo={true} />
 
           {/* Define your columns with editable fields */}
@@ -662,6 +684,7 @@ const handleAddUser = async () => {
   ]}
 />
         </DataGrid>
+        {!showAll && (
       <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0" }}>
         <Button
           variant="contained"
@@ -690,6 +713,7 @@ const handleAddUser = async () => {
           Next
         </Button>
       </div>
+      )}
       <div style={{ textAlign: "center" }}>
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", margin: "0 10px" }}>
           {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
