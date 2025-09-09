@@ -512,8 +512,10 @@ const dataForGrid = showAll ? drivers : paginatedDrivers;
 
 
 const handleGenerateQR = async (driverId, hours = 6) => {
-    const label = driverName?.trim() ? `${driverName} (ID ${driverId})` : `Driver #${driverId}`;
-  if (!window.confirm(`Do you want to generate a QR for ${label} valid for ${hours} hour(s)?`)) return;
+const nameOnly = (driverName ?? "").toString().trim();
+  const label = nameOnly || "this driver";   // fallback if name is missing
+
+  if (!window.confirm(`Do you want to generate a QR for ${label}?`)) return;
   try {
     setBusy(true);
     const { data } = await axiosInstance.post(`driver-qr/generate`, {
@@ -1026,8 +1028,12 @@ onChange={(e) =>
         variant="outlined"
         disabled={busy}
         onClick={() =>
-          handleGenerateQR(data.id, Number(qrHours[data.id] ?? 6))
-        }
+          {
+    const raw = qrHours[data.id];
+    const hrs = raw === "" ? 6 : Number(raw ?? 6); // avoid Number("") → 0
+    handleGenerateQR(data.id, hrs, data.name);     // ✅ pass driver name here
+  }}
+
       >
         Generate QR
       </Button>
