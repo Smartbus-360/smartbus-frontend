@@ -511,16 +511,39 @@ const dataForGrid = showAll ? drivers : paginatedDrivers;
 // };
 
 
-const handleGenerateQR = async (driverId, hours = 6) => {
-const nameOnly = (driverName ?? "").toString().trim();
-  const label = nameOnly || "this driver";   // fallback if name is missing
+// const handleGenerateQR = async (driverId, hours = 6) => {
+// const nameOnly = (driverName ?? "").toString().trim();
+//   const label = nameOnly || "this driver";   // fallback if name is missing
+
+//   if (!window.confirm(`Do you want to generate a QR for ${label}?`)) return;
+//   try {
+//     setBusy(true);
+//     const { data } = await axiosInstance.post(`driver-qr/generate`, {
+//       driverId,
+//       durationHours: hours,
+//     });
+//     setQrPng(data.png);
+//     setQrExpiresAt(data.expiresAt);
+//     setQrFor({ driverId });
+//     setQrOpen(true);
+//     setSnackbar({ open: true, severity: "success", message: "QR generated" });
+//   } catch (e) {
+//     setSnackbar({ open: true, message: "Failed to generate QR", severity: "error" });
+//   } finally { setBusy(false); }
+// };
+
+  const handleGenerateQR = async (driverId, hours = 6, driverName) => {
+  // show ONLY the driver's name in the confirm
+  const fallbackName = drivers.find(d => d.id === driverId)?.name;
+  const label = (driverName ?? fallbackName ?? "").toString().trim() || "this driver";
 
   if (!window.confirm(`Do you want to generate a QR for ${label}?`)) return;
+
   try {
     setBusy(true);
     const { data } = await axiosInstance.post(`driver-qr/generate`, {
       driverId,
-      durationHours: hours,
+      durationHours: Number(hours) > 0 ? Number(hours) : 6,
     });
     setQrPng(data.png);
     setQrExpiresAt(data.expiresAt);
@@ -528,9 +551,16 @@ const nameOnly = (driverName ?? "").toString().trim();
     setQrOpen(true);
     setSnackbar({ open: true, severity: "success", message: "QR generated" });
   } catch (e) {
-    setSnackbar({ open: true, message: "Failed to generate QR", severity: "error" });
-  } finally { setBusy(false); }
+    setSnackbar({
+      open: true,
+      message: e?.response?.data?.message || "Failed to generate QR",
+      severity: "error",
+    });
+  } finally {
+    setBusy(false);
+  }
 };
+
 
 // Revoke a QR by id (optional list shows active QRs)
 const handleRevokeQR = async (qrId) => {
