@@ -512,6 +512,7 @@ const dataForGrid = showAll ? drivers : paginatedDrivers;
 
 
 const handleGenerateQR = async (driverId, hours = 6) => {
+    if (!window.confirm(`Do you want to generate a QR for Driver #${driverId} valid for ${hours} hour(s)?`)) return;
   try {
     setBusy(true);
     const { data } = await axiosInstance.post(`driver-qr/generate`, {
