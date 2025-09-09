@@ -109,6 +109,8 @@ const [qrFor, setQrFor] = useState({ driverId: null });
 const [qrHistory, setQrHistory] = useState([]);
 const [qrHistoryFor, setQrHistoryFor] = useState(null);
   const [qrHistoryFilter, setQrHistoryFilter] = useState('all');
+  const hourRefs = useRef({});
+
 
 
 
@@ -1038,7 +1040,7 @@ onChange={(e) =>
   minWidth={320}
   cellRender={({ data }) => (
     <div className="flex items-center gap-3">
-      <TextField
+{/*       <TextField
         size="small"
         type="number"
         label="Hours"
@@ -1052,6 +1054,31 @@ onChange={(e) =>
         inputProps={{ min: 1 }}
         style={{ width: 90 }}
       />
+ */}
+      <TextField
+  size="small"
+  type="number"
+  label="Hours"
+  defaultValue={qrHours[data.id] ?? 6}   // or just 6 if you don’t need to preload
+  inputProps={{ min: 1 }}
+  inputRef={(el) => {
+    if (el) hourRefs.current[data.id] = el;
+    else delete hourRefs.current[data.id];
+  }}
+  onBlur={(e) => {
+    // if user clears it, snap back to 6 so click works
+    if (e.target.value === "") e.target.value = 6;
+  }}
+  onKeyDown={(e) => {
+    // optional: press Enter to generate immediately
+    if (e.key === "Enter") {
+      const val = hourRefs.current[data.id]?.value;
+      const hrs = val === "" ? 6 : Number(val);
+      handleGenerateQR(data.id, hrs, data.name);
+    }
+  }}
+  style={{ width: 90 }}
+/>
 
       <Button
         size="small"
@@ -1059,11 +1086,10 @@ onChange={(e) =>
         disabled={busy}
         onClick={() =>
           {
-    const raw = qrHours[data.id];
-    const hrs = raw === "" ? 6 : Number(raw ?? 6); // avoid Number("") → 0
+    const val = hourRefs.current[data.id]?.value;
+    const hrs = val === "" ? 6 : Number(val);
     handleGenerateQR(data.id, hrs, data.name);     // ✅ pass driver name here
   }}
-
       >
         Generate QR
       </Button>
