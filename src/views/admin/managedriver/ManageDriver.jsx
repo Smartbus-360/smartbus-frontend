@@ -993,7 +993,7 @@ onChange={(e) =>
         size="small"
         variant="outlined"
         disabled={busy}
-        onClick={() => handleGenerateQR(data.id, Number(qrHours[data.id] || 6))}
+        onClick={() => handleGenerateQR(data.id, Number(qrHours[data.id] || 6),data.name)}
       >
         Generate QR
       </Button>
