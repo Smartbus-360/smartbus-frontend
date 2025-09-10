@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   DataGrid,
@@ -40,8 +40,6 @@ import SaveIcon from "@mui/icons-material/Save";
 import { AddCircleOutline, RemoveCircleOutline } from "@mui/icons-material";
 import axiosInstance from "../../../api/axios";
 import { getUser } from "../../../config/authService";
-import { Typography } from "@mui/material";
-
 const ManageRoute = () => {
   const [institutes, setInstitutes] = useState([]);
   const [instituteId, setInstituteId] = useState("");
@@ -80,7 +78,6 @@ const ManageRoute = () => {
   const [pageSize, setPageSize] = useState(10);
   const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
 const [pendingUpdate, setPendingUpdate] = useState(null);
-  const gridRef = useRef(null);
   const [showAll, setShowAll] = useState(false);
     // Safe paging math
 const maxPage = Math.max(0, Math.ceil(allRoutes.length / pageSize) - 1);
@@ -222,14 +219,6 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
       });
     }
   };
-  const handleConfirmClose = () => {
-  setConfirmOpen(false);
-  setPendingEdit(null);
-    if (gridRef.current) {
-    gridRef.current.instance.cancelEditData();
-  }
-
-};
 
   const handleUpdateRoute = async (routeId, updatedRoute = {}) => {
 
@@ -596,7 +585,6 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
 
       <div style={{ minHeight: "600px", height: "auto", width: "100%", marginTop: "16px" }}>
         <DataGrid
-          ref={gridRef}
           dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
@@ -605,7 +593,7 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
           onRowUpdating={(e) => {
             e.cancel = true; // stop direct update
     setPendingUpdate({ id: e.oldData.id, newData: e.newData });
-    setConfirmOpen(true); // open popup
+    setConfirmUpdateOpen(true); // open popup
   }}
 
           onRowRemoving={(e) => handleDeleteRoute(e.data.id)}
@@ -715,34 +703,32 @@ onClick={() => setCurrentPage(prev => Math.min(prev + 1, maxPage))}
   )}
       </div>
       <Dialog
-  open={confirmOpen}
-  onClose={handleConfirmClose}
+  open={confirmUpdateOpen}
+  onClose={() => setConfirmUpdateOpen(false)}
+  fullWidth
+  maxWidth="sm"
 >
-  <DialogTitle >
-    Confirm Edit / संपादन की पुष्टि करें
-  </DialogTitle> 
-        <DialogContent>
-    <p>
+  <DialogTitle>Confirm Update / पुष्टि करें</DialogTitle>
+  <DialogContent>
+    <Typography>
       Do you want to apply changes to route{" "}
-      <strong>{pendingEdit?.newData?.routeName}</strong>? <br />
+      <strong>{pendingUpdate?.newData?.routeName}</strong>? <br />
       क्या आप मार्ग{" "}
-      <strong>{pendingEdit?.newData?.routeName}</strong>{" "}
+      <strong>{pendingUpdate?.newData?.routeName}</strong>{" "}
       में बदलाव करना चाहते हैं?
-    </p>
+    </Typography>
   </DialogContent>
   <DialogActions>
-    <Button onClick={ handleConfirmClose} color="secondary">
+    <Button onClick={() => setConfirmUpdateOpen(false)} color="secondary">
       No / नहीं
     </Button>
     <Button
-      variant="contained"
-      color="primary"
       onClick={() => {
-                if (pendingEdit) {
-        handleUpdateRoute(pendingEdit.id, pendingEdit.newData);
-                }
-        handleConfirmClose();
+        handleUpdateRoute(pendingUpdate.id, pendingUpdate.newData);
+        setConfirmUpdateOpen(false);
       }}
+      color="primary"
+      variant="contained"
     >
       Yes, Update / हाँ, अपडेट करें
     </Button>
