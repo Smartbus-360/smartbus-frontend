@@ -110,6 +110,9 @@ const [qrHistory, setQrHistory] = useState([]);
 const [qrHistoryFor, setQrHistoryFor] = useState(null);
   const [qrHistoryFilter, setQrHistoryFilter] = useState('all');
   const hourRefs = useRef({});
+  const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
+const [pendingUpdate, setPendingUpdate] = useState(null);
+
 
 
 
@@ -998,7 +1001,12 @@ const handleRevokeQR = async (qrId) => {
           showBorders={true}
           rowAlternationEnabled={true}
           allowColumnResizing={true}
-          onRowUpdating={(e) => handleUpdateDriver(e.oldData.id, e.newData)}
+          onRowUpdating={(e) =>{
+            e.cancel = true; // stop direct update
+    setPendingUpdate({ id: e.oldData.id, newData: e.newData });
+    setConfirmUpdateOpen(true); // open popup
+  }}
+
           onRowRemoving={(e) => handleDeleteDriver(e.data.id)}
           scrolling={{ mode: 'virtual', useNative: true }}
         >
@@ -1109,6 +1117,38 @@ onChange={(e) =>
     </div>
   )}
 />
+<Dialog
+  open={confirmUpdateOpen}
+  onClose={() => setConfirmUpdateOpen(false)}
+  fullWidth
+  maxWidth="sm"
+>
+  <DialogTitle>Confirm Update / पुष्टि करें</DialogTitle>
+  <DialogContent>
+    <Typography>
+      Do you want to apply changes to driver{" "}
+      <strong>{pendingUpdate?.newData?.name}</strong>? <br />
+      क्या आप ड्राइवर{" "}
+      <strong>{pendingUpdate?.newData?.name}</strong>{" "}
+      में बदलाव करना चाहते हैं?
+    </Typography>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setConfirmUpdateOpen(false)} color="secondary">
+      No / नहीं
+    </Button>
+    <Button
+      onClick={() => {
+        handleUpdateDriver(pendingUpdate.id, pendingUpdate.newData);
+        setConfirmUpdateOpen(false);
+      }}
+      color="primary"
+      variant="contained"
+    >
+      Yes, Update / हाँ, अपडेट करें
+    </Button>
+  </DialogActions>
+</Dialog>
 
 
 
