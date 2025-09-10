@@ -541,7 +541,7 @@ const handleAddUser = async () => {
           allowColumnResizing={true}
           onRowUpdating={(e) => {
     e.cancel = true; // stop direct update
-    setPendingUpdate({ id: e.oldData.id, newData: e.newData,grid: e.component });
+    setPendingUpdate({ id: e.oldData.id,oldData: e.oldData, newData: e.newData,grid: e.component });
     setConfirmUpdateOpen(true); // open confirmation popup
   }}
 
@@ -805,10 +805,14 @@ const handleAddUser = async () => {
       No / नहीं
     </Button>
     <Button
-      onClick={() => {
-handleUpdateUser(pendingUpdate.id, pendingUpdate.newData).then(() => {
-          pendingUpdate.grid.saveEditData(); 
-});
+      onClick={async () => {
+    const mergedData = { ...pendingUpdate.oldData, ...pendingUpdate.newData }; // ✅ combine
+    await handleUpdateUser(pendingUpdate.id, mergedData);
+
+    if (pendingUpdate.grid) {
+      pendingUpdate.grid.saveEditData();
+    }
+
   setConfirmUpdateOpen(false);
       }}
       color="primary"
