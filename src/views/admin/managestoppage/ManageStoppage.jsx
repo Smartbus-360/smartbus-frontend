@@ -38,8 +38,6 @@ import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import "leaflet-geosearch/dist/geosearch.css";
 import axiosInstance from "../../../api/axios";
 import { getUser } from "../../../config/authService";
-import { Typography } from "@mui/material";
-
 
 const ManageStoppage = () => {
   const [stoppages, setStoppages] = useState([]);
@@ -98,8 +96,6 @@ const ManageStoppage = () => {
   const token = sessionStorage.getItem("authToken");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
-const [pendingUpdate, setPendingUpdate] = useState(null);
   const user = getUser();
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -954,11 +950,7 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
           showBorders={true}
           rowAlternationEnabled={true}
           allowColumnResizing={true}
-          onRowUpdating={(e) => {
-    e.cancel = true;
-    setPendingUpdate({ id: e.oldData.id, newData: e.newData });
-    setConfirmUpdateOpen(true);
-  }}
+          onRowUpdating={(e) => handleUpdateStoppage(e.oldData.id, e.newData)}
           onRowRemoving={(e) => handleDeleteStoppage(e.data.id)}
           scrolling={{ mode: "virtual", useNative: true }}
         >
@@ -1680,37 +1672,6 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
           </div>
         </Box>
       </Modal>
-      <Dialog
-  open={confirmUpdateOpen}
-  onClose={() => setConfirmUpdateOpen(false)}
-  fullWidth
-  maxWidth="sm"
->
-  <DialogTitle>Confirm Update / पुष्टि करें</DialogTitle>
-  <DialogContent>
-    <Typography>
-      Do you want to apply changes to stoppage{" "}
-      <strong>{pendingUpdate?.newData?.stopName}</strong>? <br />
-      क्या आप <strong>{pendingUpdate?.newData?.stopName}</strong> स्टॉपेज में बदलाव करना चाहते हैं?
-    </Typography>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={() => setConfirmUpdateOpen(false)} color="secondary">
-      No / नहीं
-    </Button>
-    <Button
-      onClick={() => {
-        handleUpdateStoppage(pendingUpdate.id, pendingUpdate.newData);
-        setConfirmUpdateOpen(false);
-      }}
-      color="primary"
-      variant="contained"
-    >
-      Yes, Update / हाँ, अपडेट करें
-    </Button>
-  </DialogActions>
-</Dialog>
-
     </div>
   );
 };
