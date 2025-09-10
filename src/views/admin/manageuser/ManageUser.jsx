@@ -787,7 +787,7 @@ const handleAddUser = async () => {
         </DialogActions>
       </Dialog>
 <Dialog open={confirmOpen} onClose={() => {
-  setConfirmOpen(false)};
+  setConfirmOpen(false);
   setPendingEdit(null); 
       }}
       >
