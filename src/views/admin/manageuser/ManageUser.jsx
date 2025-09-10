@@ -157,6 +157,12 @@ const dataForGrid = showAll ? users : paginatedUsers;
     const { name, value } = event.target;
     setNewUser((prev) => ({ ...prev, [name]: value }));
   };
+  // inside ManageUser component
+const handleConfirmClose = () => {
+  setConfirmOpen(false);
+  setPendingEdit(null);
+};
+
 
   const handleStoppageChange = (event) => {
     setStoppageId(event.target.value);
@@ -786,19 +792,13 @@ const handleAddUser = async () => {
           <Button variant="contained" onClick={submitNewPassword}>Update</Button>
         </DialogActions>
       </Dialog>
-<Dialog open={confirmOpen} onClose={() => {
-  setConfirmOpen(false);
-  setPendingEdit(null); 
-      }}
+<Dialog open={confirmOpen} onClose={handleConfirmClose}
       >
   <DialogTitle sx={{ m: 0, p: 2 }}>
     Confirm Edit / संपादन की पुष्टि करें
     <IconButton
       aria-label="close"
-onClick={() => {
-    setConfirmOpen(false);
-    setPendingEdit(null);   // clear edit data
-  }}
+onClick={handleConfirmClose}
       sx={{
         position: "absolute",
         right: 8,
@@ -816,9 +816,7 @@ onClick={() => {
     </p>
   </DialogContent>
   <DialogActions>
-    <Button onClick={() => {
-  setConfirmOpen(false); setPendingEdit(null);
-}}
+    <Button onClick={handleConfirmClose}
     color="secondary">
       No / नहीं
     </Button>
@@ -829,8 +827,8 @@ onClick={() => {
         if (pendingEdit) {
           handleUpdateUser(pendingEdit.id, pendingEdit.newData);
         }
-        setConfirmOpen(false);
-        setPendingEdit(null);
+        handleConfirmClose();
+
       }}
     >
       Yes / हाँ
