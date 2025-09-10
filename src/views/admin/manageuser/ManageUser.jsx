@@ -79,6 +79,9 @@ const [newPw, setNewPw] = useState("");
 const [newPw2, setNewPw2] = useState("");
   const [showPw, setShowPw] = useState(false);
 const [showPw2, setShowPw2] = useState(false);
+  const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
+const [pendingUpdate, setPendingUpdate] = useState(null);
+
 
 
 const openPwDialog = (rowUser) => {
@@ -535,7 +538,12 @@ const handleAddUser = async () => {
           showBorders={true}
           rowAlternationEnabled={true}
           allowColumnResizing={true}
-          onRowUpdating={(e) => handleUpdateUser(e.oldData.id, e.newData)}
+          onRowUpdating={(e) => {
+    e.cancel = true; // stop direct update
+    setPendingUpdate({ id: e.oldData.id, newData: e.newData });
+    setConfirmUpdateOpen(true); // open confirmation popup
+  }}
+
           onRowRemoving={(e) => handleDeleteUser(e.data.id)}
           scrolling={{ mode: 'virtual', useNative: true }}
         >
@@ -774,6 +782,39 @@ const handleAddUser = async () => {
           <Button variant="contained" onClick={submitNewPassword}>Update</Button>
         </DialogActions>
       </Dialog>
+<Dialog
+  open={confirmUpdateOpen}
+  onClose={() => setConfirmUpdateOpen(false)}
+  fullWidth
+  maxWidth="sm"
+>
+  <DialogTitle>Confirm Update / पुष्टि करें</DialogTitle>
+  <DialogContent>
+    <Typography>
+      Do you want to apply changes to user{" "}
+      <strong>{pendingUpdate?.newData?.full_name || pendingUpdate?.newData?.username}</strong>?
+      <br />
+      क्या आप उपयोगकर्ता{" "}
+      <strong>{pendingUpdate?.newData?.full_name || pendingUpdate?.newData?.username}</strong>{" "}
+      में बदलाव करना चाहते हैं?
+    </Typography>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setConfirmUpdateOpen(false)} color="secondary">
+      No / नहीं
+    </Button>
+    <Button
+      onClick={() => {
+        handleUpdateUser(pendingUpdate.id, pendingUpdate.newData);
+        setConfirmUpdateOpen(false);
+      }}
+      color="primary"
+      variant="contained"
+    >
+      Yes, Update / हाँ, अपडेट करें
+    </Button>
+  </DialogActions>
+</Dialog>
 
     </div>
   );
