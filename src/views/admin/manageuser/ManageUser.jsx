@@ -40,7 +40,6 @@ import { getUser } from "../../../config/authService";
 import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Typography } from "@mui/material";
 
 
 const convertUrlToFile = async (url, fileName = "logo.png") => {
@@ -57,6 +56,9 @@ const ManageUser = () => {
   const [stoppageId, setStoppageId] = useState("");
   const [instituteId, setInstituteId] = useState("");
   const [showNewUserPw, setShowNewUserPw] = useState(false);
+  // Confirmation dialog
+const [confirmOpen, setConfirmOpen] = useState(false);
+const [pendingEdit, setPendingEdit] = useState(null);
 const [newUser, setNewUser] = useState({
   registrationNumber: "",
   password: "",
@@ -80,9 +82,6 @@ const [newPw, setNewPw] = useState("");
 const [newPw2, setNewPw2] = useState("");
   const [showPw, setShowPw] = useState(false);
 const [showPw2, setShowPw2] = useState(false);
-  const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
-const [pendingUpdate, setPendingUpdate] = useState(null);
-
 
 
 const openPwDialog = (rowUser) => {
@@ -540,10 +539,13 @@ const handleAddUser = async () => {
           rowAlternationEnabled={true}
           allowColumnResizing={true}
           onRowUpdating={(e) => {
-    e.cancel = true; // stop direct update
-    setPendingUpdate({ id: e.oldData.id,oldData: e.oldData, newData: e.newData,grid: e.component });
-    setConfirmUpdateOpen(true); // open confirmation popup
-  }}
+    // Stop auto-update, instead show confirmation
+    e.cancel = true;  
+    setPendingEdit({
+      id: e.oldData.id,
+      newData: e.newData,
+      username: e.oldData.username
+    });
 
           onRowRemoving={(e) => handleDeleteUser(e.data.id)}
           scrolling={{ mode: 'virtual', useNative: true }}
@@ -687,7 +689,7 @@ const handleAddUser = async () => {
     },
     {
       hint: "Set Password",
-      icon: "edit",               // DevExtreme icon
+      icon: "key",               // DevExtreme icon
       onClick: (e) => openPwDialog(e.row.data),
     },
   ]}
@@ -783,42 +785,30 @@ const handleAddUser = async () => {
           <Button variant="contained" onClick={submitNewPassword}>Update</Button>
         </DialogActions>
       </Dialog>
-<Dialog
-  open={confirmUpdateOpen}
-  onClose={() => setConfirmUpdateOpen(false)}
-  fullWidth
-  maxWidth="sm"
->
-  <DialogTitle>Confirm Update / पुष्टि करें</DialogTitle>
+<Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
+  <DialogTitle>Confirm Edit / संपादन की पुष्टि करें</DialogTitle>
   <DialogContent>
-    <Typography>
-      Do you want to apply changes to user{" "}
-      <strong>{pendingUpdate?.newData?.username }</strong>?
-      <br />
-      क्या आप उपयोगकर्ता{" "}
-      <strong>{pendingUpdate?.newData?.username}</strong>{" "}
-      में बदलाव करना चाहते हैं?
-    </Typography>
+    <p>
+      Do you want to perform changes for user: <b>{pendingEdit?.username}</b>? <br />
+      क्या आप <b>{pendingEdit?.username}</b> उपयोगकर्ता के लिए बदलाव करना चाहते हैं?
+    </p>
   </DialogContent>
   <DialogActions>
-    <Button onClick={() => setConfirmUpdateOpen(false)} color="secondary">
+    <Button onClick={() => setConfirmOpen(false)} color="secondary">
       No / नहीं
     </Button>
     <Button
-      onClick={async () => {
-    const mergedData = { ...pendingUpdate.oldData, ...pendingUpdate.newData }; // ✅ combine
-    await handleUpdateUser(pendingUpdate.id, mergedData);
-
-    if (pendingUpdate.grid) {
-      pendingUpdate.grid.saveEditData();
-    }
-
-  setConfirmUpdateOpen(false);
-      }}
-      color="primary"
       variant="contained"
+      color="primary"
+      onClick={() => {
+        if (pendingEdit) {
+          handleUpdateUser(pendingEdit.id, pendingEdit.newData);
+        }
+        setConfirmOpen(false);
+        setPendingEdit(null);
+      }}
     >
-      Yes, Update / हाँ, अपडेट करें
+      Yes / हाँ
     </Button>
   </DialogActions>
 </Dialog>
@@ -828,3 +818,4 @@ const handleAddUser = async () => {
 };
 
 export default ManageUser;
+
