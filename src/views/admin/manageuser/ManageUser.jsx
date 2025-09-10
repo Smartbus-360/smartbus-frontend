@@ -40,6 +40,7 @@ import { getUser } from "../../../config/authService";
 import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { Typography } from "@mui/material";
 
 
 const convertUrlToFile = async (url, fileName = "logo.png") => {
@@ -540,7 +541,7 @@ const handleAddUser = async () => {
           allowColumnResizing={true}
           onRowUpdating={(e) => {
     e.cancel = true; // stop direct update
-    setPendingUpdate({ id: e.oldData.id, newData: e.newData });
+    setPendingUpdate({ id: e.oldData.id, newData: e.newData,grid: e.component });
     setConfirmUpdateOpen(true); // open confirmation popup
   }}
 
@@ -686,7 +687,7 @@ const handleAddUser = async () => {
     },
     {
       hint: "Set Password",
-      icon: "key",               // DevExtreme icon
+      icon: "edit",               // DevExtreme icon
       onClick: (e) => openPwDialog(e.row.data),
     },
   ]}
@@ -805,8 +806,10 @@ const handleAddUser = async () => {
     </Button>
     <Button
       onClick={() => {
-        handleUpdateUser(pendingUpdate.id, pendingUpdate.newData);
-        setConfirmUpdateOpen(false);
+handleUpdateUser(pendingUpdate.id, pendingUpdate.newData).then(() => {
+          pendingUpdate.grid.saveEditData(); 
+});
+  setConfirmUpdateOpen(false);
       }}
       color="primary"
       variant="contained"
