@@ -217,6 +217,11 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
       [name]: value,
     }));
   };
+  const handleConfirmClose = () => {
+  setConfirmUpdateOpen(false);
+  setPendingUpdate(null);
+};
+
 
   // Handle round count change
   // const handleRoundChange = (shift, count) => {
@@ -1700,7 +1705,7 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
       </Modal>
       <Dialog
   open={confirmUpdateOpen}
-  onClose={() => setConfirmUpdateOpen(false)}
+  onClose={handleConfirmClose}
   fullWidth
   maxWidth="sm"
 >
@@ -1713,10 +1718,7 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
     </Typography>
   </DialogContent>
   <DialogActions>
-    <Button onClick={() => {
-  setConfirmUpdateOpen(false);
-  setPendingUpdate(null);  
-    }}
+    <Button onClick={handleConfirmClose}
     color="secondary"
       variant="outlined"
 >
@@ -1727,8 +1729,8 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
             if (pendingUpdate) {
         handleUpdateStoppage(pendingUpdate.id, pendingUpdate.newData);
 }
-      setConfirmUpdateOpen(false);   // close
-      setPendingUpdate(null);        // reset state
+             handleConfirmClose();
+
     }}
 
       color="primary"
