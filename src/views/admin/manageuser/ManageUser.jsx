@@ -809,7 +809,10 @@ const handleAddUser = async () => {
     </p>
   </DialogContent>
   <DialogActions>
-    <Button onClick={() => setConfirmOpen(false)} color="secondary">
+    <Button onClick={() => {
+  setConfirmOpen(false); setPendingEdit(null);
+}}
+    color="secondary">
       No / नहीं
     </Button>
     <Button
