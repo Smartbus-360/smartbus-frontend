@@ -546,7 +546,8 @@ const handleAddUser = async () => {
       newData: e.newData,
       username: e.oldData.username
     });
-
+    setConfirmOpen(true);
+          }}
           onRowRemoving={(e) => handleDeleteUser(e.data.id)}
           scrolling={{ mode: 'virtual', useNative: true }}
         >
