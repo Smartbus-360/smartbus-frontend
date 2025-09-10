@@ -791,7 +791,10 @@ const handleAddUser = async () => {
     Confirm Edit / संपादन की पुष्टि करें
     <IconButton
       aria-label="close"
-      onClick={() => setConfirmOpen(false)}
+onClick={() => {
+    setConfirmOpen(false);
+    setPendingEdit(null);   // clear edit data
+  }}
       sx={{
         position: "absolute",
         right: 8,
