@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useRef} from "react";
 import axios from "axios";
 import {
   DataGrid,
@@ -51,7 +51,7 @@ const ManageRoute = () => {
   });
   const [openRouteModal, setOpenRouteModal] = useState(false);
   const [allRoutes, setAllRoutes] = useState([]);
-
+const gridRef = useRef(null);
   const [newRoute, setNewRoute] = useState({
     routeName: "",
     description: "",
@@ -220,6 +220,13 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
       });
     }
   };
+const handleConfirmClose = () => {
+  setConfirmUpdateOpen(false);
+  setPendingUpdate(null);
+  if (gridRef.current) {
+    gridRef.current.instance.cancelEditData();  // cancel edit cleanly
+  }
+};
 
   const handleUpdateRoute = async (routeId, updatedRoute = {}) => {
 
@@ -586,6 +593,7 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
 
       <div style={{ minHeight: "600px", height: "auto", width: "100%", marginTop: "16px" }}>
         <DataGrid
+            ref={gridRef}
           dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
@@ -705,7 +713,7 @@ onClick={() => setCurrentPage(prev => Math.min(prev + 1, maxPage))}
       </div>
       <Dialog
   open={confirmUpdateOpen}
-  onClose={() => setConfirmUpdateOpen(false)}
+  onClose={handleConfirmClose}
   fullWidth
   maxWidth="sm"
 >
@@ -720,13 +728,13 @@ onClick={() => setCurrentPage(prev => Math.min(prev + 1, maxPage))}
     </Typography>
   </DialogContent>
   <DialogActions>
-    <Button onClick={() => setConfirmUpdateOpen(false)} color="secondary">
+    <Button onClick={handleConfirmClose} color="secondary">
       No / नहीं
     </Button>
     <Button
       onClick={() => {
         handleUpdateRoute(pendingUpdate.id, pendingUpdate.newData);
-        setConfirmUpdateOpen(false);
+        handleConfirmClose();
       }}
       color="primary"
       variant="contained"
