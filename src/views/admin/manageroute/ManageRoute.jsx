@@ -605,7 +605,7 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
           onRowUpdating={(e) => {
             e.cancel = true; // stop direct update
     setPendingUpdate({ id: e.oldData.id, newData: e.newData });
-    setConfirmUpdateOpen(true); // open popup
+    setConfirmOpen(true); // open popup
   }}
 
           onRowRemoving={(e) => handleDeleteRoute(e.data.id)}
@@ -718,27 +718,15 @@ onClick={() => setCurrentPage(prev => Math.min(prev + 1, maxPage))}
   open={confirmOpen}
   onClose={handleConfirmClose}
 >
-  <DialogTitle sx={{ m: 0, p: 2 }}>
+  <DialogTitle >
     Confirm Edit / संपादन की पुष्टि करें
-    <IconButton
-      aria-label="close"
-onClick={handleConfirmClose}
-      sx={{
-        position: "absolute",
-        right: 8,
-        top: 8,
-        color: (theme) => theme.palette.grey[500],
-      }}
-    >
-      ✖
-    </IconButton>
   </DialogTitle> 
         <DialogContent>
     <p>
       Do you want to apply changes to route{" "}
-      <strong>{pendingUpdate?.newData?.routeName}</strong>? <br />
+      <strong>{pendingEdit?.newData?.routeName}</strong>? <br />
       क्या आप मार्ग{" "}
-      <strong>{pendingUpdate?.newData?.routeName}</strong>{" "}
+      <strong>{pendingEdit?.newData?.routeName}</strong>{" "}
       में बदलाव करना चाहते हैं?
     </p>
   </DialogContent>
@@ -750,8 +738,8 @@ onClick={handleConfirmClose}
       variant="contained"
       color="primary"
       onClick={() => {
-                if (pendingUpdate) {
-        handleUpdateRoute(pendingUpdate.id, pendingUpdate.newData);
+                if (pendingEdit) {
+        handleUpdateRoute(pendingEdit.id, pendingEdit.newData);
                 }
         handleConfirmClose();
       }}
