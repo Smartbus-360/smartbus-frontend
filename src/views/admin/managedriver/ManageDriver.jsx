@@ -44,6 +44,8 @@ import SaveIcon from "@mui/icons-material/Save";
 import { AddCircleOutline, RemoveCircleOutline } from "@mui/icons-material";
 import axiosInstance from "../../../api/axios";
 import { getUser } from "../../../config/authService";
+import { Typography } from "@mui/material";
+
 
 const convertUrlToFile = async (url, fileName = "logo.png") => {
   const response = await fetch(url);
@@ -1139,7 +1141,10 @@ onChange={(e) =>
     </Button>
     <Button
       onClick={() => {
-        handleUpdateDriver(pendingUpdate.id, pendingUpdate.newData);
+handleUpdateDriver(pendingUpdate.id, pendingUpdate.newData).then(() => {
+      const grid = gridRef.current?.instance;
+      if (grid) grid.saveEditData();   // ✅ commit edit to grid
+    });
         setConfirmUpdateOpen(false);
       }}
       color="primary"
