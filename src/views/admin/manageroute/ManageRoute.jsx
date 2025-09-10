@@ -80,6 +80,7 @@ const ManageRoute = () => {
   const [pageSize, setPageSize] = useState(10);
   const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
 const [pendingUpdate, setPendingUpdate] = useState(null);
+  const gridRef = useRef(null);
   const [showAll, setShowAll] = useState(false);
     // Safe paging math
 const maxPage = Math.max(0, Math.ceil(allRoutes.length / pageSize) - 1);
