@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import axios from "axios";
 import DataGrid, {
   Column,
@@ -81,6 +81,7 @@ const ManageStoppage = () => {
   const [selectedStop, setSelectedStop] = useState(null);
   const [selectedRound, setSelectedRound] = useState(null);
   const [roundDeleteModalOpen, setRoundDeleteModalOpen] = useState(false);
+  const gridRef = useRef(null);
   const [newRound, setNewRound] = useState({
     shift: "",
     round: "",
@@ -220,6 +221,10 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
   const handleConfirmClose = () => {
   setConfirmUpdateOpen(false);
   setPendingUpdate(null);
+    if (gridRef.current) {
+    gridRef.current.instance.cancelEditData();  // cancel the edit
+  }
+
 };
 
 
@@ -972,6 +977,7 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
           }}
         /> */}
         <DataGrid
+          ref={gridRef}
           dataSource={paginatedStoppages}
           keyExpr="id"
           showBorders={true}
