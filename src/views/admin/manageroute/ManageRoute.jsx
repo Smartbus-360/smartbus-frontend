@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import axios from "axios";
 import {
   DataGrid,
@@ -221,6 +221,14 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
       });
     }
   };
+  const handleConfirmClose = () => {
+  setConfirmOpen(false);
+  setPendingEdit(null);
+    if (gridRef.current) {
+    gridRef.current.instance.cancelEditData();
+  }
+
+};
 
   const handleUpdateRoute = async (routeId, updatedRoute = {}) => {
 
@@ -587,6 +595,7 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
 
       <div style={{ minHeight: "600px", height: "auto", width: "100%", marginTop: "16px" }}>
         <DataGrid
+          ref={gridRef}
           dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
@@ -705,32 +714,46 @@ onClick={() => setCurrentPage(prev => Math.min(prev + 1, maxPage))}
   )}
       </div>
       <Dialog
-  open={confirmUpdateOpen}
-  onClose={() => setConfirmUpdateOpen(false)}
-  fullWidth
-  maxWidth="sm"
+  open={confirmOpen}
+  onClose={handleConfirmClose}
 >
-  <DialogTitle>Confirm Update / पुष्टि करें</DialogTitle>
-  <DialogContent>
-    <Typography>
+  <DialogTitle sx={{ m: 0, p: 2 }}>
+    Confirm Edit / संपादन की पुष्टि करें
+    <IconButton
+      aria-label="close"
+onClick={handleConfirmClose}
+      sx={{
+        position: "absolute",
+        right: 8,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+      }}
+    >
+      ✖
+    </IconButton>
+  </DialogTitle> 
+        <DialogContent>
+    <p>
       Do you want to apply changes to route{" "}
       <strong>{pendingUpdate?.newData?.routeName}</strong>? <br />
       क्या आप मार्ग{" "}
       <strong>{pendingUpdate?.newData?.routeName}</strong>{" "}
       में बदलाव करना चाहते हैं?
-    </Typography>
+    </p>
   </DialogContent>
   <DialogActions>
-    <Button onClick={() => setConfirmUpdateOpen(false)} color="secondary">
+    <Button onClick={ handleConfirmClose} color="secondary">
       No / नहीं
     </Button>
     <Button
-      onClick={() => {
-        handleUpdateRoute(pendingUpdate.id, pendingUpdate.newData);
-        setConfirmUpdateOpen(false);
-      }}
-      color="primary"
       variant="contained"
+      color="primary"
+      onClick={() => {
+                if (pendingUpdate) {
+        handleUpdateRoute(pendingUpdate.id, pendingUpdate.newData);
+                }
+        handleConfirmClose();
+      }}
     >
       Yes, Update / हाँ, अपडेट करें
     </Button>
