@@ -1264,9 +1264,9 @@ const handleToggleMapAccess = async (instituteId, currentValue) => {
               {
                 hint: "Save Changes",
                 icon: "save",
-                onClick: (e) =>
-                  handleUpdateInstitute(e.row.data.id, e.row.data), // Save specific row
-              },
+                onClick: (e) =>{
+setPendingUpdate({ id: e.row.data.id, newData: e.row.data });
+  setConfirmUpdateOpen(true);              },
             ]}
           />
         </DataGrid>
