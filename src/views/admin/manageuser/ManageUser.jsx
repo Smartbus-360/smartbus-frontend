@@ -792,11 +792,10 @@ const handleAddUser = async () => {
   <DialogContent>
     <Typography>
       Do you want to apply changes to user{" "}
-      <strong>{pendingUpdate?.newData?.full_name || pendingUpdate?.newData?.username}</strong>?
+      <strong>{pendingUpdate?.newData?.username }</strong>?
       <br />
       क्या आप उपयोगकर्ता{" "}
-      <strong>{pendingUpdate?.newData?.full_name || pendingUpdate?.newData?.username}</strong>{" "}
-      में बदलाव करना चाहते हैं?
+      <strong>{pendingUpdate?.newData?.username}</strong>में बदलाव करना चाहते हैं?
     </Typography>
   </DialogContent>
   <DialogActions>
