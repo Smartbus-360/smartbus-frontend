@@ -1693,14 +1693,23 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
     </Typography>
   </DialogContent>
   <DialogActions>
-    <Button onClick={() => setConfirmUpdateOpen(false)} color="secondary">
+    <Button onClick={() => {
+  setConfirmUpdateOpen(false);
+  setPendingUpdate(null);  
+    }}
+    color="secondary"
+      variant="outlined"
+>
       No / नहीं
     </Button>
     <Button
       onClick={() => {
         handleUpdateStoppage(pendingUpdate.id, pendingUpdate.newData);
-        setConfirmUpdateOpen(false);
-      }}
+}
+      setConfirmUpdateOpen(false);   // close
+      setPendingUpdate(null);        // reset state
+    }}
+
       color="primary"
       variant="contained"
     >
