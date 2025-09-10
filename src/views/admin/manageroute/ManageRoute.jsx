@@ -40,6 +40,8 @@ import SaveIcon from "@mui/icons-material/Save";
 import { AddCircleOutline, RemoveCircleOutline } from "@mui/icons-material";
 import axiosInstance from "../../../api/axios";
 import { getUser } from "../../../config/authService";
+import { Typography } from "@mui/material";
+
 const ManageRoute = () => {
   const [institutes, setInstitutes] = useState([]);
   const [instituteId, setInstituteId] = useState("");
