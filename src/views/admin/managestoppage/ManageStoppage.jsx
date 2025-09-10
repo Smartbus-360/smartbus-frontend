@@ -750,6 +750,26 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
                   />
                 </div>
               ))}
+                <TextField
+      label="Latitude"
+      name="latitude"
+      type="number"
+      value={newStoppage.latitude}
+      onChange={handleInputChange}
+      required
+      fullWidth
+    />
+    <TextField
+      label="Longitude"
+      name="longitude"
+      type="number"
+      value={newStoppage.longitude}
+      onChange={handleInputChange}
+      required
+      fullWidth
+    />
+
+
 
             <TextField
               label="Estimated Duration"
