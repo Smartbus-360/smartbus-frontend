@@ -1704,6 +1704,7 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
     </Button>
     <Button
       onClick={() => {
+            if (pendingUpdate) {
         handleUpdateStoppage(pendingUpdate.id, pendingUpdate.newData);
 }
       setConfirmUpdateOpen(false);   // close
