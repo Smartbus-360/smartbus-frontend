@@ -38,6 +38,8 @@ import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import "leaflet-geosearch/dist/geosearch.css";
 import axiosInstance from "../../../api/axios";
 import { getUser } from "../../../config/authService";
+import { Typography } from "@mui/material";
+
 
 const ManageStoppage = () => {
   const [stoppages, setStoppages] = useState([]);
