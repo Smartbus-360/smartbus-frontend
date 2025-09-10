@@ -194,6 +194,14 @@ const dataForGrid = showAll ? drivers : paginatedDrivers;
     setNewDriver((prev) => ({ ...prev, profilePicture: file }));
     setProfilePicturePreview(URL.createObjectURL(file));
   };
+  const handleConfirmClose = () => {
+  setConfirmUpdateOpen(false);
+  setPendingUpdate(null);
+  if (gridRef.current) {
+    gridRef.current.instance.cancelEditData();  // cancel pending edit in grid
+  }
+};
+
 
   const handleAddDriver = async () => {
     if (
@@ -1121,7 +1129,7 @@ onChange={(e) =>
 />
 <Dialog
   open={confirmUpdateOpen}
-  onClose={() => setConfirmUpdateOpen(false)}
+  onClose={handleConfirmClose}
   fullWidth
   maxWidth="sm"
 >
@@ -1136,7 +1144,7 @@ onChange={(e) =>
     </Typography>
   </DialogContent>
   <DialogActions>
-    <Button onClick={() => setConfirmUpdateOpen(false)} color="secondary">
+    <Button onClick={handleConfirmClose} color="secondary">
       No / नहीं
     </Button>
     <Button
@@ -1145,7 +1153,7 @@ handleUpdateDriver(pendingUpdate.id, pendingUpdate.newData).then(() => {
       const grid = gridRef.current?.instance;
       if (grid) grid.saveEditData();   // ✅ commit edit to grid
     });
-        setConfirmUpdateOpen(false);
+        handleConfirmClose();
       }}
       color="primary"
       variant="contained"
