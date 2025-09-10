@@ -789,6 +789,7 @@ const handleAddUser = async () => {
 <Dialog open={confirmOpen} onClose={() => {
   setConfirmOpen(false)};
   setPendingEdit(null); 
+      }}
       >
   <DialogTitle sx={{ m: 0, p: 2 }}>
     Confirm Edit / संपादन की पुष्टि करें
