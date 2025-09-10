@@ -795,7 +795,8 @@ const handleAddUser = async () => {
       <strong>{pendingUpdate?.newData?.username }</strong>?
       <br />
       क्या आप उपयोगकर्ता{" "}
-      <strong>{pendingUpdate?.newData?.username}</strong>में बदलाव करना चाहते हैं?
+      <strong>{pendingUpdate?.newData?.username}</strong>{" "}
+      में बदलाव करना चाहते हैं?
     </Typography>
   </DialogContent>
   <DialogActions>
