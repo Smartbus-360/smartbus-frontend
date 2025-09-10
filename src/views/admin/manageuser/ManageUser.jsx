@@ -786,7 +786,10 @@ const handleAddUser = async () => {
           <Button variant="contained" onClick={submitNewPassword}>Update</Button>
         </DialogActions>
       </Dialog>
-<Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
+<Dialog open={confirmOpen} onClose={() => {
+  setConfirmOpen(false)};
+  setPendingEdit(null); 
+      >
   <DialogTitle sx={{ m: 0, p: 2 }}>
     Confirm Edit / संपादन की पुष्टि करें
     <IconButton
