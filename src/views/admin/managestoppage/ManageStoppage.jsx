@@ -96,6 +96,8 @@ const ManageStoppage = () => {
   const token = sessionStorage.getItem("authToken");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
+const [pendingUpdate, setPendingUpdate] = useState(null);
   const user = getUser();
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -950,7 +952,11 @@ const ManageStoppage = () => {
           showBorders={true}
           rowAlternationEnabled={true}
           allowColumnResizing={true}
-          onRowUpdating={(e) => handleUpdateStoppage(e.oldData.id, e.newData)}
+          onRowUpdating={(e) => {
+    e.cancel = true;
+    setPendingUpdate({ id: e.oldData.id, newData: e.newData });
+    setConfirmUpdateOpen(true);
+  }}
           onRowRemoving={(e) => handleDeleteStoppage(e.data.id)}
           scrolling={{ mode: "virtual", useNative: true }}
         >
