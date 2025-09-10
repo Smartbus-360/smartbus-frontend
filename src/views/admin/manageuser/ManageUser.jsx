@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useRef} from "react";
 import axios from "axios";
 import {
   DataGrid,
@@ -82,6 +82,7 @@ const [newPw, setNewPw] = useState("");
 const [newPw2, setNewPw2] = useState("");
   const [showPw, setShowPw] = useState(false);
 const [showPw2, setShowPw2] = useState(false);
+const gridRef = useRef(null);
 
 
 const openPwDialog = (rowUser) => {
@@ -161,6 +162,10 @@ const dataForGrid = showAll ? users : paginatedUsers;
 const handleConfirmClose = () => {
   setConfirmOpen(false);
   setPendingEdit(null);
+    if (gridRef.current) {
+    gridRef.current.instance.cancelEditData();
+  }
+
 };
 
 
@@ -539,6 +544,7 @@ const handleAddUser = async () => {
           }}
         /> */}
         <DataGrid
+          ref={gridRef}
           dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
