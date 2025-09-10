@@ -787,7 +787,21 @@ const handleAddUser = async () => {
         </DialogActions>
       </Dialog>
 <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-  <DialogTitle>Confirm Edit / संपादन की पुष्टि करें</DialogTitle>
+  <DialogTitle sx={{ m: 0, p: 2 }}>
+    Confirm Edit / संपादन की पुष्टि करें
+    <IconButton
+      aria-label="close"
+      onClick={() => setConfirmOpen(false)}
+      sx={{
+        position: "absolute",
+        right: 8,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+      }}
+    >
+      ✖
+    </IconButton>
+  </DialogTitle>
   <DialogContent>
     <p>
       Do you want to perform changes for user: <b>{pendingEdit?.username}</b>? <br />
