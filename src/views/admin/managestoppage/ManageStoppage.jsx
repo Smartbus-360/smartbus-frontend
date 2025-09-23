@@ -312,7 +312,7 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
     try {
       const payload = {
         ...newStoppage,
-        rounds: JSON.stringify(newStoppage.rounds),
+        rounds: (newStoppage.rounds),
       };
       const response = await axiosInstance.post("stoppages", payload);
       if (response.data.success) {
