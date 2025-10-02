@@ -206,6 +206,16 @@ function Navbar() {
             >
               Join Us
             </Link>
+
+            <a
+  href="https://admin.smartbus360.com/"
+  target="_blank"
+  rel="noreferrer"
+  className="block px-4 py-2 text-center text-gray-800 transition duration-300 hover:bg-gray-100"
+>
+  Admin Panel
+</a>
+
             <div className="relative " ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen((prev) => !prev)}
