@@ -278,20 +278,24 @@ const [selectedQr, setSelectedQr] = useState(null);
     url ? (
       <>
         <img
-          src={`http://localhost:3000${url}`}
+          src={url?.startsWith("http") ? url : `${process.env.REACT_APP_API_URL}${url}`}
           alt="QR"
           width={70}
           height={70}
           style={{ borderRadius: 4, cursor: "pointer" }}
           onClick={() => {
-            setSelectedQr(`http://localhost:3000${url}`);
+            const finalUrl = url?.startsWith("http") ? url : `${process.env.REACT_APP_API_URL}${url}`;
+            setSelectedQr(finalUrl);
             setQrPreviewVisible(true);
           }}
         />
         <Button
           size="small"
           type="link"
-          onClick={() => window.open(`http://localhost:3000${url}`, "_blank")}
+          onClick={() => {
+            const finalUrl = url?.startsWith("http") ? url : `${process.env.REACT_APP_API_URL}${url}`;
+            window.open(finalUrl, "_blank");
+          }}
         >
           Download
         </Button>
