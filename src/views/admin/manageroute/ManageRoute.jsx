@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useRef} from "react";
 import axios from "axios";
 import {
   DataGrid,
@@ -33,6 +33,7 @@ import {
   InputLabel,
   FormControlLabel,
   Checkbox,
+  Typography
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -50,6 +51,7 @@ const ManageRoute = () => {
   });
   const [openRouteModal, setOpenRouteModal] = useState(false);
   const [allRoutes, setAllRoutes] = useState([]);
+const gridRef = useRef(null);
   const [newRoute, setNewRoute] = useState({
     routeName: "",
     description: "",
@@ -75,6 +77,24 @@ const ManageRoute = () => {
   const token = sessionStorage.getItem("authToken");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
+const [pendingUpdate, setPendingUpdate] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+    // Safe paging math
+const maxPage = Math.max(0, Math.ceil(allRoutes.length / pageSize) - 1);
+const safePage = Math.min(Math.max(currentPage, 0), maxPage);
+
+// Slice using safePage to avoid out-of-range
+const paginatedRoutes = allRoutes.slice(
+  safePage * pageSize,
+  safePage * pageSize + pageSize
+);
+
+// IMPORTANT: define this AFTER paginatedRoutes
+const dataForGrid = showAll ? allRoutes : paginatedRoutes;
+  
+
+
   const user = getUser();
   useEffect(() => {
     fetchInitialData();
@@ -98,10 +118,6 @@ const ManageRoute = () => {
     }
   };
 
-  const paginatedRoutes = allRoutes.slice(
-    currentPage * pageSize,
-    currentPage * pageSize + pageSize
-  );
 
   const handleRouteInputChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -204,6 +220,13 @@ const ManageRoute = () => {
       });
     }
   };
+const handleConfirmClose = () => {
+  setConfirmUpdateOpen(false);
+  setPendingUpdate(null);
+  if (gridRef.current) {
+    gridRef.current.instance.cancelEditData();  // cancel edit cleanly
+  }
+};
 
   const handleUpdateRoute = async (routeId, updatedRoute = {}) => {
 
@@ -378,6 +401,7 @@ const ManageRoute = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+<div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
 
         <Button
           variant="contained"
@@ -386,7 +410,16 @@ const ManageRoute = () => {
         >
           Add Route
         </Button>
-
+<Button
+    variant="outlined"
+    onClick={() => {
+      setShowAll(prev => !prev);
+      setCurrentPage(0);
+    }}
+  >
+    {showAll ? "Show by pages" : "Show all routes"}
+  </Button>
+      </div>
         {/* New Route Form */}
         <Dialog
           open={openRouteModal}
@@ -560,12 +593,18 @@ const ManageRoute = () => {
 
       <div style={{ minHeight: "600px", height: "auto", width: "100%", marginTop: "16px" }}>
         <DataGrid
-          dataSource={paginatedRoutes}
+            ref={gridRef}
+          dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
           allowColumnResizing={true}
-          onRowUpdating={(e) => handleUpdateRoute(e.oldData.id, e.newData)}
+          onRowUpdating={(e) => {
+            e.cancel = true; // stop direct update
+    setPendingUpdate({ id: e.oldData.id, newData: e.newData });
+    setConfirmUpdateOpen(true); // open popup
+  }}
+
           onRowRemoving={(e) => handleDeleteRoute(e.data.id)}
           scrolling={{ mode: 'virtual', useNative: true }}
         >
@@ -576,7 +615,7 @@ const ManageRoute = () => {
             useIcons={true}
           />
           <SearchPanel visible={true} highlightCaseSensitive={true} />
-          <Paging defaultPageSize={10} />
+          <Paging enabled={!showAll}  defaultPageSize={10} />
           <Pager showPageSizeSelector={false} showInfo={true} />
 
           {/* Columns */}
@@ -642,35 +681,69 @@ const ManageRoute = () => {
               {
                 hint: "Save Changes",
                 icon: "save",
-                onClick: (e) => handleUpdateRoute(e.row.data.id, e.row.data),
+                onClick: (e) => {
+    setPendingUpdate({ id: e.row.data.id, newData: e.row.data });
+    setConfirmUpdateOpen(true);
+                },
               },
             ]}
           />
         </DataGrid>
+        {!showAll && (
         <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0" }}>
           <Button
             variant="contained"
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-            disabled={currentPage === 0}
+            disabled={safePage === 0}
           >
             Previous
           </Button>
           <span>
-            Page {currentPage + 1} of {Math.ceil(allRoutes.length / pageSize)}
+                  Page {safePage + 1} of {maxPage + 1}
           </span>
           <Button
             variant="contained"
-            onClick={() =>
-              setCurrentPage((prev) =>
-                Math.min(prev + 1, Math.ceil(allRoutes.length / pageSize) - 1)
-              )
-            }
-            disabled={(currentPage + 1) * pageSize >= allRoutes.length}
-          >
+onClick={() => setCurrentPage(prev => Math.min(prev + 1, maxPage))}
+      disabled={safePage >= maxPage}
+    >
             Next
           </Button>
         </div>
+  )}
       </div>
+      <Dialog
+  open={confirmUpdateOpen}
+  onClose={handleConfirmClose}
+  fullWidth
+  maxWidth="sm"
+>
+  <DialogTitle>Confirm Update / पुष्टि करें</DialogTitle>
+  <DialogContent>
+    <Typography>
+      Do you want to apply changes to route{" "}
+      <strong>{pendingUpdate?.newData?.routeName}</strong>? <br />
+      क्या आप मार्ग{" "}
+      <strong>{pendingUpdate?.newData?.routeName}</strong>{" "}
+      में बदलाव करना चाहते हैं?
+    </Typography>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleConfirmClose} color="secondary">
+      No / नहीं
+    </Button>
+    <Button
+      onClick={() => {
+        handleUpdateRoute(pendingUpdate.id, pendingUpdate.newData);
+        handleConfirmClose();
+      }}
+      color="primary"
+      variant="contained"
+    >
+      Yes, Update / हाँ, अपडेट करें
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </div>
   );
 };

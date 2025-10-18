@@ -10,6 +10,8 @@ import {
   IconButton,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+
 
 const UserVerificationPage = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +19,7 @@ const UserVerificationPage = () => {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   // Predefined hidden credentials
@@ -35,7 +38,7 @@ const UserVerificationPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('${import.meta.env.VITE_API_BASE_URL}/login/user', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/login/user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -53,6 +56,12 @@ const UserVerificationPage = () => {
           message: '✅ You are connected with smartbus360.com',
           severity: 'success',
         });
+          // Redirect after 3 seconds
+  setTimeout(() => {
+    navigate('/'); // change '/home' to your actual route if different
+  }, 3000);
+
+
       } else {
         throw new Error(result.message || 'Login failed');
       }
@@ -72,15 +81,15 @@ const UserVerificationPage = () => {
       </Typography>
 
       <TextField
-        fullWidth
-        label="Email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        margin="normal"
-        required
-        type="email"
-      />
+  fullWidth
+  label="Email / Username"
+  name="email"
+  value={formData.email}
+  onChange={handleChange}
+  margin="normal"
+  required
+  type="text"
+/>
 
       <TextField
         fullWidth

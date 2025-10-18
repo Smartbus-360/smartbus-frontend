@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useRef} from "react";
 import axios from "axios";
 import {
   DataGrid,
@@ -37,6 +37,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import axiosInstance from "../../../api/axios";
 import { getUser } from "../../../config/authService";
+import InputAdornment from "@mui/material/InputAdornment";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
 
 const convertUrlToFile = async (url, fileName = "logo.png") => {
   const response = await fetch(url);
@@ -51,8 +55,13 @@ const ManageUser = () => {
   const [stoppages, setStoppages] = useState([]);
   const [stoppageId, setStoppageId] = useState("");
   const [instituteId, setInstituteId] = useState("");
+  const [showNewUserPw, setShowNewUserPw] = useState(false);
+  // Confirmation dialog
+const [confirmOpen, setConfirmOpen] = useState(false);
+const [pendingEdit, setPendingEdit] = useState(null);
 const [newUser, setNewUser] = useState({
   registrationNumber: "",
+  password: "",
   instituteCode: "",
   stop:"",
 });
@@ -66,11 +75,56 @@ const [newUser, setNewUser] = useState({
   const handleSnackbarClose = () => setSnackbar({ ...snackbar, open: false });
   const token = sessionStorage.getItem("authToken");
   const [editedUsers, setEditedUsers] = useState({});
+  // --- Password dialog state/handlers ---
+const [pwDialogOpen, setPwDialogOpen] = useState(false);
+const [pwTargetUser, setPwTargetUser] = useState(null);
+const [newPw, setNewPw] = useState("");
+const [newPw2, setNewPw2] = useState("");
+  const [showPw, setShowPw] = useState(false);
+const [showPw2, setShowPw2] = useState(false);
+const gridRef = useRef(null);
+
+
+const openPwDialog = (rowUser) => {
+  setPwTargetUser(rowUser);
+  setNewPw("");
+  setNewPw2("");
+  setPwDialogOpen(true);
+};
+
+const submitNewPassword = async () => {
+  if (newPw.length < 6) {
+    setSnackbar({ open: true, message: "Password must be ≥ 6 chars", severity: "error" });
+    return;
+  }
+  if (newPw !== newPw2) {
+    setSnackbar({ open: true, message: "Passwords do not match", severity: "error" });
+    return;
+  }
+  await handleUpdateUser(pwTargetUser.id, { password: newPw });
+  setPwDialogOpen(false);
+};
+
   useEffect(() => {
     fetchInitialData();
   }, []);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
+
+// Safe paging math
+const maxPage = Math.max(0, Math.ceil(users.length / pageSize) - 1);
+const safePage = Math.min(Math.max(currentPage, 0), maxPage);
+
+// Slice using safePage (avoids OOB when data changes)
+const paginatedUsers = users.slice(
+  safePage * pageSize,
+  safePage * pageSize + pageSize
+);
+
+// Feed the grid either the slice or everything
+const dataForGrid = showAll ? users : paginatedUsers;
+
   const user = getUser();
   const fetchInitialData = async () => {
     try {
@@ -94,11 +148,7 @@ const [newUser, setNewUser] = useState({
   const totalPages = Math.ceil(users.length / pageSize);
 
   // Paginated data
-  const paginatedUsers = users.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
+  
   // const paginatedUsers = users.slice(
   //   currentPage * pageSize,
   //   currentPage * pageSize + pageSize
@@ -108,6 +158,16 @@ const [newUser, setNewUser] = useState({
     const { name, value } = event.target;
     setNewUser((prev) => ({ ...prev, [name]: value }));
   };
+  // inside ManageUser component
+const handleConfirmClose = () => {
+  setConfirmOpen(false);
+  setPendingEdit(null);
+    if (gridRef.current) {
+    gridRef.current.instance.cancelEditData();
+  }
+
+};
+
 
   const handleStoppageChange = (event) => {
     setStoppageId(event.target.value);
@@ -116,7 +176,7 @@ const [newUser, setNewUser] = useState({
 
   const handleInstituteChange = (event) => {
     setInstituteId(event.target.value);
-    setNewUser((prev) => ({ ...prev, institute: event.target.value }));
+    setNewUser((prev) => ({ ...prev, instituteCode: event.target.value }));
   };
 
   const handleImageChange = (e) => {
@@ -126,12 +186,12 @@ const [newUser, setNewUser] = useState({
   };
 
 const handleAddUser = async () => {
-  const { registrationNumber, instituteCode,stop } = newUser;
+  const { registrationNumber,password, instituteCode,stop } = newUser;
 
-  if (!registrationNumber || !instituteCode ||!stop) {
+  if (!registrationNumber || !password || !instituteCode ||!stop) {
     setSnackbar({
       open: true,
-      message: "Please provide both registration number and institute code,Stoppage",
+      message: "Please provide both registration number ,password , institute code,and stoppage",
       severity: "error",
     });
     return;
@@ -166,8 +226,9 @@ const handleAddUser = async () => {
     // formData.append("status", "active");
 
   try {
-    const response = await axiosInstance.post("pending-student", {
+    const response = await axiosInstance.post("add-student-direct", {
       registrationNumber,
+      password,
       instituteCode,
       stopId: stop,
     });
@@ -176,11 +237,11 @@ const handleAddUser = async () => {
       fetchInitialData();
       setSnackbar({
         open: true,
-        message: `Student added! Temp password: ${response.data.tempPassword}`,
+        message: `Student added successfully and can log in now`,
         severity: "success",
       });
       setOpenModal(false);
-      setNewUser({ registrationNumber: "", instituteCode: "" ,stop:""});
+      setNewUser({ registrationNumber: "",password : "", instituteCode: "" ,stop:""});
     } else {
       setSnackbar({
         open: true,
@@ -261,7 +322,10 @@ const handleAddUser = async () => {
     formData.append("emergency_contact_info", updatedData.emergency_contact_info ?? selectedUser.emergency_contact_info ?? "");
     formData.append("dateOfBirth", updatedData.dateOfBirth ?? selectedUser.dateOfBirth ?? "");
     formData.append("nationality", updatedData.nationality ?? selectedUser.nationality ?? "");
-    formData.append("password", updatedData.password ?? selectedUser.password ?? "");
+    // formData.append("password", updatedData.password ?? selectedUser.password ?? "");
+    if (typeof updatedData.password === "string" && updatedData.password.trim().length > 0) {
+  formData.append("password", updatedData.password.trim());
+}
     formData.append("status", updatedData.status ?? selectedUser.status ?? "");
     formData.append("verified", "yes");
     formData.append("accountType", updatedData.accountType ?? selectedUser.accountType ?? "");
@@ -361,6 +425,7 @@ const handleAddUser = async () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+      <div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
       <Button
         variant="contained"
         color="primary"
@@ -369,6 +434,16 @@ const handleAddUser = async () => {
       >
         Add New User
       </Button>
+<Button
+    variant="outlined"
+    onClick={() => {
+      setShowAll(prev => !prev);
+      setCurrentPage(0);
+    }}
+  >
+    {showAll ? "Show by pages" : "Show all users"}
+  </Button>
+</div>
 
       <Dialog
         open={openModal}
@@ -387,7 +462,26 @@ const handleAddUser = async () => {
       fullWidth
       required
     />
-    <TextField
+<TextField
+  label="Password"
+  name="password"
+  type={showNewUserPw ? "text" : "password"}
+  autoComplete="new-password"
+  value={newUser.password}
+  onChange={handleInputChange}
+  fullWidth
+  required
+  InputProps={{
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton onClick={() => setShowNewUserPw((prev) => !prev)} edge="end">
+          {showNewUserPw ? <VisibilityOff /> : <Visibility />}
+        </IconButton>
+      </InputAdornment>
+    ),
+  }}
+/>
+   <TextField
       label="Institute Code"
       name="instituteCode"
       value={newUser.instituteCode}
@@ -450,12 +544,22 @@ const handleAddUser = async () => {
           }}
         /> */}
         <DataGrid
-          dataSource={paginatedUsers}
+          ref={gridRef}
+          dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
           allowColumnResizing={true}
-          onRowUpdating={(e) => handleUpdateUser(e.oldData.id, e.newData)}
+          onRowUpdating={(e) => {
+    // Stop auto-update, instead show confirmation
+    e.cancel = true;  
+    setPendingEdit({
+      id: e.oldData.id,
+      newData: e.newData,
+      username: e.oldData.username
+    });
+    setConfirmOpen(true);
+          }}
           onRowRemoving={(e) => handleDeleteUser(e.data.id)}
           scrolling={{ mode: 'virtual', useNative: true }}
         >
@@ -466,7 +570,7 @@ const handleAddUser = async () => {
             useIcons={true}
           />
           <SearchPanel visible={true} highlightCaseSensitive={true} />
-          <Paging defaultPageSize={10} />
+          <Paging enabled={!showAll}  defaultPageSize={10} />
           <Pager showPageSizeSelector={false} showInfo={true} />
 
           {/* Define your columns with editable fields */}
@@ -546,7 +650,7 @@ const handleAddUser = async () => {
           <Column dataField="address" caption="Address" minWidth={150}/>
           <Column
             dataField="emergency_contact_info"
-            caption="mergency Contact"
+            caption="emergency Contact"
           minWidth={150}/>
           <Column
             dataField="dateOfBirth"
@@ -573,7 +677,9 @@ const handleAddUser = async () => {
               displayExpr: "this",
             }}
           minWidth={150}/>
-          <Column dataField="password" caption="Password" minWidth={150}/>
+{/*           <Column dataField="password" caption="Password" minWidth={150}/>
+           */}
+          
           <Column
             dataField="status"
             caption="Status"
@@ -584,19 +690,25 @@ const handleAddUser = async () => {
             }}
           minWidth={150}/>
 
-          <Column
-            type="buttons"
-            buttons={[
-              "edit",
-              "delete",
-              {
-                hint: "Save Changes",
-                icon: "save",
-                onClick: (e) => handleUpdateUser(e.row.data.id, e.row.data),
-              },
-            ]}
-          />
+<Column
+  type="buttons"
+  buttons={[
+    "edit",
+    "delete",
+    {
+      hint: "Save Changes",
+      icon: "save",
+      onClick: (e) => handleUpdateUser(e.row.data.id, e.row.data),
+    },
+    {
+      hint: "Set Password",
+      icon: "key",               // DevExtreme icon
+      onClick: (e) => openPwDialog(e.row.data),
+    },
+  ]}
+/>
         </DataGrid>
+        {!showAll && (
       <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0" }}>
         <Button
           variant="contained"
@@ -625,6 +737,7 @@ const handleAddUser = async () => {
           Next
         </Button>
       </div>
+      )}
       <div style={{ textAlign: "center" }}>
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", margin: "0 10px" }}>
           {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
@@ -640,8 +753,98 @@ const handleAddUser = async () => {
         </div>
       </div>
       </div>
+      <Dialog open={pwDialogOpen} onClose={() => setPwDialogOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Set New Password</DialogTitle>
+<DialogContent>
+  <TextField
+    label="New Password"
+    type={showPw ? "text" : "password"}
+    fullWidth
+    margin="dense"
+    value={newPw}
+    onChange={(e) => setNewPw(e.target.value)}
+    autoComplete="new-password"
+    InputProps={{
+      endAdornment: (
+        <InputAdornment position="end">
+          <IconButton onClick={() => setShowPw((prev) => !prev)} edge="end">
+            {showPw ? <VisibilityOff /> : <Visibility />}
+          </IconButton>
+        </InputAdornment>
+      ),
+    }}
+  />
+  <TextField
+    label="Confirm Password"
+    type={showPw2 ? "text" : "password"}
+    fullWidth
+    margin="dense"
+    value={newPw2}
+    onChange={(e) => setNewPw2(e.target.value)}
+    autoComplete="new-password"
+    InputProps={{
+      endAdornment: (
+        <InputAdornment position="end">
+          <IconButton onClick={() => setShowPw2((prev) => !prev)} edge="end">
+            {showPw2 ? <VisibilityOff /> : <Visibility />}
+          </IconButton>
+        </InputAdornment>
+      ),
+    }}
+  />
+</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPwDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={submitNewPassword}>Update</Button>
+        </DialogActions>
+      </Dialog>
+<Dialog open={confirmOpen} onClose={handleConfirmClose}
+      >
+  <DialogTitle sx={{ m: 0, p: 2 }}>
+    Confirm Edit / संपादन की पुष्टि करें
+    <IconButton
+      aria-label="close"
+onClick={handleConfirmClose}
+      sx={{
+        position: "absolute",
+        right: 8,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+      }}
+    >
+      ✖
+    </IconButton>
+  </DialogTitle>
+  <DialogContent>
+    <p>
+      Do you want to perform changes for user: <b>{pendingEdit?.username}</b>? <br />
+      क्या आप <b>{pendingEdit?.username}</b> उपयोगकर्ता के लिए बदलाव करना चाहते हैं?
+    </p>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleConfirmClose}
+    color="secondary">
+      No / नहीं
+    </Button>
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={() => {
+        if (pendingEdit) {
+          handleUpdateUser(pendingEdit.id, pendingEdit.newData);
+        }
+        handleConfirmClose();
+
+      }}
+    >
+      Yes / हाँ
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </div>
   );
 };
 
 export default ManageUser;
+

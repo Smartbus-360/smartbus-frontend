@@ -46,15 +46,15 @@ const showcases = [
   },
   {
     img: showcaseImg6,
-    title: "High Reliability",
+    title: "AI-Powered Student Safety",
     description:
-      "Unlike traditional GPS, SmartBus360 has minimal maintenance needs and provides a dependable, long-lasting service. Out of 100 GPS devices, only 1 or 2 lasts for more than a year. Certified GPS devices also require costly battery replacements and recharging, amounting to around 25,000 INR + recharge cost + batteries cost + maintenance cost. In comparison, our subscription charge is just 1% of the cost of traditional GPS devices, with no safety hazards related to battery or wiring faults.",
+      "SmartBus360 uses real-time GPS and AI-powered predictive alerts to keep parents and institutes informed of every movement. The system ensures students' safety with precision tracking, instant notifications, and intelligent risk monitoring—so you always know where your child is and when they'll arrive."
   },
   {
     img: showcaseImg8,
-    title: "Cost-Effective and Safe Alternative to GPS Devices",
+    title: "Intelligent Communication System",
     description:
-      "Out of 100 GPS devices, only 1 or 2 lasts for more than a year. Certified GPS devices also require costly battery replacements and recharging, amounting to around 25,000 INR + recharge cost + batteries cost + maintenance cost. In comparison, our subscription charge is just 1% of the cost of traditional GPS devices, with no safety hazards related to battery or wiring faults.",
+      "No more confusion or repeated phone calls! SmartBus360’s AI-enhanced communication tools send real-time alerts for delays, arrivals, or emergencies. Parents, transport managers, and institute staff stay synced through automated updates—minimizing human error and enhancing trust."
   },
 ];
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import axios from "axios";
 import DataGrid, {
   Column,
@@ -81,6 +81,7 @@ const ManageStoppage = () => {
   const [selectedStop, setSelectedStop] = useState(null);
   const [selectedRound, setSelectedRound] = useState(null);
   const [roundDeleteModalOpen, setRoundDeleteModalOpen] = useState(false);
+  const gridRef = useRef(null);
   const [newRound, setNewRound] = useState({
     shift: "",
     round: "",
@@ -96,6 +97,8 @@ const ManageStoppage = () => {
   const token = sessionStorage.getItem("authToken");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
+const [pendingUpdate, setPendingUpdate] = useState(null);
   const user = getUser();
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -215,6 +218,15 @@ const ManageStoppage = () => {
       [name]: value,
     }));
   };
+  const handleConfirmClose = () => {
+  setConfirmUpdateOpen(false);
+  setPendingUpdate(null);
+    if (gridRef.current) {
+    gridRef.current.instance.cancelEditData();  // cancel the edit
+  }
+
+};
+
 
   // Handle round count change
   // const handleRoundChange = (shift, count) => {
@@ -300,7 +312,7 @@ const ManageStoppage = () => {
     try {
       const payload = {
         ...newStoppage,
-        rounds: JSON.stringify(newStoppage.rounds),
+        rounds: (newStoppage.rounds),
       };
       const response = await axiosInstance.post("stoppages", payload);
       if (response.data.success) {
@@ -748,6 +760,26 @@ const ManageStoppage = () => {
                   />
                 </div>
               ))}
+                <TextField
+      label="Latitude"
+      name="latitude"
+      type="number"
+      value={newStoppage.latitude}
+      onChange={handleInputChange}
+      required
+      fullWidth
+    />
+    <TextField
+      label="Longitude"
+      name="longitude"
+      type="number"
+      value={newStoppage.longitude}
+      onChange={handleInputChange}
+      required
+      fullWidth
+    />
+
+
 
             <TextField
               label="Estimated Duration"
@@ -945,12 +977,17 @@ const ManageStoppage = () => {
           }}
         /> */}
         <DataGrid
+          ref={gridRef}
           dataSource={paginatedStoppages}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
           allowColumnResizing={true}
-          onRowUpdating={(e) => handleUpdateStoppage(e.oldData.id, e.newData)}
+          onRowUpdating={(e) => {
+    e.cancel = true;
+    setPendingUpdate({ id: e.oldData.id, newData: e.newData });
+    setConfirmUpdateOpen(true);
+  }}
           onRowRemoving={(e) => handleDeleteStoppage(e.data.id)}
           scrolling={{ mode: "virtual", useNative: true }}
         >
@@ -1672,6 +1709,44 @@ const ManageStoppage = () => {
           </div>
         </Box>
       </Modal>
+      <Dialog
+  open={confirmUpdateOpen}
+  onClose={handleConfirmClose}
+  fullWidth
+  maxWidth="sm"
+>
+  <DialogTitle>Confirm Update / पुष्टि करें</DialogTitle>
+  <DialogContent>
+    <Typography>
+      Do you want to apply changes to stoppage{" "}
+      <strong>{pendingUpdate?.newData?.stopName}</strong>? <br />
+      क्या आप <strong>{pendingUpdate?.newData?.stopName}</strong> स्टॉपेज में बदलाव करना चाहते हैं?
+    </Typography>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleConfirmClose}
+    color="secondary"
+      variant="outlined"
+>
+      No / नहीं
+    </Button>
+    <Button
+      onClick={() => {
+            if (pendingUpdate) {
+        handleUpdateStoppage(pendingUpdate.id, pendingUpdate.newData);
+}
+             handleConfirmClose();
+
+    }}
+
+      color="primary"
+      variant="contained"
+    >
+      Yes, Update / हाँ, अपडेट करें
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </div>
   );
 };

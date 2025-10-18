@@ -68,6 +68,33 @@ function Navbar() {
             >
               Join Us
             </Link>
+            {/* <a
+  href="https://admin.smartbus360.com/"
+  target="_blank"
+  rel="noreferrer"
+  className="font-medium text-gray-900 transition duration-300 hover:text-yellow-300"
+>
+  Admin Panel
+</a> */}
+            <a
+  href="https://admin.smartbus360.com/"
+  target="_blank"
+  rel="noreferrer"
+  className="rounded-lg bg-purple-500 px-6 py-3 text-white shadow-lg transition-all duration-300 hover:bg-purple-600"
+>
+  Admin Panel
+</a>
+            <a
+  href="https://coordinates.smartbus360.com/login"
+  target="_blank"
+  rel="noreferrer"
+  className="rounded-lg bg-indigo-500 px-8 py-3 text-white shadow-lg transition-all duration-300 hover:bg-indigo-600"
+>
+  Coordinates Login
+</a>
+
+
+
             {/* Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
@@ -130,7 +157,7 @@ function Navbar() {
     Android
   </a>
   <a
-    href="https://play.google.com/store/apps/details?id=com.smartbus360.app"
+    href="https://apps.apple.com/us/app/smartbus360/id6742678067"
     target="_blank"
     rel="noreferrer"
     className="bg-black flex items-center rounded-lg px-6 py-3 text-gray-700 transition-all duration-300 hover:bg-gray-800 hover:text-white" 
@@ -197,6 +224,26 @@ function Navbar() {
             >
               Join Us
             </Link>
+
+<a
+  href="https://admin.smartbus360.com/"
+  target="_blank"
+  rel="noreferrer"
+  className="my-2 block w-full rounded-lg bg-purple-500 px-6 py-3 text-center text-white shadow-lg transition-all duration-300 hover:bg-purple-600"
+>
+  Admin Panel
+</a>
+            <a
+  href="https://coordinates.smartbus360.com/login"
+  target="_blank"
+  rel="noreferrer"
+  className="my-2 block w-full rounded-lg bg-indigo-500 px-6 py-3 text-center text-white shadow-lg transition-all duration-300 hover:bg-indigo-600"
+>
+  Coordinates Login
+</a>
+
+
+
             <div className="relative " ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen((prev) => !prev)}

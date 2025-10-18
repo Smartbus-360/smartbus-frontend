@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
   DataGrid,
@@ -34,12 +34,18 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
+// import {
+//   DataGrid, Column, Paging, Pager, Lookup, Editing, SearchPanel,
+//   Toolbar, Item, Export, Selection, GridButton, RequiredRule, MasterDetail
+// } from "devextreme-react/data-grid";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import { AddCircleOutline, RemoveCircleOutline } from "@mui/icons-material";
 import axiosInstance from "../../../api/axios";
 import { getUser } from "../../../config/authService";
+import { Typography } from "@mui/material";
+
 
 const convertUrlToFile = async (url, fileName = "logo.png") => {
   const response = await fetch(url);
@@ -49,6 +55,7 @@ const convertUrlToFile = async (url, fileName = "logo.png") => {
 };
 
 const ManageDriver = () => {
+  const gridRef = useRef(null);
   const [drivers, setDrivers] = useState([]);
   const [institutes, setInstitutes] = useState([]);
   const [routes, setRoutes] = useState([]);
@@ -86,7 +93,35 @@ const ManageDriver = () => {
   const token = sessionStorage.getItem("authToken");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
   const user = getUser();
+  // Expand + subdriver
+// const [expandedRowId, setExpandedRowId] = useState(null);
+// const [subDrivers, setSubDrivers] = useState({});     // { [driverId]: [ ...subdriverRows ] }
+// const [newSub, setNewSub] = useState({ name: "", phone: "", email: "", password: "" });
+
+// QR modal
+const [qrOpen, setQrOpen] = useState(false);
+const [qrPng, setQrPng] = useState("");
+const [qrExpiresAt, setQrExpiresAt] = useState("");
+// const [qrDurationHrs, setQrDurationHrs] = useState(6); // default 6 hrs
+  const [qrHours, setQrHours] = useState({}); // e.g. { [driverId]: 6 }
+const [qrFor, setQrFor] = useState({ driverId: null });
+  const [qrHistoryOpen, setQrHistoryOpen] = useState(false);
+const [qrHistory, setQrHistory] = useState([]);
+const [qrHistoryFor, setQrHistoryFor] = useState(null);
+  const [qrHistoryFilter, setQrHistoryFilter] = useState('all');
+  const hourRefs = useRef({});
+  const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
+const [pendingUpdate, setPendingUpdate] = useState(null);
+
+
+
+
+
+// Busy flags
+const [busy, setBusy] = useState(false);
+
   useEffect(() => {
     fetchInitialData();
   }, []);
@@ -123,19 +158,31 @@ const ManageDriver = () => {
   const paginatedDrivers = drivers.length > 0
     ? drivers.slice(safePage * pageSize, safePage * pageSize + pageSize)
     : [];
+const dataForGrid = showAll ? drivers : paginatedDrivers;
 
 
 
+
+  // const handleInstituteChange = async (event) => {
+  //   const selectedInstituteId = event.target.value;
+  //   setInstituteId(selectedInstituteId);
+  //   try {
+  //     const response = await axiosInstance.get(
+  //       `routes/institute/${selectedInstituteId}`
+  //     );
+  //     setRoutes(response.data);
+  //   } catch (err) {}
+  // };
   const handleInstituteChange = async (event) => {
-    const selectedInstituteId = event.target.value;
-    setInstituteId(selectedInstituteId);
-    try {
-      const response = await axiosInstance.get(
-        `routes/institute/${selectedInstituteId}`
-      );
-      setRoutes(response.data);
-    } catch (err) {}
-  };
+  const selectedInstituteId = event.target.value;
+  setInstituteId(selectedInstituteId);
+  setNewDriver(prev => ({ ...prev, instituteId: selectedInstituteId })); // <-- add this
+  try {
+    const response = await axiosInstance.get(`routes/institute/${selectedInstituteId}`);
+    setRoutes(response.data);
+  } catch (err) {}
+};
+
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -147,6 +194,14 @@ const ManageDriver = () => {
     setNewDriver((prev) => ({ ...prev, profilePicture: file }));
     setProfilePicturePreview(URL.createObjectURL(file));
   };
+  const handleConfirmClose = () => {
+  setConfirmUpdateOpen(false);
+  setPendingUpdate(null);
+  if (gridRef.current) {
+    gridRef.current.instance.cancelEditData();  // cancel pending edit in grid
+  }
+};
+
 
   const handleAddDriver = async () => {
     if (
@@ -421,6 +476,154 @@ const ManageDriver = () => {
     }
   };
 
+  // Fetch all subdrivers for one main driver
+// const fetchSubDrivers = async (driverId) => {
+//   try {
+//     const { data } = await axiosInstance.get(`drivers/${driverId}/subdrivers`);
+//     setSubDrivers(prev => ({ ...prev, [driverId]: data.subDrivers || [] }));
+//   } catch (e) {
+//     setSnackbar({ open: true, message: "Failed to load sub-drivers.", severity: "error" });
+//   }
+// };
+
+// Create a sub-driver under a main driver
+// const handleCreateSubDriver = async (driverId, instituteId) => {
+//   if (!newSub.name || !newSub.phone || !newSub.email || !newSub.password) {
+//     setSnackbar({ open: true, message: "Fill all sub-driver fields", severity: "warning" });
+//     return;
+//   }
+//   try {
+//     const { data } = await axiosInstance.post(
+//       `drivers/${driverId}/subdriver`,
+//       { ...newSub, instituteId }                // 👈 send instituteId
+//     );
+//     setNewSub({ name: "", phone: "", email: "", password: "" });
+//     setSnackbar({ open: true, message: "Sub-driver created", severity: "success" });
+//     fetchSubDrivers(driverId);
+//   } catch {
+//     setSnackbar({ open: true, message: "Failed to create sub-driver", severity: "error" });
+//   }
+// };
+
+// Generate a QR for a (main driver, sub-driver, durationHours)
+// const handleGenerateQR = async (originalDriverId, subDriverId,hours = 6) => {
+//   try {
+//     setBusy(true);
+//     const { data } = await axiosInstance.post(`driver-qr/generate`, {
+//       originalDriverId,
+//       subDriverId,
+//       durationHours: hours,
+//     });
+//     setQrPng(data.png);
+//     setQrExpiresAt(data.expiresAt);
+//     setQrFor({ originalDriverId, subDriverId });
+//     setQrOpen(true);
+//     setSnackbar({ open: true, severity: "success", message: "QR generated" });
+
+//   } catch (e) {
+//     setSnackbar({ open: true, message: "Failed to generate QR", severity: "error" });
+//   } finally { setBusy(false); }
+// };
+
+
+// const handleGenerateQR = async (driverId, hours = 6) => {
+// const nameOnly = (driverName ?? "").toString().trim();
+//   const label = nameOnly || "this driver";   // fallback if name is missing
+
+//   if (!window.confirm(`Do you want to generate a QR for ${label}?`)) return;
+//   try {
+//     setBusy(true);
+//     const { data } = await axiosInstance.post(`driver-qr/generate`, {
+//       driverId,
+//       durationHours: hours,
+//     });
+//     setQrPng(data.png);
+//     setQrExpiresAt(data.expiresAt);
+//     setQrFor({ driverId });
+//     setQrOpen(true);
+//     setSnackbar({ open: true, severity: "success", message: "QR generated" });
+//   } catch (e) {
+//     setSnackbar({ open: true, message: "Failed to generate QR", severity: "error" });
+//   } finally { setBusy(false); }
+// };
+
+  const handleGenerateQR = async (driverId, hours = 6, driverName) => {
+  // show ONLY the driver's name in the confirm
+  const fallbackName = drivers.find(d => d.id === driverId)?.name;
+  const label = (driverName ?? fallbackName ?? "").toString().trim() || "this driver";
+
+  if (!window.confirm(`Do you want to generate a QR for ${label}?`)) return;
+
+  try {
+    setBusy(true);
+    const { data } = await axiosInstance.post(`driver-qr/generate`, {
+      driverId,
+      durationHours: Number(hours) > 0 ? Number(hours) : 6,
+    });
+    setQrPng(data.png);
+    setQrExpiresAt(data.expiresAt);
+    setQrFor({ driverId });
+    setQrOpen(true);
+    setSnackbar({ open: true, severity: "success", message: "QR generated" });
+  } catch (e) {
+    setSnackbar({
+      open: true,
+      message: e?.response?.data?.message || "Failed to generate QR",
+      severity: "error",
+    });
+  } finally {
+    setBusy(false);
+  }
+};
+
+
+// Revoke a QR by id (optional list shows active QRs)
+const handleRevokeQR = async (qrId) => {
+  try {
+    await axiosInstance.post(`driver-qr/revoke/${qrId}`);
+    setSnackbar({ open: true, message: "QR revoked", severity: "success" });
+  } catch {
+    setSnackbar({ open: true, message: "Failed to revoke QR", severity: "error" });
+  }
+};
+  const fetchQrHistory = async (driverId, status = "all") => {
+  try {
+    const { data } = await axiosInstance.get("driver-qr/history", {
+      params: { driverId, limit: 100, status },
+    });
+    setQrHistory(data.items || []);
+  } catch {
+    setSnackbar({
+      open: true,
+      message: "Failed to load QR history",
+      severity: "error",
+    });
+  }
+};
+  const revokeFromHistory = async (row) => {
+  if (row?.status !== 'active') return;
+  if (!window.confirm('Revoke this active QR?')) return;
+  await handleRevokeQR(row.id);
+  await fetchQrHistory(qrHistoryFor, qrHistoryFilter);
+};
+
+
+
+// Row expand toggle
+// const toggleExpand = (driverId) => {
+//   const grid = gridRef.current?.instance;
+// if (!grid) return;
+// if (expandedRowId === driverId) {
+//   grid.collapseRow(driverId);
+//  setExpandedRowId(null);
+//  } else {
+//  grid.expandRow(driverId);
+// setExpandedRowId(driverId);
+//  fetchSubDrivers(driverId);
+//  }
+//  };
+
+
   return (
     <div className="mx-auto mt-4 max-w-full rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 p-6 shadow-2xl">
       <h2 className="mb-6 text-3xl font-semibold text-gray-800">
@@ -449,6 +652,18 @@ const ManageDriver = () => {
         >
           Add Driver
         </Button>
+      <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+  <Button
+    variant="outlined"
+    onClick={() => {
+      setShowAll((prev) => !prev);
+      setCurrentPage(0);
+    }}
+  >
+    {showAll ? "Show by pages" : "Show all drivers"}
+  </Button>
+</div>
+
         {/* New Driver Form */}
         <Dialog
           open={openDriverModal}
@@ -622,7 +837,7 @@ const ManageDriver = () => {
                 <InputLabel>Select Institute</InputLabel>
                 <Select
                   label="Select Institute"
-                  value={newDriver.instituteId}
+                  value={instituteId}
                   onChange={handleInstituteChange}
                   className="col-span-2"
                 >
@@ -639,13 +854,13 @@ const ManageDriver = () => {
                 {routes.length > 0 && (
                 <FormControl required>
                 <InputLabel>Select Route</InputLabel>
-                <Select
-                    label="Select Route"
-                    name="assignedRoutes"
-                    value={newDriver.assignedRoutes}
-                    onChange={handleInputChange}
-                    className="col-span-2"
-                  >
+<Select
+  label="Select Route"
+  name="assignedRoutes"
+  value={newDriver.assignedRoutes}
+  onChange={handleInputChange}
+  className="col-span-2"
+    >
                     <MenuItem value="">Select Route</MenuItem>
                     {routes.map((route) => (
                       <MenuItem key={route.id} value={route.id}>
@@ -671,8 +886,7 @@ const ManageDriver = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      <div style={{ minHeight: "600px", height: "auto", width: "100%", marginTop: "16px" }}>
-        {/* <DataGrid
+<div style={{ height: "600px", width: "100%", marginTop: "16px" }}>        {/* <DataGrid
           rows={drivers}
           columns={columns}
           pageSize={5}
@@ -694,13 +908,115 @@ const ManageDriver = () => {
             },
           }}
         /> */}
+        <Dialog open={qrOpen} onClose={() => setQrOpen(false)} maxWidth="xs" fullWidth>
+  <DialogTitle>Driver QR</DialogTitle>
+  <DialogContent>
+    {qrPng ? (
+      <div className="flex flex-col items-center gap-3">
+        <img src={qrPng} alt="QR Code" style={{ width: 260, height: 260 }} />
+        <div className="text-sm text-gray-600">
+          Expires at: {new Date(qrExpiresAt).toLocaleString()}
+        </div>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            const a = document.createElement("a");
+            a.href = qrPng;
+            a.download = `driver-qr-${qrFor.driverId}.png`;
+            a.click();
+          }}
+        >
+          Download / Share
+        </Button>
+      </div>
+    ) : (
+      <div>Generating…</div>
+    )}
+  </DialogContent>
+
+  <DialogActions>
+    <Button onClick={() => setQrOpen(false)}>Close</Button>
+  </DialogActions>
+</Dialog>
+  <Dialog
+  open={qrHistoryOpen}
+  onClose={() => setQrHistoryOpen(false)}
+  maxWidth="md"
+  fullWidth
+>
+  <DialogTitle>QR History — Driver #{qrHistoryFor}</DialogTitle>
+  <DialogContent>
+    <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+      <Button size="small" onClick={() => { setQrHistoryFilter('all');     fetchQrHistory(qrHistoryFor, 'all'); }}>All</Button>
+      <Button size="small" onClick={() => { setQrHistoryFilter('active');  fetchQrHistory(qrHistoryFor, 'active'); }}>Active</Button>
+      <Button size="small" onClick={() => { setQrHistoryFilter('used');    fetchQrHistory(qrHistoryFor, 'used'); }}>Used</Button>
+      <Button size="small" onClick={() => { setQrHistoryFilter('revoked'); fetchQrHistory(qrHistoryFor, 'revoked'); }}>Revoked</Button>
+      <Button size="small" onClick={() => { setQrHistoryFilter('expired'); fetchQrHistory(qrHistoryFor, 'expired'); }}>Expired</Button>
+    </div>
+
+    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <thead>
+        <tr>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>QR ID</th>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>Expires</th>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>Status</th>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>Used / Max</th>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>Created By</th>
+          <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #eee' }}>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {qrHistory.map((r) => (
+          <tr key={r.id}>
+            <td style={{ padding: 8 }}>{r.id}</td>
+            <td style={{ padding: 8 }}>{r.expiresAt ? new Date(r.expiresAt).toLocaleString() : '-'}</td>
+            <td style={{ padding: 8 }}>{r.status}</td>
+            <td style={{ padding: 8 }}>{(r.usedCount ?? 0)} / {(r.maxUses ?? 1)}</td>
+            <td style={{ padding: 8 }}>{r.createdByName ?? r.createdBy ?? '-'}</td>
+            <td style={{ padding: 8 }}>
+              {r.status === 'active' && (
+                <Button
+                  size="small"
+                  color="error"
+                  variant="outlined"
+                  onClick={() => revokeFromHistory(r)}
+                >
+                  Revoke
+                </Button>
+              )}
+            </td>
+          </tr>
+        ))}
+        {qrHistory.length === 0 && (
+          <tr>
+            <td colSpan={6} style={{ padding: 16, opacity: 0.7 }}>
+              No QR history found for this filter.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setQrHistoryOpen(false)}>Close</Button>
+  </DialogActions>
+</Dialog>
+
+
         <DataGrid
-          dataSource={paginatedDrivers}
+        height="100%"
+        ref={gridRef}
+          dataSource={dataForGrid}
           keyExpr="id"
           showBorders={true}
           rowAlternationEnabled={true}
           allowColumnResizing={true}
-          onRowUpdating={(e) => handleUpdateDriver(e.oldData.id, e.newData)}
+          onRowUpdating={(e) =>{
+            e.cancel = true; // stop direct update
+    setPendingUpdate({ id: e.oldData.id, newData: e.newData });
+    setConfirmUpdateOpen(true); // open popup
+  }}
+
           onRowRemoving={(e) => handleDeleteDriver(e.data.id)}
           scrolling={{ mode: 'virtual', useNative: true }}
         >
@@ -710,8 +1026,149 @@ const ManageDriver = () => {
             allowDeleting={true}
             useIcons={true}
           />
+{/* <Column
+  caption="QR"
+  minWidth={240}
+  cellRender={({ data }) => (
+    <div className="flex items-center gap-8">
+      <TextField
+        size="small"
+        type="number"
+        label="Hours"
+        value={qrHours[data.id] || 6}
+onChange={(e) =>
+          setQrHours(prev => ({ ...prev, [data.id]: e.target.value }))
+        }
+        style={{ width: 90 }}
+      />
+      <Button
+        size="small"
+        variant="outlined"
+        disabled={busy}
+        onClick={() => handleGenerateQR(data.id, Number(qrHours[data.id] || 6),data.name)}
+      >
+        Generate QR
+      </Button>
+    </div>
+  )}
+/>
+ */}
+          <Column
+  caption="QR"
+  minWidth={320}
+  cellRender={({ data }) => (
+    <div className="flex items-center gap-3">
+{/*       <TextField
+        size="small"
+        type="number"
+        label="Hours"
+        value={qrHours[data.id] ?? 6}
+        onChange={(e) =>
+          setQrHours((prev) => ({
+            ...prev,
+            [data.id]: e.target.value === "" ? "" : Number(e.target.value),
+          }))
+        }
+        inputProps={{ min: 1 }}
+        style={{ width: 90 }}
+      />
+ */}
+      <TextField
+  size="small"
+  type="number"
+  label="Hours"
+  defaultValue={qrHours[data.id] ?? 6}   // or just 6 if you don’t need to preload
+  inputProps={{ min: 1 }}
+  inputRef={(el) => {
+    if (el) hourRefs.current[data.id] = el;
+    else delete hourRefs.current[data.id];
+  }}
+  onBlur={(e) => {
+    // if user clears it, snap back to 6 so click works
+    if (e.target.value === "") e.target.value = 6;
+  }}
+  onKeyDown={(e) => {
+    // optional: press Enter to generate immediately
+    if (e.key === "Enter") {
+      const val = hourRefs.current[data.id]?.value;
+      const hrs = val === "" ? 6 : Number(val);
+      handleGenerateQR(data.id, hrs, data.name);
+    }
+  }}
+  style={{ width: 90 }}
+/>
+
+      <Button
+        size="small"
+        variant="outlined"
+        disabled={busy}
+        onClick={() =>
+          {
+    const val = hourRefs.current[data.id]?.value;
+    const hrs = val === "" ? 6 : Number(val);
+    handleGenerateQR(data.id, hrs, data.name);     // ✅ pass driver name here
+  }}
+      >
+        Generate QR
+      </Button>
+
+      <Button
+        size="small"
+        variant="text"
+        onClick={async () => {
+          setQrHistoryFor(data.id);
+          setQrHistoryFilter("all");
+          await fetchQrHistory(data.id, "all");
+          setQrHistoryOpen(true);
+        }}
+      >
+        QR History
+      </Button>
+    </div>
+  )}
+/>
+<Dialog
+  open={confirmUpdateOpen}
+  onClose={handleConfirmClose}
+  fullWidth
+  maxWidth="sm"
+>
+  <DialogTitle>Confirm Update / पुष्टि करें</DialogTitle>
+  <DialogContent>
+    <Typography>
+      Do you want to apply changes to driver{" "}
+      <strong>{pendingUpdate?.newData?.name}</strong>? <br />
+      क्या आप ड्राइवर{" "}
+      <strong>{pendingUpdate?.newData?.name}</strong>{" "}
+      में बदलाव करना चाहते हैं?
+    </Typography>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleConfirmClose} color="secondary">
+      No / नहीं
+    </Button>
+    <Button
+      onClick={() => {
+handleUpdateDriver(pendingUpdate.id, pendingUpdate.newData).then(() => {
+      const grid = gridRef.current?.instance;
+      if (grid) grid.saveEditData();   // ✅ commit edit to grid
+    });
+        handleConfirmClose();
+      }}
+      color="primary"
+      variant="contained"
+    >
+      Yes, Update / हाँ, अपडेट करें
+    </Button>
+  </DialogActions>
+</Dialog>
+
+
+
           <SearchPanel visible={true} highlightCaseSensitive={true} />
-          <Paging defaultPageSize={10} />
+{/*           <Paging defaultPageSize={10} />
+           */}
+          <Paging enabled={!showAll} defaultPageSize={10} />
           <Pager showPageSizeSelector={false} showInfo={true} />
 
           {/* Columns */}
@@ -813,6 +1270,22 @@ const ManageDriver = () => {
               displayExpr: "this",
             }}
           minWidth={150}/>
+
+        {/* <Column
+  caption="QR / Sub-Driver"
+  minWidth={220}
+  cellRender={({ data }) => {
+    const isOpen = expandedRowId === data.id;
+    return (
+      <div className="flex items-center gap-2">
+        <Button size="small" variant="outlined" onClick={() => toggleExpand(data.id)}>
+          {isOpen ? "Hide" : "Manage"}
+        </Button>
+      </div>
+    );
+  }}
+/> */}
+
           <Column
             type="buttons"
             buttons={[
@@ -826,6 +1299,7 @@ const ManageDriver = () => {
             ]}
           />
         </DataGrid>
+  {!showAll && (
         <div
           style={{
             display: "flex",
@@ -853,6 +1327,8 @@ const ManageDriver = () => {
           Next
         </Button>
         </div>
+  )}
+
       </div>
     </div>
   );

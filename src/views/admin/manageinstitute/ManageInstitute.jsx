@@ -22,6 +22,7 @@ import {
   Select,
   MenuItem,
   Snackbar,
+  Switch,
   Alert,
   IconButton,
   InputAdornment,
@@ -91,16 +92,19 @@ const ManageInstitute = () => {
   // };
   const [editedInstitutes, setEditedInstitutes] = useState({});
   const [logoPreview, setLogoPreview] = useState(null);
+  const asBool = (v) => v === true || v === 1 || v === "1";
   const token = sessionStorage.getItem("authToken");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
+const [pendingUpdate, setPendingUpdate] = useState(null);
   useEffect(() => {
     const fetchInstitutes = async () => {
       try {
         const response = await axiosInstance.get(
           "institutes"
         );
-        setInstitutes(response.data);
+setInstitutes(Array.isArray(response.data) ? response.data : (response.data?.institutes ?? []));
       } catch (error) {
         console.error("Error fetching institutes:", error);
         setSnackbar({
@@ -320,7 +324,33 @@ const ManageInstitute = () => {
       });
     }
   };
-  
+const handleToggleMapAccess = async (instituteId, currentValue) => {
+  try {
+    // 1) Update on server
+    await axiosInstance.put(
+      `institutes/${instituteId}/map-access`,
+      { mapAccess: !currentValue }
+    );
+
+    // (Optional) optimistic flip for instant feedback
+    setInstitutes(prev =>
+      prev.map(i => (i.id === instituteId ? { ...i, mapAccess: !currentValue } : i))
+    );
+
+    // 2) Pull DB truth so we don't get stuck with null/old values
+    const { data } = await axiosInstance.get("institutes");
+    setInstitutes(Array.isArray(data) ? data : (data?.institutes ?? []));
+
+    setSnackbar({ open: true, message: "Map access updated", severity: "success" });
+  } catch (e) {
+    setSnackbar({
+      open: true,
+      message: e?.response?.data?.message || "Failed to update map access",
+      severity: "error",
+    });
+  }
+};
+
 
   const handleDeleteInstitute = async (id) => {
     try {
@@ -1095,7 +1125,12 @@ const ManageInstitute = () => {
           showBorders={true}
           rowAlternationEnabled={true}
           allowColumnResizing={true}
-          onRowUpdating={(e) => handleUpdateInstitute(e.oldData.id, e.newData)}
+          onRowUpdating={(e) => {
+            e.cancel = true; // stop direct update
+  setPendingUpdate({ id: e.row.data.id, newData: e.row.data });
+  setConfirmUpdateOpen(true); // open popup
+}}
+
           onRowRemoving={(e) => handleDeleteInstitute(e.data.id)}
           scrolling={{ mode: 'virtual', useNative: true }}
         >
@@ -1112,9 +1147,26 @@ const ManageInstitute = () => {
           {/* Columns */}
           {/* <Column dataField="id" caption="ID" allowEditing={false} width={70} /> */}
           <Column dataField="name" caption="Institute Name" minWidth={150}/>
+          <Column dataField="instituteCode" caption="Institute Code" minWidth={150} />
           <Column dataField="contactNumber" caption="Contact Number" minWidth={150}/>
           <Column dataField="email" caption="Email" minWidth={150}/>
           <Column dataField="website" caption="Website" minWidth={150}/>
+          <Column
+  dataField="mapAccess"
+  caption="Map Access"
+  width={140}
+  allowEditing={false}
+  cellRender={(cell) => {
+    const row = cell.data;
+    return (
+      <Switch
+        checked={asBool(row.mapAccess)}
+  onChange={() => handleToggleMapAccess(row.id, asBool(row.mapAccess))}
+        inputProps={{ "aria-label": "toggle-map-access" }}
+      />
+    );
+  }}
+/>
           <Column
             dataField="logo"
             caption="Logo"
@@ -1212,8 +1264,10 @@ const ManageInstitute = () => {
               {
                 hint: "Save Changes",
                 icon: "save",
-                onClick: (e) =>
-                  handleUpdateInstitute(e.row.data.id, e.row.data), // Save specific row
+                onClick: (e) =>{
+setPendingUpdate({ id: e.row.data.id, newData: e.row.data });
+  setConfirmUpdateOpen(true);             
+                },
               },
             ]}
           />
@@ -1242,6 +1296,39 @@ const ManageInstitute = () => {
           </Button>
         </div>
       </div>
+      <Dialog
+  open={confirmUpdateOpen}
+  onClose={() => setConfirmUpdateOpen(false)}
+  fullWidth
+  maxWidth="sm"
+>
+  <DialogTitle>Confirm Update / पुष्टि करें</DialogTitle>
+  <DialogContent>
+    <Typography>
+      Do you want to apply changes to institute{" "}
+      <strong>{pendingUpdate?.newData?.name}</strong>? <br />
+      क्या आप संस्थान{" "}
+      <strong>{pendingUpdate?.newData?.name}</strong>{" "}
+      में बदलाव करना चाहते हैं?
+    </Typography>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setConfirmUpdateOpen(false)} color="secondary">
+      No / नहीं
+    </Button>
+    <Button
+      onClick={() => {
+        handleUpdateInstitute(pendingUpdate.id, pendingUpdate.newData);
+        setConfirmUpdateOpen(false);
+      }}
+      color="primary"
+      variant="contained"
+    >
+      Yes, Update / हाँ, अपडेट करें
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </div>
   );
 };
