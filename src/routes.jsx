@@ -18,6 +18,9 @@ import Advertisements from "./views/admin/advertisements/Advertisements.jsx";
 import Enquires from "./views/admin/Enquires.jsx";
 import { getUser } from "./config/authService.js";
 import BusNotifications from "./views/admin/managebusnotifications/ManageBusNotifications.jsx";
+import AttendanceManagement from "./pages/AttendanceManagement.jsx";
+import { MdOutlineQrCode2 } from "react-icons/md";
+
 
 export default function routes() {
   const user = getUser();
@@ -104,6 +107,13 @@ export default function routes() {
             icon: <MdHome className="h-6 w-6" />,
             component: <Advertisements />,
           },
+                    {
+    name: "Attendance Management",
+    layout: "/admin",
+    path: "attendance",
+    icon: <MdOutlineQrCode2 className="h-6 w-6" />,
+    component: <AttendanceManagement/>,
+  },
           {
             name: "Enquires",
             layout: "/admin",
@@ -192,6 +202,13 @@ export default function routes() {
             icon: <MdNotifications className="h-6 w-6" />,
             component: < BusNotifications />,
           },
+                    {
+    name: "Attendance Management",
+    layout: "/admin",
+    path: "attendance",
+    icon: <MdOutlineQrCode2 className="h-6 w-6" />,
+    component: <AttendanceManagement/>,
+  },
           {
             name: "My Profile",
             layout: "/admin",
