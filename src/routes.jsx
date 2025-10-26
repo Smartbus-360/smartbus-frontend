@@ -20,6 +20,8 @@ import { getUser } from "./config/authService.js";
 import BusNotifications from "./views/admin/managebusnotifications/ManageBusNotifications.jsx";
 import AttendanceManagement from "./pages/AttendanceManagement.jsx";
 import { MdOutlineQrCode2 } from "react-icons/md";
+import ManageAttendanceTaker from "./views/admin/manageattendancetaker/ManageAttendanceTaker.jsx";
+import { MdPeopleAlt } from "react-icons/md";
 
 
 export default function routes() {
@@ -93,6 +95,14 @@ export default function routes() {
             icon: <MdGroupAdd className="h-6 w-6" />,
             component: <ManageUser />,
           },
+        {
+  name: "Manage Attendance-Takers",
+  layout: "/admin",
+  path: "manage/attendance-takers",
+  icon: <MdPeopleAlt className="h-6 w-6" />,
+  component: <ManageAttendanceTaker />,
+},
+
           {
             name: "Replace Bus",
             layout: "/admin",
@@ -209,6 +219,14 @@ export default function routes() {
     icon: <MdOutlineQrCode2 className="h-6 w-6" />,
     component: <AttendanceManagement/>,
   },
+        {
+  name: "Manage Attendance-Takers",
+  layout: "/admin",
+  path: "manage/attendance-takers",
+  icon: <MdPeopleAlt className="h-6 w-6" />,
+  component: <ManageAttendanceTaker />,
+},
+
           {
             name: "My Profile",
             layout: "/admin",
