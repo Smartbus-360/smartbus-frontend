@@ -20,7 +20,7 @@ import { getUser } from "./config/authService.js";
 import BusNotifications from "./views/admin/managebusnotifications/ManageBusNotifications.jsx";
 import AttendanceManagement from "./pages/AttendanceManagement.jsx";
 import { MdOutlineQrCode2 } from "react-icons/md";
-import ManageAttendanceTaker from "./pages/ManageAttendanceTaker.js";
+import ManageAttendanceTakers from "./pages/ManageAttendanceTakers.js";
 import { MdPeopleAlt } from "react-icons/md";
 
 
