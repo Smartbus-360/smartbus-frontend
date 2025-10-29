@@ -100,7 +100,7 @@ export default function routes() {
   layout: "/admin",
   path: "manage/attendance-takers",
   icon: <MdPeopleAlt className="h-6 w-6" />,
-  component: <ManageAttendanceTaker />,
+  component: <ManageAttendanceTakers />,
 },
 
           {
@@ -224,7 +224,7 @@ export default function routes() {
   layout: "/admin",
   path: "manage/attendance-takers",
   icon: <MdPeopleAlt className="h-6 w-6" />,
-  component: <ManageAttendanceTaker />,
+  component: <ManageAttendanceTakers />,
 },
 
           {
