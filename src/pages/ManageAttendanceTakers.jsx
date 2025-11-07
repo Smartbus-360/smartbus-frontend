@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Input, Tag, message, Space, Spin } from "antd";
+import { Table, Button, Modal, Form, Input, Tag, message, Space, Spin,QRCode } from "antd";
 import API from "../api/axios"; // ✅ axios instance
 
 export default function ManageAttendanceTakers() {
@@ -8,6 +8,10 @@ export default function ManageAttendanceTakers() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTaker, setEditingTaker] = useState(null);
   const [form] = Form.useForm();
+
+  const [qrModal, setQrModal] = useState({ visible: false, data: null });
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrStatus, setQrStatus] = useState({}); 
 
   // ✅ Fetch all attendance-takers
   const fetchTakers = async () => {
@@ -64,6 +68,45 @@ export default function ManageAttendanceTakers() {
     });
   };
 
+  const handleGenerateQR = async (takerId) => {
+    setQrLoading(true);
+    try {
+      const res = await API.post("/attendance-takers/generate-qr", {
+        attendanceTakerId: takerId,
+      });
+      setQrModal({
+        visible: true,
+        data: res.data.data, // { token, qrData }
+      });
+      message.success("QR generated successfully");
+      setQrStatus((prev) => ({ ...prev, [takerId]: true }));
+    } catch (err) {
+      message.error("Failed to generate QR");
+    } finally {
+      setQrLoading(false);
+    }
+  };
+
+  const handleRevokeQR = async (takerId) => {
+    Modal.confirm({
+      title: "Revoke QR access for this Attendance Taker?",
+      okText: "Yes, Revoke",
+      okType: "danger",
+      onOk: async () => {
+        try {
+          await API.post("/attendance-takers/revoke-qr", {
+            attendanceTakerId: takerId,
+          });
+          message.success("QR revoked successfully");
+          setQrStatus((prev) => ({ ...prev, [takerId]: false }));
+        } catch (err) {
+          message.error("Failed to revoke QR");
+        }
+      },
+    });
+  };
+
+
   // ✅ Open Add/Edit Modal
   const openModal = (record = null) => {
     setEditingTaker(record);
@@ -97,6 +140,37 @@ export default function ManageAttendanceTakers() {
         <Tag color={status === "Available" ? "green" : "volcano"}>
           {status || "Unknown"}
         </Tag>
+      ),
+    },
+    {
+      title: "QR Status",
+      key: "qrstatus",
+      render: (_, record) => (
+        <Tag color={qrStatus[record.id] ? "green" : "red"}>
+          {qrStatus[record.id] ? "Active" : "Revoked"}
+        </Tag>
+      ),
+    },
+    {
+      title: "QR Actions",
+      key: "qractions",
+      render: (_, record) => (
+        <Space>
+          <Button
+            loading={qrLoading}
+            type="link"
+            onClick={() => handleGenerateQR(record.id)}
+          >
+            Generate QR
+          </Button>
+          <Button
+            danger
+            type="link"
+            onClick={() => handleRevokeQR(record.id)}
+          >
+            Revoke
+          </Button>
+        </Space>
       ),
     },
     {
@@ -177,6 +251,36 @@ export default function ManageAttendanceTakers() {
             <Input placeholder="Enter phone number" />
           </Form.Item>
         </Form>
+      </Modal>
+            {/* ✅ QR Modal */}
+      <Modal
+        open={qrModal.visible}
+        onCancel={() => setQrModal({ visible: false, data: null })}
+        footer={null}
+        title="Attendance-Taker QR Code"
+      >
+        {qrModal.data ? (
+          <div style={{ textAlign: "center" }}>
+            <QRCode value={qrModal.data.qrData} size={200} />
+            <p style={{ marginTop: 10 }}>
+              <strong>Token:</strong> {qrModal.data.token}
+            </p>
+            <Button
+  style={{ marginTop: 15 }}
+  onClick={() => {
+    const canvas = document.querySelector("canvas");
+    const link = document.createElement("a");
+    link.download = `attendance_taker_qr_${qrModal.data.token}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }}
+>
+  ⬇️ Download QR
+</Button>
+          </div>
+        ) : (
+          <p>Loading QR...</p>
+        )}
       </Modal>
     </div>
   );
