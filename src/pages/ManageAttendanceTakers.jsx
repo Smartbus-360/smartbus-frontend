@@ -69,84 +69,44 @@ export default function ManageAttendanceTakers() {
     });
   };
 
-  // const handleGenerateQR = async (takerId) => {
-  //   setQrLoading(true);
-  //   try {
-  //     const res = await API.post("/attendance-takers/generate-qr", {
-  //       attendanceTakerId: takerId,
-  //     });
-  //     setQrModal({
-  //       visible: true,
-  //       data: res.data.data, // { token, qrData }
-  //     });
-  //     message.success("QR generated successfully");
-  //     setQrStatus((prev) => ({ ...prev, [takerId]: true }));
-  //   } catch (err) {
-  //     message.error("Failed to generate QR");
-  //   } finally {
-  //     setQrLoading(false);
-  //   }
-  // };
   const handleGenerateQR = async (takerId) => {
-  setQrLoading(true);
-  try {
-    const res = await API.post("/attendance-taker/generate-qr", {
-      attendanceTakerId: takerId,
+    setQrLoading(true);
+    try {
+      const res = await API.post("/attendance-takers/generate-qr", {
+        attendanceTakerId: takerId,
+      });
+      setQrModal({
+        visible: true,
+        data: res.data.data, // { token, qrData }
+      });
+      message.success("QR generated successfully");
+      setQrStatus((prev) => ({ ...prev, [takerId]: true }));
+    } catch (err) {
+      message.error("Failed to generate QR");
+    } finally {
+      setQrLoading(false);
+    }
+  };
+
+
+  const handleRevokeQR = async (takerId) => {
+    Modal.confirm({
+      title: "Revoke QR access for this Attendance Taker?",
+      okText: "Yes, Revoke",
+      okType: "danger",
+      onOk: async () => {
+        try {
+          await API.post("/attendance-takers/revoke-qr", {
+            attendanceTakerId: takerId,
+          });
+          message.success("QR revoked successfully");
+          setQrStatus((prev) => ({ ...prev, [takerId]: false }));
+        } catch (err) {
+          message.error("Failed to revoke QR");
+        }
+      },
     });
-    console.log("QR API Response:", res.data);
-    setQrModal({
-      visible: true,
-      data: res.data.data, // contains { token, qrData }
-    });
-    message.success("QR generated successfully");
-    setQrStatus((prev) => ({ ...prev, [takerId]: true }));
-  } catch (err) {
-    console.error("QR generate error:", err);
-    message.error("Failed to generate QR");
-  } finally {
-    setQrLoading(false);
-  }
-};
-
-
-  // const handleRevokeQR = async (takerId) => {
-  //   Modal.confirm({
-  //     title: "Revoke QR access for this Attendance Taker?",
-  //     okText: "Yes, Revoke",
-  //     okType: "danger",
-  //     onOk: async () => {
-  //       try {
-  //         await API.post("/attendance-takers/revoke-qr", {
-  //           attendanceTakerId: takerId,
-  //         });
-  //         message.success("QR revoked successfully");
-  //         setQrStatus((prev) => ({ ...prev, [takerId]: false }));
-  //       } catch (err) {
-  //         message.error("Failed to revoke QR");
-  //       }
-  //     },
-  //   });
-  // };
-
-const handleRevokeQR = async (takerId) => {
-  Modal.confirm({
-    title: "Revoke QR access for this Attendance Taker?",
-    okText: "Yes, Revoke",
-    okType: "danger",
-    onOk: async () => {
-      try {
-        await API.post("/attendance-taker/revoke-qr", {
-          attendanceTakerId: takerId,
-        });
-        message.success("QR revoked successfully");
-        setQrStatus((prev) => ({ ...prev, [takerId]: false }));
-      } catch (err) {
-        console.error("QR revoke error:", err);
-        message.error("Failed to revoke QR");
-      }
-    },
-  });
-};
+  };
 
   // ✅ Open Add/Edit Modal
   const openModal = (record = null) => {
