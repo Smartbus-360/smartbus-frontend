@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Modal, Form, Input, Tag, message, Space, Spin } from "antd";
-import { QRCode } from "antd";
+import { QRCode ,Select} from "antd";
 import API from "../api/axios"; // ✅ axios instance
 
 export default function ManageAttendanceTakers() {
@@ -134,6 +134,18 @@ export default function ManageAttendanceTakers() {
       key: "phone",
     },
     {
+  title: "Role",
+  dataIndex: "role",
+  key: "role",
+  render: (role) =>
+    role === "teacher" ? (
+      <Tag color="blue">Teacher</Tag>
+    ) : (
+      <Tag color="purple">Taker</Tag>
+    ),
+},
+
+    {
       title: "Status",
       dataIndex: "availabilityStatus",
       key: "availabilityStatus",
@@ -251,6 +263,17 @@ export default function ManageAttendanceTakers() {
           <Form.Item label="Phone" name="phone">
             <Input placeholder="Enter phone number" />
           </Form.Item>
+          <Form.Item
+  label="Role"
+  name="role"
+  rules={[{ required: true, message: "Please select a role" }]}
+>
+  <Select placeholder="Select role">
+    <Select.Option value="taker">Attendance Taker</Select.Option>
+    <Select.Option value="teacher">Teacher</Select.Option>
+  </Select>
+</Form.Item>
+
         </Form>
       </Modal>
             {/* ✅ QR Modal */}
