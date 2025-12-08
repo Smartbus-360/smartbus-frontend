@@ -19,7 +19,14 @@ export default function ManageAttendanceTakers() {
     setLoading(true);
     try {
       const res = await API.get("/attendance-takers");
-      setTakers(res.data);
+      // setTakers(res.data);
+      setTakers(
+  res.data.map(item => ({
+    ...item,
+    role: item.role || "taker"
+  }))
+);
+
     } catch (err) {
       message.error("Failed to load attendance-takers");
     } finally {
@@ -112,7 +119,13 @@ export default function ManageAttendanceTakers() {
   const openModal = (record = null) => {
     setEditingTaker(record);
     form.resetFields();
-    if (record) form.setFieldsValue(record);
+    // if (record) form.setFieldsValue(record);
+    if (record) {
+  form.setFieldsValue({
+    ...record,
+    role: record.role || "taker",
+  });
+}
     setIsModalOpen(true);
   };
 
