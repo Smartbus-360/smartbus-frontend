@@ -614,7 +614,7 @@ const fetchStopReport = async (driverId) => {
   try {
     setReportLoading(true);
     const { data } = await axiosInstance.get(
-      "/admin/driver-stop-report",
+      "/driver-stop-report",
       { params: { driverId } }
     );
 
@@ -1418,7 +1418,7 @@ handleUpdateDriver(pendingUpdate.id, pendingUpdate.newData).then(() => {
             variant="contained"
             onClick={() =>
               window.open(
-                `/admin/driver-stop-report/pdf?driverId=${reportData.driver.id}&date=${reportData.date}`,
+                `/driver-stop-report/pdf?driverId=${reportData.driver.id}&date=${reportData.date}`,
                 "_blank"
               )
             }
@@ -1431,7 +1431,7 @@ handleUpdateDriver(pendingUpdate.id, pendingUpdate.newData).then(() => {
             color="success"
             onClick={() =>
               window.open(
-                `/admin/driver-stop-report/excel?driverId=${reportData.driver.id}&date=${reportData.date}`,
+                `/driver-stop-report/excel?driverId=${reportData.driver.id}&date=${reportData.date}`,
                 "_blank"
               )
             }
