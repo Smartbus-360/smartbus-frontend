@@ -114,6 +114,10 @@ const [qrHistoryFor, setQrHistoryFor] = useState(null);
   const hourRefs = useRef({});
   const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
 const [pendingUpdate, setPendingUpdate] = useState(null);
+  const [reportOpen, setReportOpen] = useState(false);
+const [reportData, setReportData] = useState(null);
+const [reportLoading, setReportLoading] = useState(false);
+
 
 
 
@@ -605,6 +609,26 @@ const handleRevokeQR = async (qrId) => {
   if (!window.confirm('Revoke this active QR?')) return;
   await handleRevokeQR(row.id);
   await fetchQrHistory(qrHistoryFor, qrHistoryFilter);
+};
+const fetchStopReport = async (driverId) => {
+  try {
+    setReportLoading(true);
+    const { data } = await axiosInstance.get(
+      "/admin/driver-stop-report",
+      { params: { driverId } }
+    );
+
+    setReportData(data);
+    setReportOpen(true);
+  } catch (err) {
+    setSnackbar({
+      open: true,
+      message: err?.response?.data?.message || "Failed to load report",
+      severity: "error",
+    });
+  } finally {
+    setReportLoading(false);
+  }
 };
 
 
@@ -1285,6 +1309,19 @@ handleUpdateDriver(pendingUpdate.id, pendingUpdate.newData).then(() => {
     );
   }}
 /> */}
+<Column
+  caption="Stop Report"
+  minWidth={160}
+  cellRender={({ data }) => (
+    <Button
+      size="small"
+      variant="outlined"
+      onClick={() => fetchStopReport(data.id)}
+    >
+      View Report
+    </Button>
+  )}
+/>
 
           <Column
             type="buttons"
@@ -1330,6 +1367,88 @@ handleUpdateDriver(pendingUpdate.id, pendingUpdate.newData).then(() => {
   )}
 
       </div>
+      <Dialog open={reportOpen} onClose={() => setReportOpen(false)} maxWidth="md" fullWidth>
+  <DialogTitle>Driver Stop Report</DialogTitle>
+  <DialogContent dividers>
+
+    {reportLoading && <p>Loading report…</p>}
+
+    {!reportLoading && reportData && (
+      <>
+        <h3 className="text-lg font-semibold">
+          {reportData?.driver?.name} — Bus {reportData?.driver?.busNumber}
+        </h3>
+        <p>Date: {reportData.date}</p>
+        <p>Route: {reportData.route?.name}</p>
+
+        <div className="mt-3 bg-gray-100 p-3 rounded">
+          <p><b>Total Stops:</b> {reportData.totals.totalStops}</p>
+          <p><b>Reached:</b> {reportData.totals.reachedStops}</p>
+          <p><b>Pending:</b> {reportData.totals.pendingStops}</p>
+          <p><b>Progress:</b> {reportData.totals.progressPercentage}%</p>
+        </div>
+
+        <h4 className="mt-4 font-semibold">Stop Details</h4>
+
+        <table className="w-full mt-2 border-collapse">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border p-2">Order</th>
+              <th className="border p-2">Stop Name</th>
+              <th className="border p-2">Phase</th>
+              <th className="border p-2">Reached</th>
+              <th className="border p-2">Reach Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reportData.stops.map((s) => (
+              <tr key={s.stopId}>
+                <td className="border p-2">{s.stopOrder}</td>
+                <td className="border p-2">{s.stopName}</td>
+                <td className="border p-2">{s.phase}</td>
+                <td className="border p-2">{s.reached ? "✔" : "✗"}</td>
+                <td className="border p-2">{s.reachTime || "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="flex gap-3 mt-4">
+          <Button
+            variant="contained"
+            onClick={() =>
+              window.open(
+                `/admin/driver-stop-report/pdf?driverId=${reportData.driver.id}&date=${reportData.date}`,
+                "_blank"
+              )
+            }
+          >
+            Download PDF
+          </Button>
+
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() =>
+              window.open(
+                `/admin/driver-stop-report/excel?driverId=${reportData.driver.id}&date=${reportData.date}`,
+                "_blank"
+              )
+            }
+          >
+            Download Excel
+          </Button>
+        </div>
+      </>
+    )}
+
+  </DialogContent>
+
+  <DialogActions>
+    <Button onClick={() => setReportOpen(false)}>Close</Button>
+  </DialogActions>
+</Dialog>
+
     </div>
   );
 };
