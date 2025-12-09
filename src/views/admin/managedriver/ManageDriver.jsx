@@ -1468,14 +1468,14 @@ handleUpdateDriver(pendingUpdate.id, pendingUpdate.newData).then(() => {
         </table>
 
         <div className="flex gap-3 mt-4">
-<Button
+{/* <Button
   variant="contained"
   onClick={() =>
     downloadPDF(reportData.driver.id, reportData.date)
   }
 >
   Download PDF
-</Button>
+</Button> */}
 
 <Button
   variant="contained"
