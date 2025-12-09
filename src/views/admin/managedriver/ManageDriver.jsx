@@ -630,6 +630,60 @@ const fetchStopReport = async (driverId) => {
     setReportLoading(false);
   }
 };
+const downloadPDF = async (driverId, date) => {
+  try {
+    const token = sessionStorage.getItem("authToken");
+
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/admin/driver-stop-report/pdf?driverId=${driverId}&date=${date}`,
+      {
+        responseType: "blob",
+        headers: { Authorization: `Bearer ${token}` },
+        validateStatus: () => true
+      }
+    );
+
+    const blob = new Blob([res.data], { type: "application/pdf" });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `driver-report-${driverId}.pdf`;
+    a.click();
+  } catch (e) {
+    console.error(e);
+    alert("Failed to download PDF");
+  }
+};
+
+const downloadExcel = async (driverId, date) => {
+  try {
+    const token = sessionStorage.getItem("authToken");
+
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/admin/driver-stop-report/excel?driverId=${driverId}&date=${date}`,
+      {
+        responseType: "blob",
+        headers: { Authorization: `Bearer ${token}` },
+        validateStatus: () => true
+      }
+    );
+
+    const blob = new Blob([res.data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `driver-report-${driverId}.xlsx`;
+    a.click();
+  } catch (e) {
+    console.error(e);
+    alert("Failed to download Excel");
+  }
+};
 
 
 
@@ -1414,30 +1468,25 @@ handleUpdateDriver(pendingUpdate.id, pendingUpdate.newData).then(() => {
         </table>
 
         <div className="flex gap-3 mt-4">
-          <Button
-            variant="contained"
-            onClick={() =>
-              window.open(
-                `/driver-stop-report/pdf?driverId=${reportData.driver.id}&date=${reportData.date}`,
-                "_blank"
-              )
-            }
-          >
-            Download PDF
-          </Button>
+<Button
+  variant="contained"
+  onClick={() =>
+    downloadPDF(reportData.driver.id, reportData.date)
+  }
+>
+  Download PDF
+</Button>
 
-          <Button
-            variant="contained"
-            color="success"
-            onClick={() =>
-              window.open(
-                `/driver-stop-report/excel?driverId=${reportData.driver.id}&date=${reportData.date}`,
-                "_blank"
-              )
-            }
-          >
-            Download Excel
-          </Button>
+<Button
+  variant="contained"
+  color="success"
+  onClick={() =>
+    downloadExcel(reportData.driver.id, reportData.date)
+  }
+>
+  Download Excel
+</Button>
+
         </div>
       </>
     )}
