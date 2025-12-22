@@ -38,6 +38,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import SchoolIcon from "@mui/icons-material/School";
 import axiosInstance from "../../../api/axios";
+import { Typography } from "@mui/material";
 
 const convertUrlToFile = async (url, fileName = "logo.png") => {
   const response = await fetch(url);
