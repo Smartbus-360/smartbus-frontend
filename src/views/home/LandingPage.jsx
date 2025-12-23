@@ -48,7 +48,8 @@ const LandingPage = () => {
               </a>
             </p>
             <p>
-              <span><Link to="/home/privacy-policy" className="font-semibold">Privacy Policy</Link></span> | <span><Link to="/home/terms-and-conditions" className="font-semibold">Terms of Service</Link></span>
+              <span><Link to="/home/privacy-policy" className="font-semibold">Privacy Policy</Link></span> | <span><Link to="/home/terms-and-conditions" className="font-semibold">Terms of Service</Link></span>|
+              <span><Link to="/home/shipping-policy" className="font-semibold">Shipping Policy</Link></span>|  <span><Link to="/home/contact-us" className="font-semibold">Contact-Us</Link></span>|<span><Link to="/home/refund-policy" className="font-semibold">Refund Policy</Link></span>
             </p>
           </div>
           <div className="mt-4 text-sm text-gray-400">
