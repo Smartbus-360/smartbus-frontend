@@ -20,6 +20,9 @@ import MissionAndVision from "./views/home/MissionAndVision";
 import WhySmartBus from "./views/home/WhySmartbus";
 import UniversityDetails from "./views/search/UniversityDetails";
 import VerificationPage from './components/student/UserVerification';
+import RefundPolicy from "./views/home/RefundPolicy";
+import ContactUs from "./views/home/ContactUs";
+import ShippingPolicy from "./views/home/ShippingPolicy";
 
 const App = () => {
   return (
@@ -38,6 +41,9 @@ const App = () => {
         <Route path="why-smartbus360" element={<WhySmartBus />} />
         <Route path="join-us" element={<JoinUs />} />
         <Route path="student-login" element={<LoginForm />} />
+<Route path="/refund-policy" element={<RefundPolicy />} />
+<Route path="/contact-us" element={<ContactUs />} />
+<Route path="/shipping-policy" element={<ShippingPolicy />} />
 
       </Route>
 
