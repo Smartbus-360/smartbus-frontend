@@ -29,6 +29,9 @@ const App = () => {
     <Routes>
       {/* Landing Page */}
       <Route path="/" element={<LandingPage />} />
+<Route path="/refund-policy" element={<RefundPolicy />} />
+<Route path="/contact-us" element={<ContactUs />} />
+<Route path="/shipping-policy" element={<ShippingPolicy />} />
 
       {/* Home Routes */}
       <Route path="home/*" element={<HomeLayout />}>
@@ -41,9 +44,6 @@ const App = () => {
         <Route path="why-smartbus360" element={<WhySmartBus />} />
         <Route path="join-us" element={<JoinUs />} />
         <Route path="student-login" element={<LoginForm />} />
-<Route path="/refund-policy" element={<RefundPolicy />} />
-<Route path="/contact-us" element={<ContactUs />} />
-<Route path="/shipping-policy" element={<ShippingPolicy />} />
 
       </Route>
 
