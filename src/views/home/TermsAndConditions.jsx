@@ -22,7 +22,7 @@ const TermsAndConditions = () => {
         </div>
 
         <div className="mb-6">
-          <h2 className="mb-4 text-2xl font-semibold">2. Scope of Services</h2>
+          <h2 className="mb-4 text-2xl font-semibold">2. Scope of Services/Subscription Terms</h2>
           <p>
             SmartBus360 provides location tracking, real-time updates, and
             related features on Android, iOS, and web portals. The platform
@@ -47,7 +47,7 @@ const TermsAndConditions = () => {
 
         <div className="mb-6">
           <h2 className="mb-4 text-2xl font-semibold">
-            3. User Responsibilities
+            3. School/College/User Responsibilities
           </h2>
           <ul className="list-disc pl-5">
             <li>
@@ -90,7 +90,8 @@ const TermsAndConditions = () => {
 
         <div className="mb-6">
           <h2 className="mb-4 text-2xl font-semibold">
-            5. Limitation of Liability
+            5. Service Usage Rules
+            {/* Limitation of Liability */}
           </h2>
           <p>
             SmartBus360 is provided "as is" without warranties of any kind,
@@ -133,7 +134,7 @@ const TermsAndConditions = () => {
         </div>
 
         <div className="mb-6">
-          <h2 className="mb-4 text-2xl font-semibold">8. Governing Law</h2>
+          <h2 className="mb-4 text-2xl font-semibold">8. Governing Law (India)</h2>
           <p>
             These Terms and Conditions are governed by applicable laws in the
             jurisdiction of the user’s residence or use of the application.
