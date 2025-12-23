@@ -13,4 +13,4 @@ export default function AuthLayout() {
 
 
 
-export default HomeLayout;
+// export default HomeLayout;
