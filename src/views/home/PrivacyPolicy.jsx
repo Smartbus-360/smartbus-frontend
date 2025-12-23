@@ -40,7 +40,7 @@ const PrivacyPolicy = () => {
         </div>
 
         <div className="mb-6">
-          <h2 className="mb-4 text-2xl font-semibold">2. Data Usage</h2>
+          <h2 className="mb-4 text-2xl font-semibold">2. App & Website Data Usage</h2>
           <p>The data collected is used to:</p>
           <ul className="mt-2 list-disc pl-5">
             <li>Provide tracking services and enable real-time updates.</li>
@@ -54,7 +54,7 @@ const PrivacyPolicy = () => {
         </div>
 
         <div className="mb-6">
-          <h2 className="mb-4 text-2xl font-semibold">3. Data Sharing</h2>
+          <h2 className="mb-4 text-2xl font-semibold">3. Student Data Protection</h2>
           <p>
             We do not sell user data. Data may be shared in the following
             circumstances:
