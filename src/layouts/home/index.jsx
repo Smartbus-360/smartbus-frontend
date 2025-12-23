@@ -1,12 +1,31 @@
-import React from 'react';
+// import React from 'react';
+// import { Outlet } from "react-router-dom";
+
+
+// export default function AuthLayout() {
+
+//   return (
+//     <div>
+//       <Outlet />
+//     </div>
+//   );
+// }
+
 import { Outlet } from "react-router-dom";
+import Navbar from "../../components/navbar/home";
+import Footer from "../../components/footer/Footer";
 
-
-export default function AuthLayout() {
-
+function HomeLayout() {
   return (
-    <div>
+    <>
+      <Navbar />
+
+      {/* ✅ THIS WAS MISSING */}
       <Outlet />
-    </div>
+
+      <Footer />
+    </>
   );
 }
+
+export default HomeLayout;
