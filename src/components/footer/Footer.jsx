@@ -18,11 +18,11 @@ const Footer = () => {
   return (
     <div className="w-full text-center px-4 pb-8 pt-4 text-sm text-gray-600">
       <div className="flex flex-wrap justify-center gap-4 mb-3">
-        <Link to="/refund-policy">Refund Policy</Link>
-        <Link to="/shipping-policy">Shipping Policy</Link>
+        <Link to="/home/refund-policy">Refund Policy</Link>
+        <Link to="/home/shipping-policy">Shipping Policy</Link>
         <Link to="/home/privacy-policy">Privacy Policy</Link>
         <Link to="/home/terms-and-conditions">Terms & Conditions</Link>
-        <Link to="/contact-us">Contact Us</Link>
+        <Link to="/home/contact-us">Contact Us</Link>
       </div>
 
       <p>© SMARTBUS360. All Rights Reserved.</p>
