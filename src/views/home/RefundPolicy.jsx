@@ -8,7 +8,7 @@ const RefundPolicy = () => {
 
       <p className="mb-3">
         SMARTBUS360 is a subscription-based digital service offering monthly plans
-        ranging between ₹10 and ₹20.
+        ranging ₹20/user.
       </p>
 
       <p className="mb-3">
