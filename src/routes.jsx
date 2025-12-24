@@ -22,6 +22,7 @@ import AttendanceManagement from "./pages/AttendanceManagement.jsx";
 import { MdOutlineQrCode2 } from "react-icons/md";
 import ManageAttendanceTakers from "./pages/ManageAttendanceTakers.jsx";
 import { MdPeopleAlt } from "react-icons/md";
+import MapSubscriptionAdmin from "./pages/MapSubscriptionAdmin.jsx";
 
 
 export default function routes() {
@@ -138,6 +139,13 @@ export default function routes() {
             icon: <MdNotifications className="h-6 w-6" />,
             component: <ManageNotifications />,
           },
+                  {
+  name: "Manage Map Access",
+  layout: "/admin",
+  path: "map-subscription",
+  icon: <MdMap className="h-6 w-6" />,
+  component: <MapSubscriptionAdmin />,
+},
           {
             name: "My Profile",
             layout: "/admin",
