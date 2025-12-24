@@ -174,8 +174,8 @@ function Navbar() {
             >
               Login
             </button>
-            <button
-  onClick={() => navigate("/home/student-login")}
+             <button
+  onClick={() => navigate("/student/login")}
   className="rounded-lg bg-blue-500 px-8 py-3 text-white shadow-lg transition-all duration-300 hover:bg-blue-600"
 >
   Student Login
@@ -325,8 +325,8 @@ function Navbar() {
 </button>
 
 {/* Student Login Button */}
-<button
-  onClick={() => navigate("home/student-login")}
+ <button
+  onClick={() => navigate("/student/login")}
   className="rounded-lg bg-blue-500 px-8 py-3 text-white shadow-lg transition-all duration-300 hover:bg-blue-600"
 >
   Student Login
