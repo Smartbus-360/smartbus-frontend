@@ -125,8 +125,10 @@
 import { useEffect, useState } from "react";
 import axios from "../api/studentAxios";
 import jsPDF from "jspdf";
+import { useNavigate } from "react-router-dom";
 
 export default function StudentMapSubscription() {
+    const navigate = useNavigate();   // 👈 ADD THIS
   const token = localStorage.getItem("studentToken");
 
   const [access, setAccess] = useState(null);
@@ -437,6 +439,16 @@ const startAutoPay = async () => {
   };
 
   new window.Razorpay(options).open();
+};
+const handleLogout = () => {
+  // 🔐 Clear student auth data
+  localStorage.removeItem("studentToken");
+  localStorage.removeItem("studentId");
+  localStorage.removeItem("studentName");
+  localStorage.removeItem("studentEmail");
+
+  // 🚀 Redirect to login
+  navigate("/student/login");   // or "/student/login" based on your router
 };
 
   // return (
