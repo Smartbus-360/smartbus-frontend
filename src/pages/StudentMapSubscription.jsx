@@ -514,6 +514,13 @@ const handleLogout = () => {
         Student Map Subscription
       </h2>
 
+      <button
+    onClick={handleLogout}
+    className="text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-md"
+  >
+    Logout
+  </button>
+
       {/* Access Status */}
       {access?.allowed ? (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 flex justify-between items-center">
