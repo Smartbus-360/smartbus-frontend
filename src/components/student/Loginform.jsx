@@ -89,7 +89,7 @@ export default function StudentLogin() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/login/user",
+        "https://api.smartbus360.com/api/login/user",
         {
           username: formData.username,
           password: formData.password,
