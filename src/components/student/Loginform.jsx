@@ -71,7 +71,7 @@
 
 
 // StudentLogin.jsx
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -79,6 +79,15 @@ export default function StudentLogin() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const navigate = useNavigate();
+
+useEffect(() => {
+  const token = localStorage.getItem("studentToken");
+  if (token) {
+    navigate("/student/map", { replace: true });
+  }
+}, []);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
