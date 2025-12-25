@@ -80,7 +80,7 @@ export default function StudentLogin() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
 useEffect(() => {
   const token = localStorage.getItem("studentToken");
