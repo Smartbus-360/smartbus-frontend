@@ -386,6 +386,7 @@ const startOneTimePayment = async () => {
     description: "Map Subscription",
 
     handler: async (response) => {
+        try {
       await axios.post(
         "https://api.smartbus360.com/api/payment/verify-map-subscription",
         {
@@ -401,6 +402,11 @@ const startOneTimePayment = async () => {
       setShowSuccess(true);
       await checkAccess();
       await fetchHistory();
+              alert("Payment successful. Map activated.");
+} catch (err) {
+    alert("Payment done but activation failed");
+  }
+
     }
   };
 
