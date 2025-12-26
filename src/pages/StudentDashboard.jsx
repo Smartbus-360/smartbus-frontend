@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-
-
-useEffect(() => {
-  const token = localStorage.getItem("studentToken");
-  if (!token) navigate("/student/login");
-}, []);
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
+
+  // ✅ useEffect MUST be inside the component
+  useEffect(() => {
+    const token = localStorage.getItem("studentToken");
+    if (!token) {
+      navigate("/student/login", { replace: true });
+    }
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("studentToken");
@@ -29,7 +30,6 @@ export default function StudentDashboard() {
 
         <div className="space-y-4">
 
-          {/* 🔑 Update Password */}
           <button
             onClick={() => navigate("/student/update-password")}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-lg font-medium"
@@ -37,7 +37,6 @@ export default function StudentDashboard() {
             Update Password
           </button>
 
-          {/* ❤️ Donate Us */}
           <button
             onClick={() => navigate("/student/map-subscription")}
             className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-lg font-medium"
@@ -45,7 +44,6 @@ export default function StudentDashboard() {
             Donate Us
           </button>
 
-          {/* 🚪 Logout */}
           <button
             onClick={handleLogout}
             className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm"
