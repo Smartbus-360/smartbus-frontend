@@ -402,6 +402,9 @@ const startOneTimePayment = async () => {
       setShowSuccess(true);
       await checkAccess();
       await fetchHistory();
+          // 🔥 FORCE MAP RELOAD
+window.location.href = "/student/map";
+
               alert("Payment successful. Map activated.");
 } catch (err) {
     alert("Payment done but activation failed");
