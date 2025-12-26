@@ -25,6 +25,7 @@ import ContactUs from "./views/home/ContactUs";
 import ShippingPolicy from "./views/home/ShippingPolicy";
 import StudentMapSubscription from "./pages/StudentMapSubscription";
 import StudentPrivateRoute from "./StudentPrivateRoute";
+import StudentDashboard from "./pages/StudentDashboard";
 
 const App = () => {
   return (
@@ -56,6 +57,7 @@ const App = () => {
       </Route>
   {/* other routes */}
         <Route path="/student/login" element={<LoginForm />} />
+      <Route path="/student/dashboard" element={<StudentDashboard />} />
   <Route path="/register" element={<StudentRegistrationForm />} />
 <Route
   path="/student/map"
