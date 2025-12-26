@@ -126,10 +126,9 @@ import { useEffect, useState } from "react";
 import axios from "../api/studentAxios";
 import jsPDF from "jspdf";
 import { useNavigate } from "react-router-dom";
-  const token = localStorage.getItem("studentToken");
 export default function StudentMapSubscription() {
     const navigate = useNavigate();   // 👈 ADD THIS
-
+  const token = localStorage.getItem("studentToken");
   const [access, setAccess] = useState(null);
   const [plans, setPlans] = useState([]);
   const [subscriptions, setSubscriptions] = useState([]);
@@ -153,7 +152,8 @@ useEffect(() => {
   checkAccess();
   fetchPlans();
   fetchHistory();
-}, []);
+}, [token]);
+
 
   const authHeader = {
     headers: {
