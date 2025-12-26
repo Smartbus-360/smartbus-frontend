@@ -85,7 +85,7 @@ export default function StudentLogin() {
 useEffect(() => {
   const token = localStorage.getItem("studentToken");
   if (token) {
-    navigate("/student/map", { replace: true });
+    navigate("/student/dashboard", { replace: true });
   }
 }, []);
 
