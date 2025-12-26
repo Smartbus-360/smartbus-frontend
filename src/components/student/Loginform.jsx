@@ -113,7 +113,8 @@ useEffect(() => {
         localStorage.setItem("studentEmail", res.data.email);
 
         // 👉 Go to student map page
-        navigate("/student/map");
+        // navigate("/student/map");
+        navigate("/student/dashboard");
       } else {
         setError("Invalid username or password");
       }
