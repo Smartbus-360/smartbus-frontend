@@ -21,7 +21,7 @@ const StudentRegistrationForm = () => {
   useEffect(() => {
   (async () => {
     try {
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem('studentToken');
       if (!token) return navigate('/home/student-login');
 
       const res = await fetch(
@@ -135,7 +135,7 @@ Password: ${formData.password}`);
         method: 'PUT',
         headers: {
    'Content-Type': 'application/json',
-   Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}`
+   Authorization: `Bearer ${localStorage.getItem('studentToken') || ''}`
  },
         body: JSON.stringify({
           username: formData.username,
