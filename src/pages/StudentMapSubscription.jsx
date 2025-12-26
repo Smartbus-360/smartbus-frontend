@@ -126,10 +126,9 @@ import { useEffect, useState } from "react";
 import axios from "../api/studentAxios";
 import jsPDF from "jspdf";
 import { useNavigate } from "react-router-dom";
-
+  const token = localStorage.getItem("studentToken");
 export default function StudentMapSubscription() {
     const navigate = useNavigate();   // 👈 ADD THIS
-  const token = localStorage.getItem("studentToken");
 
   const [access, setAccess] = useState(null);
   const [plans, setPlans] = useState([]);
@@ -143,6 +142,18 @@ const [showSuccess, setShowSuccess] = useState(false);
 const [showError, setShowError] = useState(false);
 const [errorMsg, setErrorMsg] = useState("");
 const [autoPay, setAutoPay] = useState(false);
+
+
+useEffect(() => {
+  if (!token) {
+    navigate("/student/login", { replace: true });
+    return;
+  }
+
+  checkAccess();
+  fetchPlans();
+  fetchHistory();
+}, []);
 
   const authHeader = {
     headers: {
@@ -187,13 +198,27 @@ const [autoPay, setAutoPay] = useState(false);
   };
 
   // 3️⃣ History
+  // const fetchHistory = async () => {
+  //   const res = await axios.get(
+  //     "https://api.smartbus360.com/api/map/subscription/history",
+  //     authHeader
+  //   );
+  //   setSubscriptions(res.data.subscriptions || []);
+  // };
+
   const fetchHistory = async () => {
+  if (!token) return; // ⛔ important
+
+  try {
     const res = await axios.get(
       "https://api.smartbus360.com/api/map/subscription/history",
       authHeader
     );
     setSubscriptions(res.data.subscriptions || []);
-  };
+  } catch (err) {
+    setSubscriptions([]);
+  }
+};
 
   const downloadReceipt = async (subscriptionId) => {
   try {
@@ -326,6 +351,7 @@ const [autoPay, setAutoPay] = useState(false);
 
 //       theme: { color: "#2563eb" }
 //     };
+  
 
 //     const rzp = new window.Razorpay(options);
 //     rzp.open();
