@@ -82,12 +82,12 @@ export default function StudentLogin() {
 
   // const navigate = useNavigate();
 
-useEffect(() => {
-  const token = localStorage.getItem("studentToken");
-  if (token) {
-    navigate("/student/dashboard", { replace: true });
-  }
-}, []);
+// useEffect(() => {
+//   const token = localStorage.getItem("studentToken");
+//   if (token) {
+//     navigate("/student/dashboard", { replace: true });
+//   }
+// }, []);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
