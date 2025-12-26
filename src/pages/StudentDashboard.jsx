@@ -1,5 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+
+
+useEffect(() => {
+  const token = localStorage.getItem("studentToken");
+  if (!token) navigate("/student/login");
+}, []);
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
