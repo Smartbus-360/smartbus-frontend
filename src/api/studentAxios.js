@@ -46,7 +46,10 @@ studentAxios.interceptors.response.use(
   response => response,
   error => {
     if (error.response?.status === 401) {
-      localStorage.clear();
+      localStorage.removeItem("studentToken");
+  localStorage.removeItem("studentId");
+  localStorage.removeItem("studentName");
+  localStorage.removeItem("studentEmail");
       window.location.href = "/student/login";
     }
     return Promise.reject(error);
