@@ -80,6 +80,14 @@ export default function StudentLogin() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+  // ❌ Always clear old session when login page opens
+  localStorage.removeItem("studentToken");
+  localStorage.removeItem("studentId");
+  localStorage.removeItem("studentName");
+  localStorage.removeItem("studentEmail");
+}, []);
+
   // const navigate = useNavigate();
 
 // useEffect(() => {
