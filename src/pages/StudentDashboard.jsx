@@ -34,14 +34,14 @@ export default function StudentDashboard() {
         <div className="space-y-4">
 
           <button
-            onClick={() => navigate("/student/update-password")}
+            onClick={() => navigate("/register")}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-lg font-medium"
           >
             Update Password
           </button>
 
           <button
-            onClick={() => navigate("/student/map-subscription")}
+            onClick={() => navigate("/student/map")}
             className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-lg font-medium"
           >
             Donate Us
