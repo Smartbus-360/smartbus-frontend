@@ -6,11 +6,14 @@ export default function StudentDashboard() {
 
   // ✅ useEffect MUST be inside the component
   useEffect(() => {
-    const token = localStorage.getItem("studentToken");
-    if (!token) {
-      navigate("/student/login", { replace: true });
-    }
-  }, [navigate]);
+  const token = localStorage.getItem("studentToken");
+
+  if (!token) {
+    navigate("/student/login", { replace: true });
+    return;
+  }
+}, [navigate]);
+
 
   const handleLogout = () => {
     localStorage.removeItem("studentToken");
