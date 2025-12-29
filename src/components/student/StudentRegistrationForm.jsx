@@ -22,7 +22,7 @@ const StudentRegistrationForm = () => {
   (async () => {
     try {
       const token = localStorage.getItem('studentToken');
-      if (!token) return navigate('/home/student-login');
+      if (!token) return navigate('/student/login');
 
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/admin/auth/me/basic`,
