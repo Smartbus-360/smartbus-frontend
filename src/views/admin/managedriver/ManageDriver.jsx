@@ -117,6 +117,9 @@ const [pendingUpdate, setPendingUpdate] = useState(null);
   const [reportOpen, setReportOpen] = useState(false);
 const [reportData, setReportData] = useState(null);
 const [reportLoading, setReportLoading] = useState(false);
+const [qrNeverExpire, setQrNeverExpire] = useState({});
+const [activeQrByDriver, setActiveQrByDriver] = useState({});
+// { [driverId]: true }
 
 
 
@@ -561,9 +564,12 @@ const dataForGrid = showAll ? drivers : paginatedDrivers;
   try {
     setBusy(true);
     const { data } = await axiosInstance.post(`driver-qr/generate`, {
-      driverId,
-      durationHours: Number(hours) > 0 ? Number(hours) : 6,
-    });
+  driverId,
+  neverExpire: !!qrNeverExpire[driverId],
+  durationHours: qrNeverExpire[driverId]
+    ? undefined
+    : Number(hours) > 0 ? Number(hours) : 6,
+});
     setQrPng(data.png);
     setQrExpiresAt(data.expiresAt);
     setQrFor({ driverId });
@@ -596,6 +602,15 @@ const handleRevokeQR = async (qrId) => {
       params: { driverId, limit: 100, status },
     });
     setQrHistory(data.items || []);
+    const hasActive = (data.items || []).some(
+      (r) => r.status === "active"
+    );
+
+    setActiveQrByDriver((prev) => ({
+      ...prev,
+      [driverId]: hasActive,
+    }));
+
   } catch {
     setSnackbar({
       open: true,
@@ -992,9 +1007,14 @@ const downloadExcel = async (driverId, date) => {
     {qrPng ? (
       <div className="flex flex-col items-center gap-3">
         <img src={qrPng} alt="QR Code" style={{ width: 260, height: 260 }} />
-        <div className="text-sm text-gray-600">
+        {/* <div className="text-sm text-gray-600">
           Expires at: {new Date(qrExpiresAt).toLocaleString()}
-        </div>
+        </div> */}
+        <div className="text-sm font-medium">
+  {qrExpiresAt
+    ? `Expires at: ${new Date(qrExpiresAt).toLocaleString()}`
+    : "✅ Valid Forever (Until Revoked)"}
+</div>
         <Button
           variant="outlined"
           onClick={() => {
@@ -1047,7 +1067,12 @@ const downloadExcel = async (driverId, date) => {
         {qrHistory.map((r) => (
           <tr key={r.id}>
             <td style={{ padding: 8 }}>{r.id}</td>
-            <td style={{ padding: 8 }}>{r.expiresAt ? new Date(r.expiresAt).toLocaleString() : '-'}</td>
+            {/* <td style={{ padding: 8 }}>{r.expiresAt ? new Date(r.expiresAt).toLocaleString() : '-'}</td> */}
+            <td style={{ padding: 8 }}>
+  {r.expiresAt
+    ? new Date(r.expiresAt).toLocaleString()
+    : <span style={{ color: "green", fontWeight: 600 }}>Valid Forever</span>}
+</td>
             <td style={{ padding: 8 }}>{r.status}</td>
             <td style={{ padding: 8 }}>{(r.usedCount ?? 0)} / {(r.maxUses ?? 1)}</td>
             <td style={{ padding: 8 }}>{r.createdByName ?? r.createdBy ?? '-'}</td>
@@ -1155,6 +1180,7 @@ onChange={(e) =>
   size="small"
   type="number"
   label="Hours"
+  disabled={qrNeverExpire[data.id]}
   defaultValue={qrHours[data.id] ?? 6}   // or just 6 if you don’t need to preload
   inputProps={{ min: 1 }}
   inputRef={(el) => {
@@ -1174,6 +1200,21 @@ onChange={(e) =>
     }
   }}
   style={{ width: 90 }}
+/>
+<FormControlLabel
+  control={
+    <Checkbox
+      size="small"
+      checked={!!qrNeverExpire[data.id]}
+      onChange={(e) =>
+        setQrNeverExpire((prev) => ({
+          ...prev,
+          [data.id]: e.target.checked,
+        }))
+      }
+    />
+  }
+  label="Never Expire"
 />
 
       <Button
@@ -1202,6 +1243,12 @@ onChange={(e) =>
       >
         QR History
       </Button>
+            {activeQrByDriver[data.id] && (
+        <span style={{ color: "green", fontSize: 12 }}>
+          ● Active QR
+        </span>
+      )}
+
     </div>
   )}
 />
