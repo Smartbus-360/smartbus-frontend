@@ -1112,7 +1112,7 @@ const downloadExcel = async (driverId, date) => {
             <td style={{ padding: 8 }}>{(r.usedCount ?? 0)} / {(r.maxUses ?? 1)}</td>
             <td style={{ padding: 8 }}>{r.createdByName ?? r.createdBy ?? '-'}</td>
             <td style={{ padding: 8 }}>
-              {r.status === 'active' && (
+                {(r.status === 'active' || r.status === 'used') && (
                 <Button
                   size="small"
                   color="error"
