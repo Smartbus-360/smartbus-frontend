@@ -1160,7 +1160,13 @@ onChange={(e) =>
   caption="QR"
   minWidth={320}
   cellRender={({ data }) => (
-    <div className="flex items-center gap-3">
+    // <div className="flex items-center gap-3">
+    <div style={{ 
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 8,
+  alignItems: "center"
+}}>
 {/*       <TextField
         size="small"
         type="number"
