@@ -119,6 +119,7 @@ const [reportData, setReportData] = useState(null);
 const [reportLoading, setReportLoading] = useState(false);
 const [qrNeverExpire, setQrNeverExpire] = useState({});
 const [activeQrByDriver, setActiveQrByDriver] = useState({});
+// { driverId: { id, expiresAt, status } }
 // { [driverId]: true }
 
 
@@ -132,6 +133,15 @@ const [busy, setBusy] = useState(false);
   useEffect(() => {
     fetchInitialData();
   }, []);
+
+  useEffect(() => {
+  if (!drivers.length) return;
+
+  drivers.forEach((d) => {
+    fetchActiveQrForDriver(d.id);
+  });
+}, [drivers.length]);
+
 
   const fetchInitialData = async () => {
     try {
@@ -574,6 +584,14 @@ const dataForGrid = showAll ? drivers : paginatedDrivers;
     setQrExpiresAt(data.expiresAt);
     setQrFor({ driverId });
     setQrOpen(true);
+    setActiveQrByDriver((prev) => ({
+  ...prev,
+  [driverId]: {
+    id: data.id,
+    expiresAt: data.expiresAt,
+    status: "active",
+  },
+}));
     setSnackbar({ open: true, severity: "success", message: "QR generated" });
   } catch (e) {
     setSnackbar({
@@ -586,11 +604,36 @@ const dataForGrid = showAll ? drivers : paginatedDrivers;
   }
 };
 
+const fetchActiveQrForDriver = async (driverId) => {
+  try {
+    const { data } = await axiosInstance.get("driver-qr/history", {
+      params: { driverId, status: "active", limit: 1 },
+    });
+
+    const active = data.items?.[0] || null;
+
+    setActiveQrByDriver((prev) => ({
+      ...prev,
+      [driverId]: active,
+    }));
+  } catch (e) {
+    console.error("Failed to fetch active QR", e);
+  }
+};
 
 // Revoke a QR by id (optional list shows active QRs)
 const handleRevokeQR = async (qrId) => {
   try {
     await axiosInstance.post(`driver-qr/revoke/${qrId}`);
+
+    setActiveQrByDriver((prev) => {
+      const copy = { ...prev };
+      Object.keys(copy).forEach((d) => {
+        if (copy[d]?.id === qrId) delete copy[d];
+      });
+      return copy;
+    });
+
     setSnackbar({ open: true, message: "QR revoked", severity: "success" });
   } catch {
     setSnackbar({ open: true, message: "Failed to revoke QR", severity: "error" });
@@ -602,14 +645,6 @@ const handleRevokeQR = async (qrId) => {
       params: { driverId, limit: 100, status },
     });
     setQrHistory(data.items || []);
-    const hasActive = (data.items || []).some(
-      (r) => r.status === "active"
-    );
-
-    setActiveQrByDriver((prev) => ({
-      ...prev,
-      [driverId]: hasActive,
-    }));
 
   } catch {
     setSnackbar({
@@ -1226,7 +1261,7 @@ onChange={(e) =>
       <Button
         size="small"
         variant="outlined"
-        disabled={busy}
+disabled={busy || !!activeQrByDriver[data.id]}
         onClick={() =>
           {
     const val = hourRefs.current[data.id]?.value;
@@ -1249,11 +1284,30 @@ onChange={(e) =>
       >
         QR History
       </Button>
-            {activeQrByDriver[data.id] && (
-        <span style={{ color: "green", fontSize: 12 }}>
-          ● Active QR
-        </span>
-      )}
+{activeQrByDriver[data.id] && (
+  <>
+    <span style={{ color: "green", fontSize: 12 }}>
+      ● Active QR
+      {activeQrByDriver[data.id].expiresAt
+        ? ` (expires ${new Date(activeQrByDriver[data.id].expiresAt).toLocaleString()})`
+        : " (Forever)"}
+    </span>
+
+    <Button
+      size="small"
+      color="error"
+      variant="outlined"
+      onClick={async () => {
+        if (!window.confirm("Revoke active QR?")) return;
+        await handleRevokeQR(activeQrByDriver[data.id].id);
+        await fetchActiveQrForDriver(data.id); // refresh state
+      }}
+    >
+      Revoke
+    </Button>
+  </>
+)}
+
 
     </div>
   )}
