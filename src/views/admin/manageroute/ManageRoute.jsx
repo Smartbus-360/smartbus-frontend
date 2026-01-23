@@ -72,6 +72,11 @@ const gridRef = useRef(null);
     routeStatus: "",
     pickupInstructions: "",
     dropOffInstructions: "",
+    routeShiftTimings: {
+  morning: { rounds: {} },
+  afternoon: { rounds: {} },
+  evening: { rounds: {} }
+},
   });
   const handleSnackbarClose = () => setSnackbar({ ...snackbar, open: false });
   const token = sessionStorage.getItem("authToken");
@@ -339,6 +344,23 @@ const handleConfirmClose = () => {
       });
     }
   };
+const updateShiftTiming = (shift, round, field, value) => {
+  setNewRoute(prev => ({
+    ...prev,
+    routeShiftTimings: {
+      ...prev.routeShiftTimings,
+      [shift]: {
+        rounds: {
+          ...prev.routeShiftTimings[shift].rounds,
+          [round]: {
+            ...prev.routeShiftTimings[shift].rounds[round],
+            [field]: value
+          }
+        }
+      }
+    }
+  }));
+};
 
   const handleDeleteRoute = async (routeId) => {
 
