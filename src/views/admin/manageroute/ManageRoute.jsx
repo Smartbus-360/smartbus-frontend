@@ -84,6 +84,8 @@ const gridRef = useRef(null);
   const [pageSize, setPageSize] = useState(10);
   const [confirmUpdateOpen, setConfirmUpdateOpen] = useState(false);
 const [pendingUpdate, setPendingUpdate] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+const [editingRouteId, setEditingRouteId] = useState(null);
   const [showAll, setShowAll] = useState(false);
     // Safe paging math
 const maxPage = Math.max(0, Math.ceil(allRoutes.length / pageSize) - 1);
@@ -185,6 +187,7 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
           routeStatus: newRoute.routeStatus,
           pickupInstructions: newRoute.pickupInstructions,
           dropOffInstructions: newRoute.dropOffInstructions,
+          shiftTimings: newRoute.routeShiftTimings
         }
       );
 
@@ -209,6 +212,11 @@ const dataForGrid = showAll ? allRoutes : paginatedRoutes;
           routeStatus: "",
           pickupInstructions: "",
           dropOffInstructions: "",
+          routeShiftTimings: {
+    morning: { rounds: {} },
+    afternoon: { rounds: {} },
+    evening: { rounds: {} }
+  }
         });
         fetchInitialData();
         setSnackbar({
@@ -305,6 +313,8 @@ const handleConfirmClose = () => {
         updatedRoute.dropOffInstructions ||
         selectedRoute.dropOffInstructions ||
         "",
+      shiftTimings:
+    updatedRoute.routeShiftTimings || selectedRoute.shiftTimings
     };
 
     try {
@@ -425,13 +435,25 @@ const updateShiftTiming = (shift, round, field, value) => {
       </Snackbar>
 <div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
 
-        <Button
+        {/* <Button
           variant="contained"
           color="primary"
           onClick={() => setOpenRouteModal(true)}
         >
           Add Route
-        </Button>
+        </Button> */}
+  <Button
+  variant="contained"
+  color="primary"
+  onClick={() => {
+    setIsEditMode(false);
+    setEditingRouteId(null);
+    setOpenRouteModal(true);
+  }}
+>
+  Add Route
+</Button>
+
 <Button
     variant="outlined"
     onClick={() => {
@@ -449,7 +471,10 @@ const updateShiftTiming = (shift, round, field, value) => {
           maxWidth="md"
           fullWidth
         >
-          <DialogTitle>Add New Route</DialogTitle>
+          {/* <DialogTitle>Add New Route</DialogTitle> */}
+          <DialogTitle>
+  {isEditMode ? "Edit Route" : "Add New Route"}
+</DialogTitle>
           <DialogContent>
             <div className="grid grid-cols-2 gap-4 p-2">
               {/* Route Input Fields */}
@@ -564,6 +589,34 @@ const updateShiftTiming = (shift, round, field, value) => {
                 value={newRoute.endTime}
                 onChange={handleRouteInputChange}
               />
+              <Typography variant="h6" sx={{ mt: 2 }}>
+  Shift Timings
+</Typography>
+
+<Typography variant="subtitle2">Morning – Round 1</Typography>
+
+<TextField
+  label="Start"
+  type="time"
+  value={
+    newRoute.routeShiftTimings?.morning?.rounds?.["1"]?.start || ""
+  }
+  onChange={(e) =>
+    updateShiftTiming("morning", "1", "start", e.target.value)
+  }
+/>
+
+<TextField
+  label="End"
+  type="time"
+  value={
+    newRoute.routeShiftTimings?.morning?.rounds?.["1"]?.end || ""
+  }
+  onChange={(e) =>
+    updateShiftTiming("morning", "1", "end", e.target.value)
+  }
+/>
+
               <TextField
                 label="Capacity"
                 type="number"
@@ -600,17 +653,32 @@ const updateShiftTiming = (shift, round, field, value) => {
             </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setOpenRouteModal(false)} color="secondary">
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddRoute}
-            >
-              Add Route
-            </Button>
-          </DialogActions>
+  <Button
+    onClick={() => {
+      setOpenRouteModal(false);
+      setIsEditMode(false);
+      setEditingRouteId(null);
+    }}
+    color="secondary"
+  >
+    Cancel
+  </Button>
+
+  <Button
+    variant="contained"
+    color="primary"
+    onClick={() => {
+      if (isEditMode) {
+        handleUpdateRoute(editingRouteId, newRoute);
+      } else {
+        handleAddRoute();
+      }
+      setOpenRouteModal(false);
+    }}
+  >
+    {isEditMode ? "Update Route" : "Add Route"}
+  </Button>
+</DialogActions>
         </Dialog>
 
       <div style={{ minHeight: "600px", height: "auto", width: "100%", marginTop: "16px" }}>
@@ -684,6 +752,17 @@ const updateShiftTiming = (shift, round, field, value) => {
           format="HH:mm" minWidth={150}/>
 
           <Column
+  caption="Shift Timings"
+  minWidth={250}
+  allowEditing={false}
+  cellRender={({ data }) => (
+    <pre style={{ fontSize: 11, whiteSpace: "pre-wrap" }}>
+      {JSON.stringify(data.shiftTimings, null, 2)}
+    </pre>
+  )}
+/>
+
+          <Column
             dataField="routeStatus"
             caption="Status"
             lookup={{
@@ -703,10 +782,25 @@ const updateShiftTiming = (shift, round, field, value) => {
               {
                 hint: "Save Changes",
                 icon: "save",
-                onClick: (e) => {
-    setPendingUpdate({ id: e.row.data.id, newData: e.row.data });
-    setConfirmUpdateOpen(true);
-                },
+    //             onClick: (e) => {
+    // setPendingUpdate({ id: e.row.data.id, newData: e.row.data });
+    // setConfirmUpdateOpen(true);
+    //             },
+onClick: (e) => {
+  setIsEditMode(true);
+  setEditingRouteId(e.row.data.id);
+
+  setNewRoute({
+    ...e.row.data,
+    routeShiftTimings: e.row.data.shiftTimings || {
+      morning: { rounds: {} },
+      afternoon: { rounds: {} },
+      evening: { rounds: {} }
+    }
+  });
+
+  setOpenRouteModal(true);
+},
               },
             ]}
           />
