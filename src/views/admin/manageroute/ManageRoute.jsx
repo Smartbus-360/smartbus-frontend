@@ -41,6 +41,12 @@ import SaveIcon from "@mui/icons-material/Save";
 import { AddCircleOutline, RemoveCircleOutline } from "@mui/icons-material";
 import axiosInstance from "../../../api/axios";
 import { getUser } from "../../../config/authService";
+const SHIFT_CONFIG = {
+  morning: { label: "Morning", maxRounds: 3 },
+  afternoon: { label: "Afternoon", maxRounds: 3 },
+  evening: { label: "Evening", maxRounds: 3 },
+};
+
 const ManageRoute = () => {
   const [institutes, setInstitutes] = useState([]);
   const [instituteId, setInstituteId] = useState("");
@@ -593,29 +599,60 @@ const updateShiftTiming = (shift, round, field, value) => {
   Shift Timings
 </Typography>
 
-<Typography variant="subtitle2">Morning – Round 1</Typography>
+              <Typography variant="h6" sx={{ mt: 3 }}>
+  Shift Timings
+</Typography>
 
-<TextField
-  label="Start"
-  type="time"
-  value={
-    newRoute.routeShiftTimings?.morning?.rounds?.["1"]?.start || ""
-  }
-  onChange={(e) =>
-    updateShiftTiming("morning", "1", "start", e.target.value)
-  }
-/>
+{Object.entries(SHIFT_CONFIG).map(([shiftKey, shift]) => (
+  <div key={shiftKey} style={{ marginTop: 16 }}>
+    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+      {shift.label}
+    </Typography>
 
-<TextField
-  label="End"
-  type="time"
-  value={
-    newRoute.routeShiftTimings?.morning?.rounds?.["1"]?.end || ""
-  }
-  onChange={(e) =>
-    updateShiftTiming("morning", "1", "end", e.target.value)
-  }
-/>
+    {[...Array(shift.maxRounds)].map((_, index) => {
+      const round = String(index + 1);
+
+      return (
+        <div
+          key={round}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "120px 1fr 1fr",
+            gap: 12,
+            marginTop: 8,
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="body2">
+            Round {round}
+          </Typography>
+
+          <TextField
+            label="Start"
+            type="time"
+            value={
+              newRoute.routeShiftTimings?.[shiftKey]?.rounds?.[round]?.start || ""
+            }
+            onChange={(e) =>
+              updateShiftTiming(shiftKey, round, "start", e.target.value)
+            }
+          />
+
+          <TextField
+            label="End"
+            type="time"
+            value={
+              newRoute.routeShiftTimings?.[shiftKey]?.rounds?.[round]?.end || ""
+            }
+            onChange={(e) =>
+              updateShiftTiming(shiftKey, round, "end", e.target.value)
+            }
+          />
+        </div>
+      );
+    })}
+  </div>
+))}
 
               <TextField
                 label="Capacity"
@@ -751,16 +788,28 @@ const updateShiftTiming = (shift, round, field, value) => {
           }}
           format="HH:mm" minWidth={150}/>
 
-          <Column
+<Column
   caption="Shift Timings"
-  minWidth={250}
+  minWidth={300}
   allowEditing={false}
-  cellRender={({ data }) => (
-    <pre style={{ fontSize: 11, whiteSpace: "pre-wrap" }}>
-      {JSON.stringify(data.shiftTimings, null, 2)}
-    </pre>
-  )}
+  cellRender={({ data }) => {
+    const timings = data.shiftTimings || {};
+
+    return (
+      <div style={{ fontSize: 12 }}>
+        {Object.entries(timings).map(([shift, obj]) =>
+          Object.entries(obj.rounds || {}).map(([round, time]) => (
+            <div key={`${shift}-${round}`}>
+              <strong>{shift.toUpperCase()}</strong> R{round}:{" "}
+              {time.start} – {time.end}
+            </div>
+          ))
+        )}
+      </div>
+    );
+  }}
 />
+
 
           <Column
             dataField="routeStatus"
