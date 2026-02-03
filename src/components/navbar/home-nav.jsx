@@ -14,11 +14,19 @@ function Navbar() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  // const dropdownRef = useRef(null);
+  const desktopDropdownRef = useRef(null);
+const mobileDropdownRef = useRef(null);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      // if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+  desktopDropdownRef.current &&
+  !desktopDropdownRef.current.contains(event.target) &&
+  mobileDropdownRef.current &&
+  !mobileDropdownRef.current.contains(event.target)
+) {
         setDropdownOpen(false);
       }
     };
@@ -36,7 +44,8 @@ function Navbar() {
 
   return (
     <nav className="z-10 w-full bg-gray-50 text-gray-900 shadow-lg">
-      <div className="container mx-auto px-4 lg:px-8">
+      {/* <div className="container mx-auto px-4 lg:px-8"> */}
+      <div className="mx-auto max-w-7xl px-4 lg:px-8">
         <div className="flex items-center justify-between py-4 lg:justify-around">
           {/* Logo */}
           <div className="flex items-center">
@@ -69,7 +78,7 @@ function Navbar() {
               Join Us
             </Link>
             {/* Dropdown */}
-            <div className="relative" ref={dropdownRef}>
+<div className="relative" ref={desktopDropdownRef}>
               <button
                 onClick={() => setDropdownOpen((prev) => !prev)}
                 className="flex items-center font-medium text-gray-900 transition duration-300 hover:text-yellow-300"
@@ -166,7 +175,8 @@ function Navbar() {
 
         {/* Mobile menu */}
         {isOpen && (
-          <div className="block md:hidden">
+          // <div className="block md:hidden">
+        <div className="absolute left-0 top-full z-50 w-full bg-white shadow-lg md:hidden">
             <Link
               to="/"
               onClick={() => setIsOpen(false)} // Close menu after navigation
@@ -190,7 +200,7 @@ function Navbar() {
             >
               Join Us
             </Link>
-            <div className="relative " ref={dropdownRef}>
+<div className="relative" ref={mobileDropdownRef}>
               <button
                 onClick={() => setDropdownOpen((prev) => !prev)}
                 className="block flex w-full items-center justify-center px-4 py-2 text-center text-gray-800 transition duration-300 hover:bg-gray-100"
