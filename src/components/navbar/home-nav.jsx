@@ -1,275 +1,178 @@
 import { useState, useEffect, useRef } from "react";
 import Logo from "../../assets/img/logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import { FaAndroid, FaApple } from "react-icons/fa";
-import {
-  FaBars,
-  FaTimes,
-  FaChevronDown,
-  FaDownload
-} from "react-icons/fa";
+import { FaAndroid, FaApple, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import { Link as ScrollLink } from "react-scroll";
 
 function Navbar() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  // const dropdownRef = useRef(null);
+
   const desktopDropdownRef = useRef(null);
-const mobileDropdownRef = useRef(null);
+  const mobileDropdownRef = useRef(null);
 
   useEffect(() => {
-    const handleOutsideClick = (event) => {
-      // if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleOutsideClick = (e) => {
       if (
-  desktopDropdownRef.current &&
-  !desktopDropdownRef.current.contains(event.target) &&
-  mobileDropdownRef.current &&
-  !mobileDropdownRef.current.contains(event.target)
-) {
+        desktopDropdownRef.current &&
+        !desktopDropdownRef.current.contains(e.target) &&
+        mobileDropdownRef.current &&
+        !mobileDropdownRef.current.contains(e.target)
+      ) {
         setDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
   const handleNavigation = (path) => {
-    navigate(path); // Navigate to the desired path
-    setDropdownOpen(false); // Close dropdown
-    setIsOpen(false); // Close mobile menu
+    navigate(path);
+    setDropdownOpen(false);
+    setIsOpen(false);
   };
 
   return (
-    <nav className="z-10 w-full bg-gray-50 text-gray-900 shadow-lg">
-      {/* <div className="container mx-auto px-4 lg:px-8"> */}
+    <nav className="z-50 w-full bg-gray-50 text-gray-900 shadow-md">
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
-        <div className="flex items-center justify-between py-4 lg:justify-around">
-          {/* Logo */}
-          <div className="flex items-center">
-            <img src={Logo} alt="Smart Bus 360 Logo" className="h-20" />
-            <span className="ml-2 text-xl font-bold text-gray-900">
-              Smart Bus 360
-            </span>
+
+        {/* TOP ROW */}
+        <div className="flex items-center justify-between py-4">
+
+          {/* LOGO */}
+          <div className="flex items-center gap-2">
+            <img src={Logo} alt="Smart Bus 360" className="h-14" />
+            <span className="text-lg font-bold">Smart Bus 360</span>
           </div>
 
-          {/* Menu items */}
-        <div className="hidden md:flex items-center justify-between w-full ml-10">
-  
-  {/* LEFT: Navigation */}
-  <div className="flex items-center space-x-6">
-    <Link to="/" className="nav-link">Home</Link>
-    <ScrollLink to="features" smooth duration={500} className="nav-link">
-      Features
-    </ScrollLink>
-    <Link to="/home/join-us" className="nav-link">Join Us</Link>
+          {/* DESKTOP NAV */}
+          <div className="hidden md:flex items-center justify-between flex-1 ml-10">
 
-    {/* About Dropdown */}
-    <div className="relative" ref={desktopDropdownRef}>
-      <button
-        onClick={() => setDropdownOpen((p) => !p)}
-        className="nav-link flex items-center"
-      >
-        About <FaChevronDown className="ml-1 text-sm" />
-      </button>
+            {/* LEFT LINKS */}
+            <div className="flex items-center gap-6">
+              <Link to="/" className="nav-link">Home</Link>
+              <ScrollLink to="features" smooth duration={500} className="nav-link">
+                Features
+              </ScrollLink>
+              <Link to="/home/join-us" className="nav-link">Join Us</Link>
 
-      {dropdownOpen && (
-        <div className="absolute left-0 mt-2 w-52 rounded-xl bg-white shadow-xl">
-          {[
-            ["About Smartbus360", "/home/about"],
-            ["Mission & Vision", "/home/mission-vision"],
-            ["Core Values", "/home/core-values"],
-            ["Founder’s Message", "/home/founder-mesage"],
-            ["Why Smartbus360?", "/home/why-smartbus360"],
-          ].map(([label, path]) => (
-            <button
-              key={path}
-              onClick={() => handleNavigation(path)}
-              className="block w-full px-4 py-2 text-left hover:bg-gray-100"
-            >
-              {label}
-            </button>
-          ))}
+              {/* ABOUT */}
+              <div className="relative" ref={desktopDropdownRef}>
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="nav-link flex items-center gap-1"
+                >
+                  About <FaChevronDown className="text-xs" />
+                </button>
+
+                {dropdownOpen && (
+                  <div className="absolute left-0 mt-2 w-52 rounded-xl bg-white shadow-xl">
+                    {[
+                      ["About Smartbus360", "/home/about"],
+                      ["Mission & Vision", "/home/mission-vision"],
+                      ["Core Values", "/home/core-values"],
+                      ["Founder’s Message", "/home/founder-mesage"],
+                      ["Why Smartbus360?", "/home/why-smartbus360"],
+                    ].map(([label, path]) => (
+                      <button
+                        key={path}
+                        onClick={() => handleNavigation(path)}
+                        className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* RIGHT ACTIONS */}
+            <div className="flex items-center gap-3">
+              <a href="https://admin.smartbus360.com/" target="_blank" rel="noreferrer" className="btn-purple">
+                Admin
+              </a>
+              <a href="https://coordinates.smartbus360.com/login" target="_blank" rel="noreferrer" className="btn-indigo">
+                Coordinates
+              </a>
+              <button onClick={() => navigate("/student/login")} className="btn-blue">
+                Student
+              </button>
+              <button onClick={() => navigate("/auth/sign-in")} className="btn-yellow">
+                Login
+              </button>
+            </div>
+          </div>
+
+          {/* MOBILE TOGGLE */}
+          <button
+            className="md:hidden text-xl"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
-      )}
-    </div>
-  </div>
 
-  {/* RIGHT: Actions */}
-  <div className="flex items-center space-x-3">
-    <a
-      href="https://admin.smartbus360.com/"
-      target="_blank"
-      className="btn-primary-purple"
-      rel="noreferrer"
-    >
-      Admin Panel
-    </a>
-
-    <a
-      href="https://coordinates.smartbus360.com/login"
-      target="_blank"
-      className="btn-primary-indigo"
-      rel="noreferrer"
-    >
-      Coordinates
-    </a>
-
-    <button
-      onClick={() => navigate("/student/login")}
-      className="btn-primary-blue"
-    >
-      Student
-    </button>
-
-    <button
-      onClick={() => navigate("/auth/sign-in")}
-      className="btn-primary-yellow"
-    >
-      Login
-    </button>
-  </div>
-</div>
-
-        {/* Mobile menu */}
+        {/* MOBILE MENU */}
         {isOpen && (
-          // <div className="block md:hidden">
-        <div className="absolute left-0 top-full z-50 w-full bg-white shadow-lg md:hidden">
-            <Link
-              to="/"
-              onClick={() => setIsOpen(false)} // Close menu after navigation
-              className="block px-4 py-2 text-center text-gray-800 transition duration-300 hover:bg-gray-100"
-            >
-              Home
-            </Link>
-            <ScrollLink
-              to="features"
-              smooth={true}
-              duration={500}
-              onClick={() => setIsOpen(false)} // Close menu after navigation
-              className="block px-4 py-2 text-center text-gray-800 transition duration-300 hover:bg-gray-100"
-            >
+          <div className="md:hidden bg-white shadow-lg rounded-lg p-4 space-y-3">
+
+            <Link to="/" onClick={() => setIsOpen(false)} className="mobile-link">Home</Link>
+            <ScrollLink to="features" smooth duration={500} onClick={() => setIsOpen(false)} className="mobile-link">
               Features
             </ScrollLink>
-            <Link
-              to="/home/join-us"
-              onClick={() => setIsOpen(false)} // Close menu after navigation
-              className="block px-4 py-2  text-center text-gray-800 transition duration-300 hover:bg-gray-100"
-            >
+            <Link to="/home/join-us" onClick={() => setIsOpen(false)} className="mobile-link">
               Join Us
             </Link>
-          <a
-  href="https://admin.smartbus360.com/"
-  target="_blank"
-  rel="noreferrer"
-  className="my-2 block w-full rounded-lg bg-purple-500 px-6 py-3 text-center text-white shadow-lg transition-all duration-300 hover:bg-purple-600"
->
-  Admin Panel
-</a>
 
-<a
-  href="https://coordinates.smartbus360.com/login"
-  target="_blank"
-  rel="noreferrer"
-  className="my-2 block w-full rounded-lg bg-indigo-500 px-6 py-3 text-center text-white shadow-lg transition-all duration-300 hover:bg-indigo-600"
->
-  Coordinates Login
-</a>
+            <a href="https://admin.smartbus360.com/" target="_blank" rel="noreferrer" className="btn-purple w-full text-center">
+              Admin Panel
+            </a>
+            <a href="https://coordinates.smartbus360.com/login" target="_blank" rel="noreferrer" className="btn-indigo w-full text-center">
+              Coordinates Login
+            </a>
+            <button onClick={() => navigate("/student/login")} className="btn-blue w-full">
+              Student Login
+            </button>
 
-<button
-  onClick={() => {
-    setIsOpen(false);
-    navigate("/student/login");
-  }}
-  className="my-2 w-full rounded-lg bg-blue-500 px-6 py-3 text-white shadow-lg transition-all duration-300 hover:bg-blue-600"
->
-  Student Login
-</button>
-<div className="relative" ref={mobileDropdownRef}>
+            <div ref={mobileDropdownRef}>
               <button
-                onClick={() => setDropdownOpen((prev) => !prev)}
-                className="block flex w-full items-center justify-center px-4 py-2 text-center text-gray-800 transition duration-300 hover:bg-gray-100"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="mobile-link flex justify-center items-center gap-1"
               >
-                About <FaChevronDown className="ml-1" />
+                About <FaChevronDown className="text-xs" />
               </button>
+
               {dropdownOpen && (
-                <div className="ml-4 z-50">
-                  <button
-                    onClick={() => handleNavigation("/home/about")}                    
-                    className="block w-full px-4 py-2 text-center text-gray-800 hover:bg-gray-100"
-                  >
-                    About Smartbus360
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/home/mission-vision")}
-                    className="block w-full px-4 py-2 text-center text-gray-800 hover:bg-gray-100"
-                  >
-                    Mission and Vision
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/home/core-values")}
-                    className="block w-full px-4 py-2 text-center text-gray-800 hover:bg-gray-100"
-                  >
-                    Core Values
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/home/founder-mesage")}
-                    className="block w-full px-4 py-2 text-center text-gray-800 hover:bg-gray-100"
-                  >
-                    Founder&apos;s Message
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/home/why-smartbus360")}
-                    className="block w-full px-4 py-2 text-center text-gray-800 hover:bg-gray-100"
-                  >
-                    Why Smartbus360?
-                  </button>
+                <div className="space-y-1">
+                  {[
+                    ["About Smartbus360", "/home/about"],
+                    ["Mission & Vision", "/home/mission-vision"],
+                    ["Core Values", "/home/core-values"],
+                    ["Founder’s Message", "/home/founder-mesage"],
+                    ["Why Smartbus360?", "/home/why-smartbus360"],
+                  ].map(([label, path]) => (
+                    <button
+                      key={path}
+                      onClick={() => handleNavigation(path)}
+                      className="block w-full py-2 text-center hover:bg-gray-100"
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
-            {/* <ScrollLink
-              to="downloads"
-              smooth={true}
-              duration={500}
-              onClick={() => setIsOpen(false)} // Close menu after navigation
-              className="mb-2 block flex items-center px-4 py-2 text-gray-800 transition duration-300 hover:bg-gray-100"
-            >
-              Download <FaDownload className="ml-1" />
-            </ScrollLink>
-             */}
-<div className="flex flex-col space-y-2 px-4 py-2">
-  <a
-    href="https://play.google.com/store/apps/details?id=com.smartbus360.app"
-    target="_blank"
-    rel="noreferrer"
-    className="flex w-full items-center justify-center rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600 transition-all duration-300 text-sm"
-  >
-    <FaAndroid className="mr-2 text-xl" />
-    Android
-  </a>
-  <a
-    href="https://play.google.com/store/apps/details?id=com.smartbus360.app"
-    target="_blank"
-    rel="noreferrer"
-    className="flex w-full items-center justify-center rounded-lg bg-black px-4 py-2 text-gray-700 hover:bg-gray-800 hover:text-white transition-all duration-300 text-sm"
-  >
-    <FaApple className="mr-2 text-xl" />
-    iOS
-  </a>
-</div>
 
-            <button
-              onClick={() => {
-                setIsOpen(false); // Close menu
-                navigate("/auth/sign-in");
-              }}
-              className="mb-2 rounded-lg bg-yellow-400 px-8 py-3 text-gray-800 shadow-lg transition-all duration-300 hover:bg-yellow-500"
-            >
-              Login
-            </button>
-            
+            <div className="flex gap-2">
+              <a href="https://play.google.com/store/apps/details?id=com.smartbus360.app" target="_blank" rel="noreferrer" className="btn-green w-full flex justify-center gap-2">
+                <FaAndroid /> Android
+              </a>
+              <a href="https://apps.apple.com/us/app/smartbus360/id6742678067" target="_blank" rel="noreferrer" className="btn-black w-full flex justify-center gap-2">
+                <FaApple /> iOS
+              </a>
+            </div>
 
           </div>
         )}
