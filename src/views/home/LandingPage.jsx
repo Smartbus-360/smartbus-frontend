@@ -1,6 +1,6 @@
 import React from "react";
 import {Link, useNavigate } from "react-router-dom";
-import Navbar from "../../components/navbar/home";
+import Navbar from "../../components/navbar/home-nav";
 import HeroSection from "./HeroSection.jsx";
 import Features from "./Features.jsx";
 import Showcase from "./Showcase.jsx";
