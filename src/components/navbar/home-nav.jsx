@@ -56,146 +56,82 @@ const mobileDropdownRef = useRef(null);
           </div>
 
           {/* Menu items */}
-          <div className="hidden flex-wrap items-center space-x-8 md:flex">
-            <Link
-              to="/"
-              className="font-medium text-gray-900 transition duration-300 hover:text-yellow-300"
-            >
-              Home
-            </Link>
-            <ScrollLink
-              to="features"
-              smooth={true}
-              duration={500}
-              className="cursor-pointer font-medium text-gray-900 transition duration-300 hover:text-yellow-300"
-            >
-              Features
-            </ScrollLink>
-            <Link
-              to="/home/join-us"
-              className="font-medium text-gray-900 transition duration-300 hover:text-yellow-300"
-            >
-              Join Us
-            </Link>
-            <a
-  href="https://admin.smartbus360.com/"
-  target="_blank"
-  rel="noreferrer"
-  className="rounded-lg bg-purple-500 px-6 py-3 text-white shadow-lg transition-all duration-300 hover:bg-purple-600"
->
-  Admin Panel
-</a>
+        <div className="hidden md:flex items-center justify-between w-full ml-10">
+  
+  {/* LEFT: Navigation */}
+  <div className="flex items-center space-x-6">
+    <Link to="/" className="nav-link">Home</Link>
+    <ScrollLink to="features" smooth duration={500} className="nav-link">
+      Features
+    </ScrollLink>
+    <Link to="/home/join-us" className="nav-link">Join Us</Link>
 
-<a
-  href="https://coordinates.smartbus360.com/login"
-  target="_blank"
-  rel="noreferrer"
-  className="rounded-lg bg-indigo-500 px-8 py-3 text-white shadow-lg transition-all duration-300 hover:bg-indigo-600"
->
-  Coordinates Login
-</a>
+    {/* About Dropdown */}
+    <div className="relative" ref={desktopDropdownRef}>
+      <button
+        onClick={() => setDropdownOpen((p) => !p)}
+        className="nav-link flex items-center"
+      >
+        About <FaChevronDown className="ml-1 text-sm" />
+      </button>
 
-<button
-  onClick={() => navigate("/student/login")}
-  className="rounded-lg bg-blue-500 px-8 py-3 text-white shadow-lg transition-all duration-300 hover:bg-blue-600"
->
-  Student Login
-</button>
-            {/* Dropdown */}
-<div className="relative" ref={desktopDropdownRef}>
-              <button
-                onClick={() => setDropdownOpen((prev) => !prev)}
-                className="flex items-center font-medium text-gray-900 transition duration-300 hover:text-yellow-300"
-              >
-                About <FaChevronDown className="ml-2" />
-              </button>
-              {dropdownOpen && (
-                <div className="absolute left-0 z-20 mt-2 w-48 rounded-lg bg-white shadow-lg">
-                  <button
-                    onClick={() => handleNavigation("/home/about")}
-                    className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
-                  >
-                    About Smartbus360
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/home/mission-vision")}
-                    className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
-                  >
-                    Mission and Vision
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/home/core-values")}
-                    className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
-                  >
-                    Core Values
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/home/founder-mesage")}
-                    className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
-                  >
-                    Founder&apos;s Message
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/home/why-smartbus360")}
-                    className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
-                  >
-                    Why Smartbus360?
-                  </button>
-                </div>
-              )}
-            </div>
-            {/* <ScrollLink
-              to="downloads"
-              smooth={true}
-              duration={500}
-              className="hidden items-center font-medium text-gray-900 transition duration-300 hover:text-yellow-300 lg:flex"
-            >
-              Download <FaDownload className="ml-2" />
-            </ScrollLink> */}
-            <div className="hidden lg:flex space-x-2">
-  <a
-    href="https://play.google.com/store/apps/details?id=com.smartbus360.app"
-    target="_blank"
-    rel="noreferrer"
-    className="flex items-center rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600 transition text-sm"
-  >
-    <FaAndroid className="mr-2 text-xl" />
-    Android
-  </a>
-  <a
-    href="https://apps.apple.com/us/app/smartbus360/id6742678067"
-    target="_blank"
-    rel="noreferrer"
-    className="bg-black flex items-center rounded-lg px-6 py-3 text-gray-700 transition-all duration-300 hover:bg-gray-800 hover:text-white" 
-  >
-    <FaApple className="mr-2 text-xl" />
-    iOS
-  </a>
-</div>
-
-            {/* Admin Login Button */}
+      {dropdownOpen && (
+        <div className="absolute left-0 mt-2 w-52 rounded-xl bg-white shadow-xl">
+          {[
+            ["About Smartbus360", "/home/about"],
+            ["Mission & Vision", "/home/mission-vision"],
+            ["Core Values", "/home/core-values"],
+            ["Founder’s Message", "/home/founder-mesage"],
+            ["Why Smartbus360?", "/home/why-smartbus360"],
+          ].map(([label, path]) => (
             <button
-              onClick={() => navigate("/auth/sign-in")}
-              className="rounded-lg bg-yellow-400 px-8 py-3 text-gray-800 shadow-lg transition-all duration-300 hover:bg-yellow-500"
+              key={path}
+              onClick={() => handleNavigation(path)}
+              className="block w-full px-4 py-2 text-left hover:bg-gray-100"
             >
-              Login
+              {label}
             </button>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="block md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-900 hover:text-yellow-300 focus:outline-none"
-            >
-              {isOpen ? (
-                <FaTimes className="h-6 w-6" />
-              ) : (
-                <FaBars className="h-6 w-6" />
-              )}
-            </button>
-          </div>
+          ))}
         </div>
+      )}
+    </div>
+  </div>
+
+  {/* RIGHT: Actions */}
+  <div className="flex items-center space-x-3">
+    <a
+      href="https://admin.smartbus360.com/"
+      target="_blank"
+      className="btn-primary-purple"
+      rel="noreferrer"
+    >
+      Admin Panel
+    </a>
+
+    <a
+      href="https://coordinates.smartbus360.com/login"
+      target="_blank"
+      className="btn-primary-indigo"
+      rel="noreferrer"
+    >
+      Coordinates
+    </a>
+
+    <button
+      onClick={() => navigate("/student/login")}
+      className="btn-primary-blue"
+    >
+      Student
+    </button>
+
+    <button
+      onClick={() => navigate("/auth/sign-in")}
+      className="btn-primary-yellow"
+    >
+      Login
+    </button>
+  </div>
+</div>
 
         {/* Mobile menu */}
         {isOpen && (
