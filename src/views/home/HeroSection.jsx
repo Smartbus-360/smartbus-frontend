@@ -220,36 +220,35 @@ useEffect(() => {
       </div>
 
       {/* Main content */}
-      <div style={{ display: "flex", height: "calc(100vh - 50px)", overflow: "hidden" }}>
+<div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-50px)] overflow-hidden">
         {/* Map */}
-        <div style={{ width: "50%", height: "100%", position: "relative" }}>
+<div className="w-full lg:w-1/2 h-[300px] lg:h-full relative">
           <div
-            id="map"
-            style={{
-              width: "100%",
-              height: "100%",
-              borderRadius: "15px",
-              boxShadow: "0 20px 50px rgba(0,0,0,0.3)",
-              minHeight: "100%",
-            }}
-          />
+  id="map"
+  className="w-full h-full rounded-xl shadow-2xl"
+/>
         </div>
 
         {/* Stop Info Box */}
         {stops[currentStopIndex] && (
-          <div
-            style={{
-              position: "absolute",
-              bottom: 40,
-              left: 40,
-              background: "rgba(10, 61, 98, 0.85)",
-              borderRadius: 15,
-              padding: 15,
-              zIndex: 9999,
-              maxWidth: "400px",
-              boxShadow: "0 0 20px rgba(0,0,0,0.3)",
-            }}
-          >
+<div
+  className="
+    absolute
+    bottom-4
+    left-1/2
+    -translate-x-1/2
+    lg:left-4
+    lg:translate-x-0
+    w-[90%]
+    lg:w-[400px]
+    bg-[rgba(10,61,98,0.85)]
+    rounded-xl
+    p-4
+    z-50
+    shadow-xl
+  "
+>
+
             <h3>
               <i className="fas fa-map-marker-alt" style={{ marginRight: 10 }}></i> Upcoming Location
             </h3>
@@ -282,9 +281,9 @@ useEffect(() => {
         )}
 
         {/* Info Panel */}
-        <div style={{ flex: "1 1 500px", display: "flex", flexDirection: "column", gap: "20px" }}>
+<div className="w-full lg:w-1/2 flex flex-col gap-5 p-4">
           {/* Countdown Panel */}
-          <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 15, padding: 20 }}>
+<div className="bg-white/10 rounded-xl p-5">
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <i className="fas fa-bus" style={{ color: "#ff9933", fontSize: 30 }}></i>
               <h2 style={{ fontSize: 22, fontWeight: "bold" }}>Bus Arrival Information</h2>
@@ -449,7 +448,7 @@ useEffect(() => {
           fontSize: "14px",
           fontWeight: "500",
           borderTop: "2px solid #fff",
-          marginTop: "40px",
+          marginTop: "20px",
           transition: "background-color 0.5s ease",
         }}
       >
