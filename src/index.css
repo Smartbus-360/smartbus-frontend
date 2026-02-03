@@ -17,21 +17,17 @@ body {
   @apply font-medium text-gray-800 hover:text-yellow-400 transition;
 }
 
-.btn-primary-purple {
-  @apply rounded-lg bg-purple-500 px-4 py-2 text-white hover:bg-purple-600 transition;
+.mobile-link {
+  @apply block text-center py-2 font-medium hover:bg-gray-100;
 }
 
-.btn-primary-indigo {
-  @apply rounded-lg bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-600 transition;
-}
+.btn-purple { @apply bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition; }
+.btn-indigo { @apply bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition; }
+.btn-blue   { @apply bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition; }
+.btn-yellow { @apply bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg hover:bg-yellow-500 transition; }
+.btn-green  { @apply bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition; }
+.btn-black  { @apply bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition; }
 
-.btn-primary-blue {
-  @apply rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 transition;
-}
-
-.btn-primary-yellow {
-  @apply rounded-lg bg-yellow-400 px-4 py-2 text-gray-900 hover:bg-yellow-500 transition;
-}
 
 /* .custom-quill-editor {
   min-height: calc(5 * 20px); 
