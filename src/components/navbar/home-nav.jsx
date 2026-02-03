@@ -77,6 +77,30 @@ const mobileDropdownRef = useRef(null);
             >
               Join Us
             </Link>
+            <a
+  href="https://admin.smartbus360.com/"
+  target="_blank"
+  rel="noreferrer"
+  className="rounded-lg bg-purple-500 px-6 py-3 text-white shadow-lg transition-all duration-300 hover:bg-purple-600"
+>
+  Admin Panel
+</a>
+
+<a
+  href="https://coordinates.smartbus360.com/login"
+  target="_blank"
+  rel="noreferrer"
+  className="rounded-lg bg-indigo-500 px-8 py-3 text-white shadow-lg transition-all duration-300 hover:bg-indigo-600"
+>
+  Coordinates Login
+</a>
+
+<button
+  onClick={() => navigate("/student/login")}
+  className="rounded-lg bg-blue-500 px-8 py-3 text-white shadow-lg transition-all duration-300 hover:bg-blue-600"
+>
+  Student Login
+</button>
             {/* Dropdown */}
 <div className="relative" ref={desktopDropdownRef}>
               <button
@@ -200,6 +224,33 @@ const mobileDropdownRef = useRef(null);
             >
               Join Us
             </Link>
+          <a
+  href="https://admin.smartbus360.com/"
+  target="_blank"
+  rel="noreferrer"
+  className="my-2 block w-full rounded-lg bg-purple-500 px-6 py-3 text-center text-white shadow-lg transition-all duration-300 hover:bg-purple-600"
+>
+  Admin Panel
+</a>
+
+<a
+  href="https://coordinates.smartbus360.com/login"
+  target="_blank"
+  rel="noreferrer"
+  className="my-2 block w-full rounded-lg bg-indigo-500 px-6 py-3 text-center text-white shadow-lg transition-all duration-300 hover:bg-indigo-600"
+>
+  Coordinates Login
+</a>
+
+<button
+  onClick={() => {
+    setIsOpen(false);
+    navigate("/student/login");
+  }}
+  className="my-2 w-full rounded-lg bg-blue-500 px-6 py-3 text-white shadow-lg transition-all duration-300 hover:bg-blue-600"
+>
+  Student Login
+</button>
 <div className="relative" ref={mobileDropdownRef}>
               <button
                 onClick={() => setDropdownOpen((prev) => !prev)}
