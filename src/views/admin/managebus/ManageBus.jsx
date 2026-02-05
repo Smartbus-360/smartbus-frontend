@@ -265,6 +265,47 @@ const ManageBusForDriver = () => {
     }
   };
 
+  const handleLocationSourceSwitch = async (busId, currentSource) => {
+  try {
+    const newSource = currentSource === "GPS" ? "ANDROID" : "GPS";
+
+    console.log("🔁 Switching location source:", {
+      busId,
+      from: currentSource,
+      to: newSource,
+    });
+
+    await axiosInstance.put(
+      `/bus/${busId}/location-source`,
+      { locationSource: newSource }
+    );
+
+    console.log("✅ Location source updated successfully");
+
+    // Update UI immediately
+    setBusList((prev) =>
+      prev.map((bus) =>
+        bus.id === busId
+          ? { ...bus, locationSource: newSource }
+          : bus
+      )
+    );
+
+    setSnackbar({
+      open: true,
+      message: `Location source switched to ${newSource}`,
+      severity: "success",
+    });
+  } catch (error) {
+    console.error("❌ Failed to switch location source", error);
+    setSnackbar({
+      open: true,
+      message: "Failed to switch location source",
+      severity: "error",
+    });
+  }
+};
+
   const handleDeleteBus = async (busId) => {
 
     const role = user?.role || "";
@@ -644,6 +685,25 @@ const ManageBusForDriver = () => {
               displayExpr: "this",
             }}
           minWidth={150}/>
+<Column
+  caption="Location Source"
+  minWidth={160}
+  cellRender={(cellData) => {
+    const bus = cellData.data;
+    return (
+      <Button
+        variant="contained"
+        size="small"
+        color={bus.locationSource === "GPS" ? "success" : "primary"}
+        onClick={() =>
+          handleLocationSourceSwitch(bus.id, bus.locationSource || "ANDROID")
+        }
+      >
+        {bus.locationSource === "GPS" ? "GPS" : "ANDROID"}
+      </Button>
+    );
+  }}
+/>
 
           <Column
             dataField="fuelType"
