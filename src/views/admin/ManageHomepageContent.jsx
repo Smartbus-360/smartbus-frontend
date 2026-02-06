@@ -33,6 +33,21 @@ export default function ManageHomepageContent() {
     setDescription("");
     setFile(null);
   };
+  const handleDelete = async (id) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this item?"
+  );
+  if (!confirmDelete) return;
+
+  try {
+    await axiosInstance.delete(`/homepage-content/${id}`);
+    fetchContent();
+  } catch (err) {
+    alert("Failed to delete content");
+    console.error(err);
+  }
+};
+
 
   return (
     <div className="p-6">
@@ -75,7 +90,7 @@ export default function ManageHomepageContent() {
       </form>
 
       {/* LIST */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {items.map((item) => (
           <div key={item.id} className="border p-3 rounded">
             {item.imageUrl && (
@@ -87,7 +102,31 @@ export default function ManageHomepageContent() {
             <p className="text-xs mt-1 text-gray-500">{item.type}</p>
           </div>
         ))}
-      </div>
+      </div> */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  {items.map((item) => (
+    <div key={item.id} className="border p-3 rounded relative">
+      {item.imageUrl && (
+        <img
+          src={`https://api.smartbus360.com${item.imageUrl}`}
+          className="h-32 w-full object-cover mb-2"
+        />
+      )}
+
+      <h3 className="font-bold">{item.title}</h3>
+      <p className="text-sm">{item.description}</p>
+      <p className="text-xs mt-1 text-gray-500">{item.type}</p>
+
+      {/* DELETE BUTTON */}
+      <button
+        onClick={() => handleDelete(item.id)}
+        className="mt-3 bg-red-600 text-white px-3 py-1 rounded text-sm"
+      >
+        Delete
+      </button>
+    </div>
+  ))}
+</div>
     </div>
   );
 }
