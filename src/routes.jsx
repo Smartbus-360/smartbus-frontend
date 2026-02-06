@@ -23,6 +23,8 @@ import { MdOutlineQrCode2 } from "react-icons/md";
 import ManageAttendanceTakers from "./pages/ManageAttendanceTakers.jsx";
 import { MdPeopleAlt } from "react-icons/md";
 import MapSubscriptionAdmin from "./pages/MapSubscriptionAdmin.jsx";
+import ManageHomepageContent from "./views/admin/managehomepage/ManageHomepageContent.jsx";
+import { MdWeb } from "react-icons/md";
 
 
 export default function routes() {
@@ -139,6 +141,13 @@ export default function routes() {
             icon: <MdNotifications className="h-6 w-6" />,
             component: <ManageNotifications />,
           },
+        {
+  name: "Manage Homepage Content",
+  layout: "/admin",
+  path: "manage/homepage",
+  icon: <MdWeb className="h-6 w-6" />,
+  component: <ManageHomepageContent />,
+},
                   {
   name: "Manage Map Access",
   layout: "/admin",
