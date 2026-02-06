@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../../axios/axios";
+import axiosInstance from "../../../api/axios";
 
 export default function ManageHomepageContent() {
   const [items, setItems] = useState([]);
