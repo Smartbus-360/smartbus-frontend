@@ -420,7 +420,7 @@ useEffect(() => {
               </div>
             </div>
           </div>
-        {/* ARTICLE TRANSITION AREA */}
+    {/* ARTICLE TRANSITION AREA */}
 {articles.length > 0 && (
   <div className="relative w-full h-[280px] flex items-center justify-center mt-4">
     <img
@@ -454,7 +454,6 @@ useEffect(() => {
       ))}
     </div>
 
-
     <style>
       {`
         @keyframes logoScroll {
@@ -465,6 +464,8 @@ useEffect(() => {
     </style>
   </div>
 )}
+        </div>
+      </div>
 
 {showCompletionPopup && (
   <div style={{
