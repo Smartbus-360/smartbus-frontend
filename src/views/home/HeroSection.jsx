@@ -455,10 +455,6 @@ useEffect(() => {
     </div>
 
 
-        </div>
-      </div>
-
-
     <style>
       {`
         @keyframes logoScroll {
