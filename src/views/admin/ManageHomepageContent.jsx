@@ -78,8 +78,9 @@ export default function ManageHomepageContent() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {items.map((item) => (
           <div key={item.id} className="border p-3 rounded">
-            {item.image && (
-              <img src={item.image} className="h-32 w-full object-cover mb-2" />
+            {item.imageUrl && (
+              <img src={`https://api.smartbus360.com${item.imageUrl}`}
+ className="h-32 w-full object-cover mb-2" />
             )}
             <h3 className="font-bold">{item.title}</h3>
             <p className="text-sm">{item.description}</p>
