@@ -317,86 +317,6 @@ useEffect(() => {
 
         {/* Info Panel */}
 <div className="w-full lg:w-1/2 flex flex-col gap-5 p-4">
-  {/* ARTICLE SLIDER */}
-{articles.length > 0 && (
-  <div
-    style={{
-      position: "relative",
-      height: "260px",
-      borderRadius: "16px",
-      overflow: "hidden",
-    }}
-  >
-    {articles.map((item, index) => (
-      <div
-        key={item.id}
-        style={{
-          position: "absolute",
-          inset: 0,
-          opacity: index === activeArticleIndex ? 1 : 0,
-          transition: "opacity 1s ease-in-out",
-          backgroundImage: `url(https://api.smartbus360.com${item.imageUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        {/* Optional overlay text */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            width: "100%",
-            padding: "15px",
-            background: "linear-gradient(to top, rgba(0,0,0,0.7), transparent)",
-          }}
-        >
-          <h3 style={{ fontSize: 18, fontWeight: "bold" }}>{item.title}</h3>
-          <p style={{ fontSize: 14 }}>{item.description}</p>
-        </div>
-      </div>
-    ))}
-  </div>
-)}
-  {/* LOGO MARQUEE */}
-{logos.length > 0 && (
-  <div
-    style={{
-      overflow: "hidden",
-      width: "100%",
-      marginTop: "12px",
-    }}
-  >
-    <div
-      style={{
-        display: "flex",
-        gap: "40px",
-        animation: "logoScroll 20s linear infinite",
-      }}
-    >
-      {[...logos, ...logos].map((logo, index) => (
-        <img
-          key={index}
-          src={`https://api.smartbus360.com${logo.imageUrl}`}
-          alt={logo.title}
-          style={{
-            height: 60,
-            objectFit: "contain",
-            filter: "drop-shadow(0 0 5px rgba(255,255,255,0.3))",
-          }}
-        />
-      ))}
-    </div>
-
-    <style>
-      {`
-        @keyframes logoScroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-      `}
-    </style>
-  </div>
-)}
           {/* Countdown Panel */}
 <div className="bg-white/10 rounded-xl p-5">
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -502,6 +422,51 @@ useEffect(() => {
           </div>
         </div>
       </div>
+
+      {/* ARTICLE TRANSITION AREA */}
+{articles.length > 0 && (
+  <div className="relative w-full h-[280px] flex items-center justify-center mt-4">
+    <img
+      key={articles[activeArticleIndex].id}
+      src={`https://api.smartbus360.com${articles[activeArticleIndex].imageUrl}`}
+      alt={articles[activeArticleIndex].title}
+      className="
+        max-h-full
+        max-w-full
+        object-contain
+        transition-opacity
+        duration-1000
+      "
+    />
+  </div>
+)}
+{/* LOGO MARQUEE */}
+{logos.length > 0 && (
+  <div className="overflow-hidden w-full mt-6">
+    <div
+      className="flex gap-10"
+      style={{ animation: "logoScroll 25s linear infinite" }}
+    >
+      {[...logos, ...logos].map((logo, index) => (
+        <img
+          key={index}
+          src={`https://api.smartbus360.com${logo.imageUrl}`}
+          alt={logo.title}
+          className="h-16 object-contain"
+        />
+      ))}
+    </div>
+
+    <style>
+      {`
+        @keyframes logoScroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+      `}
+    </style>
+  </div>
+)}
 
 {showCompletionPopup && (
   <div style={{
