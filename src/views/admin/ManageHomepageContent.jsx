@@ -25,7 +25,7 @@ export default function ManageHomepageContent() {
     formData.append("type", type);
     formData.append("title", title);
     formData.append("description", description);
-    if (file) formData.append("file", file);
+    if (file) formData.append("image", file);
 
     await axiosInstance.post("/homepage-content", formData);
     fetchContent();
