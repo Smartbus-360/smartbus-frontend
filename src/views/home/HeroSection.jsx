@@ -257,7 +257,8 @@ useEffect(() => {
       {/* Main content */}
 <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-50px)] overflow-hidden">
         {/* Map */}
-<div className="w-full lg:w-1/2 h-[300px] lg:h-full relative">
+{/* <div className="w-full lg:w-1/2 h-[300px] lg:h-full relative"> */}
+          <div className="w-full lg:w-1/2 h-[300px] lg:h-full relative px-6 py-5">
           <div
   id="map"
   className="w-full h-full rounded-xl shadow-2xl"
@@ -316,7 +317,8 @@ useEffect(() => {
         )}
 
         {/* Info Panel */}
-<div className="w-full lg:w-1/2 flex flex-col gap-5 p-4">
+{/* <div className="w-full lg:w-1/2 flex flex-col gap-5 p-4"> */}
+          <div className="w-full lg:w-1/2 flex flex-col gap-6 px-6 py-5">
           {/* Countdown Panel */}
 <div className="bg-white/10 rounded-xl p-5">
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -421,16 +423,33 @@ useEffect(() => {
             </div>
           </div>
     {/* ARTICLE TRANSITION AREA */}
+// {articles.length > 0 && (
+//   <div className="relative w-full h-[280px] flex items-center justify-center mt-4">
+//     <img
+//       key={articles[activeArticleIndex].id}
+//       src={`https://api.smartbus360.com${articles[activeArticleIndex].imageUrl}`}
+//       alt={articles[activeArticleIndex].title}
+//       className="
+//         max-h-full
+//         max-w-full
+//         object-contain
+//         transition-opacity
+//         duration-1000
+//       "
+//     />
+//   </div>
+// )}
+  {/* ARTICLE SECTION */}
 {articles.length > 0 && (
-  <div className="relative w-full h-[280px] flex items-center justify-center mt-4">
+  <div className="relative w-full h-[320px] overflow-hidden rounded-xl">
     <img
       key={articles[activeArticleIndex].id}
       src={`https://api.smartbus360.com${articles[activeArticleIndex].imageUrl}`}
       alt={articles[activeArticleIndex].title}
       className="
-        max-h-full
-        max-w-full
-        object-contain
+        w-full
+        h-full
+        object-cover
         transition-opacity
         duration-1000
       "
@@ -439,11 +458,12 @@ useEffect(() => {
 )}
 {/* LOGO MARQUEE */}
 {logos.length > 0 && (
-  <div className="overflow-hidden w-full mt-6">
-    <div
-      className="flex gap-10"
-      style={{ animation: "logoScroll 25s linear infinite" }}
-    >
+<div className="overflow-hidden w-full py-4 border-t border-white/10">
+<div
+  className="flex gap-14 w-max"
+  style={{ animation: "logoScroll 30s linear infinite" }}
+>
+
       {[...logos, ...logos].map((logo, index) => (
         <img
           key={index}
