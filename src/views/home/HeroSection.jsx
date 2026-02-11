@@ -402,26 +402,7 @@ useEffect(() => {
           </div>
 
           {/* Status Panel */}
-          <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 15, padding: 20 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <i className="fas fa-info-circle" style={{ color: "#ff9933", fontSize: 30 }}></i>
-              <h2 style={{ fontSize: 22, fontWeight: "bold" }}>Bus Status</h2>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontWeight: "bold", color: "lime" }}>Online</div>
-                <div>Bus Driver</div>
-              </div>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontWeight: "bold", color: "lime" }}>On Time</div>
-                <div>Status</div>
-              </div>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontWeight: "bold", color: "lime" }}>32 Students</div>
-                <div>Capacity</div>
-              </div>
-            </div>
-          </div>
+         
     {/* ARTICLE TRANSITION AREA */}
 {/* // {articles.length > 0 && (
 //   <div className="relative w-full h-[280px] flex items-center justify-center mt-4">
@@ -440,15 +421,24 @@ useEffect(() => {
 //   </div>
 // )} */}
  {articles.length > 0 && (
-  <div className="relative w-full h-[420px] rounded-xl overflow-hidden">
+  <div className="w-full flex justify-center mt-4">
     <img
       key={articles[activeArticleIndex].id}
       src={`https://api.smartbus360.com${articles[activeArticleIndex].imageUrl}`}
       alt={articles[activeArticleIndex].title}
-      className="w-full h-full object-cover transition-opacity duration-1000"
+      className="
+        w-full
+        max-h-[600px]
+        object-contain
+        transition-opacity
+        duration-1000
+        rounded-xl
+        shadow-2xl
+      "
     />
   </div>
 )}
+
 
 {/* LOGO MARQUEE */}
 {logos.length > 0 && (
