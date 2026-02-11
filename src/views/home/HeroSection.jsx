@@ -442,10 +442,10 @@ useEffect(() => {
 
 {/* LOGO MARQUEE */}
 {logos.length > 0 && (
-  <div className="overflow-hidden w-full py-6 border-t border-white/10 rounded-xl bg-white/5">
+  <div className="overflow-hidden w-full py-8 mt-6 bg-white/5 rounded-xl">
 
-    <div className="marquee-container">
-      <div className="marquee-track">
+    <div className="relative w-full overflow-hidden">
+      <div className="flex animate-marquee whitespace-nowrap">
         {[...logos, ...logos].map((logo, index) => (
           <img
             key={index}
@@ -459,18 +459,13 @@ useEffect(() => {
 
     <style>
       {`
-        .marquee-container {
-          width: 100%;
-          overflow: hidden;
-        }
-
-        .marquee-track {
+        .animate-marquee {
           display: flex;
           width: max-content;
-          animation: scrollLeft 20s linear infinite;
+          animation: marquee 25s linear infinite;
         }
 
-        @keyframes scrollLeft {
+        @keyframes marquee {
           0% {
             transform: translateX(0);
           }
