@@ -34,7 +34,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="z-50 w-full bg-gray-50 text-gray-900 shadow-md">
+<nav className="relative z-[9999] w-full bg-gray-50 text-gray-900 shadow-md">
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
 
         {/* TOP ROW */}
@@ -89,20 +89,55 @@ function Navbar() {
             </div>
 
             {/* RIGHT ACTIONS */}
-            <div className="flex items-center gap-3">
-              <a href="https://admin.smartbus360.com/" target="_blank" rel="noreferrer" className="btn-purple">
-                Admin
-              </a>
-              <a href="https://coordinates.smartbus360.com/login" target="_blank" rel="noreferrer" className="btn-indigo">
-                Coordinates
-              </a>
-              <button onClick={() => navigate("/student/login")} className="btn-blue">
-                Student
-              </button>
-              <button onClick={() => navigate("/auth/sign-in")} className="btn-yellow">
-                Login
-              </button>
-            </div>
+            {/* RIGHT ACTIONS */}
+<div className="flex items-center gap-3">
+
+  {/* Android Button */}
+  <a
+    href="https://play.google.com/store/apps/details?id=com.smartbus360.app"
+    target="_blank"
+    rel="noreferrer"
+    className="btn-green flex items-center gap-2"
+  >
+    <FaAndroid /> Android
+  </a>
+
+  {/* iOS Button */}
+  <a
+    href="https://apps.apple.com/us/app/smartbus360/id6742678067"
+    target="_blank"
+    rel="noreferrer"
+    className="btn-black flex items-center gap-2"
+  >
+    <FaApple /> iOS
+  </a>
+
+  <a
+    href="https://admin.smartbus360.com/"
+    target="_blank"
+    rel="noreferrer"
+    className="btn-purple"
+  >
+    Admin
+  </a>
+
+  <a
+    href="https://coordinates.smartbus360.com/login"
+    target="_blank"
+    rel="noreferrer"
+    className="btn-indigo"
+  >
+    Coordinates
+  </a>
+
+  <button onClick={() => navigate("/student/login")} className="btn-blue">
+    Student
+  </button>
+
+  <button onClick={() => navigate("/auth/sign-in")} className="btn-yellow">
+    Login
+  </button>
+</div>
           </div>
 
           {/* MOBILE TOGGLE */}
@@ -126,12 +161,12 @@ function Navbar() {
               Join Us
             </Link>
 
-            <a href="https://admin.smartbus360.com/" target="_blank" rel="noreferrer" className="btn-purple w-full text-center">
+            {/* <a href="https://admin.smartbus360.com/" target="_blank" rel="noreferrer" className="btn-purple w-full text-center">
               Admin Panel
             </a>
             <a href="https://coordinates.smartbus360.com/login" target="_blank" rel="noreferrer" className="btn-indigo w-full text-center">
               Coordinates Login
-            </a>
+            </a> */}
             <button onClick={() => navigate("/student/login")} className="btn-blue w-full">
               Student Login
             </button>
