@@ -440,49 +440,46 @@ useEffect(() => {
 //   </div>
 // )} */}
 {articles.length > 0 && (
-  <div className="relative w-full h-[320px] overflow-hidden rounded-xl">
+  <div className="relative w-full h-[420px] overflow-hidden rounded-xl">
     <img
       key={articles[activeArticleIndex].id}
       src={`https://api.smartbus360.com${articles[activeArticleIndex].imageUrl}`}
       alt={articles[activeArticleIndex].title}
-      className="
-        w-full
-        h-full
-        object-cover
-        transition-opacity
-        duration-1000
-      "
+      className="max-h-full max-w-full object-contain transition-opacity duration-1000"
     />
   </div>
 )}
 {/* LOGO MARQUEE */}
 {logos.length > 0 && (
-<div className="overflow-hidden w-full py-6 border-t border-white/10 rounded-xl bg-white/5">
-<div
-  className="flex gap-14 w-max"
-  style={{ animation: "logoScroll 30s linear infinite" }}
->
-
+  <div className="overflow-hidden w-full py-6 border-t border-white/10 rounded-xl bg-white/5">
+    
+    <div className="flex whitespace-nowrap animate-marquee">
       {[...logos, ...logos].map((logo, index) => (
         <img
           key={index}
           src={`https://api.smartbus360.com${logo.imageUrl}`}
           alt={logo.title}
-          className="h-24 object-contain"
+          className="h-24 mx-10 object-contain inline-block"
         />
       ))}
     </div>
 
     <style>
       {`
-        @keyframes logoScroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
+        @keyframes marqueeScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+
+        .animate-marquee {
+          animation: marqueeScroll 25s linear infinite;
         }
       `}
     </style>
+
   </div>
 )}
+
         </div>
       </div>
 
