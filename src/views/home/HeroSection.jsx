@@ -256,13 +256,13 @@ useEffect(() => {
 
       {/* Main content */}
 {/* <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-50px)] overflow-hidden"> */}
-        <div className="flex flex-col lg:flex-row h-auto ">
+<div className="flex flex-col lg:flex-row min-h-[calc(100vh-90px)]">
         {/* Map */}
 {/* <div className="w-full lg:w-1/2 h-[300px] lg:h-full relative"> */}
-          <div className="w-full lg:w-1/2 h-[300px] lg:h-full relative px-6 py-5">
+<div className="w-full lg:w-1/2 h-[400px] lg:h-auto relative px-6 py-5 flex">
           <div
   id="map"
-  className="w-full h-full rounded-xl shadow-2xl"
+  className="w-full h-full min-h-[500px] rounded-xl shadow-2xl"
 />
         </div>
 
@@ -443,7 +443,7 @@ useEffect(() => {
 
 {/* LOGO MARQUEE */}
 {logos.length > 0 && (
-  <div className="w-full py-10 mt-8 bg-white/5 rounded-xl overflow-hidden">
+<div className="w-full py-10 mt-8 bg-white/5 rounded-xl">
 
     <div className="w-full overflow-hidden">
       <div className="flex items-center animate-marquee whitespace-nowrap">
@@ -452,7 +452,7 @@ useEffect(() => {
             key={index}
             src={`https://api.smartbus360.com${logo.imageUrl}`}
             alt={logo.title}
-            className="h-28 mx-14 object-contain"
+className="h-28 mx-14 object-contain flex-shrink-0"
           />
         ))}
       </div>
