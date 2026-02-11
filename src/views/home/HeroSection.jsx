@@ -457,7 +457,7 @@ useEffect(() => {
 )}
 {/* LOGO MARQUEE */}
 {logos.length > 0 && (
-  <div className="overflow-hidden w-full py-4 border-t border-white/10 px-0">
+  <div className="overflow-hidden w-full py-4 border-t border-white/10 -mx-6 px-6">
 <div
   className="flex gap-14 w-max"
   style={{ animation: "logoScroll 30s linear infinite" }}
