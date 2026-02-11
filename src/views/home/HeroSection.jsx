@@ -423,7 +423,7 @@ useEffect(() => {
             </div>
           </div>
     {/* ARTICLE TRANSITION AREA */}
-// {articles.length > 0 && (
+{/* // {articles.length > 0 && (
 //   <div className="relative w-full h-[280px] flex items-center justify-center mt-4">
 //     <img
 //       key={articles[activeArticleIndex].id}
@@ -438,8 +438,7 @@ useEffect(() => {
 //       "
 //     />
 //   </div>
-// )}
-  {/* ARTICLE SECTION */}
+// )} */}
 {articles.length > 0 && (
   <div className="relative w-full h-[320px] overflow-hidden rounded-xl">
     <img
