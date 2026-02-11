@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Navbar from "../../components/navbar/home-nav";
 
 export function Contact() {
   const [message, setMessage] = useState("");
