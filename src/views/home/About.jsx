@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaUsers, FaRocket, FaHandsHelping, FaGlobeAmericas, FaBus, FaLeaf, FaRoute } from "react-icons/fa";
 import NftBanner1 from '../../assets/img/background/background.png';
-import Navbar from "../../components/navbar/home-nav";
 
 export default function About() {
   useEffect(() => {
@@ -11,7 +10,6 @@ export default function About() {
 
   return (
     <>
-      <Navbar />
       {/* Hero Section */}
       <section
         style={{ backgroundImage: `url(${NftBanner1})` }}
