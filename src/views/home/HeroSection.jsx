@@ -256,7 +256,7 @@ useEffect(() => {
 
       {/* Main content */}
 {/* <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-50px)] overflow-hidden"> */}
-        <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-50px)]">
+        <div className="flex flex-col lg:flex-row h-auto ">
         {/* Map */}
 {/* <div className="w-full lg:w-1/2 h-[300px] lg:h-full relative"> */}
           <div className="w-full lg:w-1/2 h-[300px] lg:h-full relative px-6 py-5">
