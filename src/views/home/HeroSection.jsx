@@ -457,7 +457,6 @@ useEffect(() => {
 )}
 {/* LOGO MARQUEE */}
 {logos.length > 0 && (
-{/* <div className="overflow-hidden w-full py-4 border-t border-white/10"> */}
   <div className="overflow-hidden w-full py-4 border-t border-white/10 px-0">
 <div
   className="flex gap-14 w-max"
