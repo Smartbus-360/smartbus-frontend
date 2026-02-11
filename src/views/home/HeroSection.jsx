@@ -318,7 +318,7 @@ useEffect(() => {
 
         {/* Info Panel */}
 {/* <div className="w-full lg:w-1/2 flex flex-col gap-5 p-4"> */}
-          <div className="w-full lg:w-1/2 flex flex-col gap-6 px-6 py-5">
+          <div className="w-full lg:w-1/2 flex flex-col gap-6  py-5">
           {/* Countdown Panel */}
 <div className="bg-white/10 rounded-xl p-5">
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -457,7 +457,8 @@ useEffect(() => {
 )}
 {/* LOGO MARQUEE */}
 {logos.length > 0 && (
-<div className="overflow-hidden w-full py-4 border-t border-white/10">
+{/* <div className="overflow-hidden w-full py-4 border-t border-white/10"> */}
+  <div className="overflow-hidden w-full py-4 border-t border-white/10 px-0">
 <div
   className="flex gap-14 w-max"
   style={{ animation: "logoScroll 30s linear infinite" }}
@@ -468,7 +469,7 @@ useEffect(() => {
           key={index}
           src={`https://api.smartbus360.com${logo.imageUrl}`}
           alt={logo.title}
-          className="h-16 object-contain"
+          className="h-24 object-contain"
         />
       ))}
     </div>
