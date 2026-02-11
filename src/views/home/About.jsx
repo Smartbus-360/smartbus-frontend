@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../components/navbar/home-nav";
 import { FaUsers, FaRocket, FaHandsHelping, FaGlobeAmericas, FaBus, FaLeaf, FaRoute } from "react-icons/fa";
 import NftBanner1 from '../../assets/img/background/background.png';
 
