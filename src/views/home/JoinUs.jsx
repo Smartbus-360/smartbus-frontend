@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Navbar from "../../components/navbar/home-nav";
 
 export function Contact() {
   const [message, setMessage] = useState("");
@@ -66,7 +65,6 @@ export function Contact() {
 
   return (
     <>
-      <Navbar />
       <section className="bg-gray-50 px-8 py-16 lg:py-24">
         <div className="container mx-auto">
           {/* Title Section */}
