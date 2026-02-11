@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import Navbar from "../../components/navbar/home-nav";
 
 export default function CoreValues() {
   useEffect(() => {
@@ -8,7 +7,6 @@ export default function CoreValues() {
 
   return (
     <>
-      <Navbar />
 
       {/* Hero Section */}
       <section className="relative bg-green-600 text-white h-[50vh] flex items-center justify-center text-center">
