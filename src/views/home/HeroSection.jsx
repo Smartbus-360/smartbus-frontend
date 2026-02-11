@@ -255,7 +255,8 @@ useEffect(() => {
       </div>
 
       {/* Main content */}
-<div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-50px)] overflow-hidden">
+{/* <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-50px)] overflow-hidden"> */}
+        <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-50px)]">
         {/* Map */}
 {/* <div className="w-full lg:w-1/2 h-[300px] lg:h-full relative"> */}
           <div className="w-full lg:w-1/2 h-[300px] lg:h-full relative px-6 py-5">
@@ -442,16 +443,16 @@ useEffect(() => {
 
 {/* LOGO MARQUEE */}
 {logos.length > 0 && (
-  <div className="overflow-hidden w-full py-8 mt-6 bg-white/5 rounded-xl">
+  <div className="w-full py-10 mt-8 bg-white/5 rounded-xl overflow-hidden">
 
-    <div className="relative w-full overflow-hidden">
-      <div className="flex animate-marquee whitespace-nowrap">
+    <div className="w-full overflow-hidden">
+      <div className="flex items-center animate-marquee whitespace-nowrap">
         {[...logos, ...logos].map((logo, index) => (
           <img
             key={index}
             src={`https://api.smartbus360.com${logo.imageUrl}`}
             alt={logo.title}
-            className="h-24 mx-12 object-contain"
+            className="h-28 mx-14 object-contain"
           />
         ))}
       </div>
@@ -462,22 +463,19 @@ useEffect(() => {
         .animate-marquee {
           display: flex;
           width: max-content;
-          animation: marquee 25s linear infinite;
+          animation: marqueeScroll 25s linear infinite;
         }
 
-        @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+        @keyframes marqueeScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
       `}
     </style>
 
   </div>
 )}
+
 
 
         </div>
