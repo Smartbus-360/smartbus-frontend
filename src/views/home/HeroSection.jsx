@@ -439,46 +439,61 @@ useEffect(() => {
 //     />
 //   </div>
 // )} */}
-{articles.length > 0 && (
-  <div className="relative w-full h-[420px] overflow-hidden rounded-xl">
+ {articles.length > 0 && (
+  <div className="relative w-full h-[420px] rounded-xl overflow-hidden">
     <img
       key={articles[activeArticleIndex].id}
       src={`https://api.smartbus360.com${articles[activeArticleIndex].imageUrl}`}
       alt={articles[activeArticleIndex].title}
-      className="max-h-full max-w-full object-contain transition-opacity duration-1000"
+      className="w-full h-full object-cover transition-opacity duration-1000"
     />
   </div>
 )}
+
 {/* LOGO MARQUEE */}
 {logos.length > 0 && (
   <div className="overflow-hidden w-full py-6 border-t border-white/10 rounded-xl bg-white/5">
-    
-    <div className="flex whitespace-nowrap animate-marquee">
-      {[...logos, ...logos].map((logo, index) => (
-        <img
-          key={index}
-          src={`https://api.smartbus360.com${logo.imageUrl}`}
-          alt={logo.title}
-          className="h-24 mx-10 object-contain inline-block"
-        />
-      ))}
+
+    <div className="marquee-container">
+      <div className="marquee-track">
+        {[...logos, ...logos].map((logo, index) => (
+          <img
+            key={index}
+            src={`https://api.smartbus360.com${logo.imageUrl}`}
+            alt={logo.title}
+            className="h-24 mx-12 object-contain"
+          />
+        ))}
+      </div>
     </div>
 
     <style>
       {`
-        @keyframes marqueeScroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+        .marquee-container {
+          width: 100%;
+          overflow: hidden;
         }
 
-        .animate-marquee {
-          animation: marqueeScroll 25s linear infinite;
+        .marquee-track {
+          display: flex;
+          width: max-content;
+          animation: scrollLeft 20s linear infinite;
+        }
+
+        @keyframes scrollLeft {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
         }
       `}
     </style>
 
   </div>
 )}
+
 
         </div>
       </div>
