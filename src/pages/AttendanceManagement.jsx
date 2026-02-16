@@ -360,9 +360,7 @@ const [searchText, setSearchText] = useState("");
       {loading ? (
         <Spin />
       ) : (
-        <Table
-          {/* dataSource={students} */}
-            <Table
+<Table
   dataSource={
     students.filter(student =>
       student.username
