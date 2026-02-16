@@ -188,6 +188,10 @@ export default function AttendanceManagement() {
 const [qrPreviewVisible, setQrPreviewVisible] = useState(false);
 const [selectedQr, setSelectedQr] = useState(null);
 const [searchText, setSearchText] = useState("");
+const [pagination, setPagination] = useState({
+  current: 1,
+  pageSize: 10,
+});
 
   // ✅ Fetch all students (modify API if needed)
   const fetchStudents = async () => {
@@ -338,6 +342,11 @@ const [searchText, setSearchText] = useState("");
       ),
     },
   ];
+const filteredStudents = students.filter(student =>
+  student.username
+    ?.toLowerCase()
+    .includes(searchText.toLowerCase())
+);
 
   return (
     <div style={{ padding: 20 }}>
@@ -360,7 +369,7 @@ const [searchText, setSearchText] = useState("");
       {loading ? (
         <Spin />
       ) : (
-<Table
+{/* <Table
   dataSource={
     students.filter(student =>
       student.username
@@ -375,7 +384,25 @@ pagination={{
       showSizeChanger: true,
       pageSizeOptions: ["10", "20", "30", "50"],
     }}
-        />
+        /> */}
+      <Table
+  dataSource={filteredStudents}
+  columns={columns}
+  rowKey="id"
+  pagination={{
+    current: pagination.current,
+    pageSize: pagination.pageSize,
+    total: filteredStudents.length,
+    showSizeChanger: true,
+    pageSizeOptions: ["10", "20", "30", "50"],
+  }}
+  onChange={(pagination) => {
+    setPagination({
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+  }}
+/>
       )}
 
       {attendanceModalVisible && (
