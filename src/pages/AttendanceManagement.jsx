@@ -370,7 +370,11 @@ const [searchText, setSearchText] = useState("");
   }
           columns={columns}
           rowKey="id"
-          pagination={{ pageSize: 10 }}
+pagination={{
+      pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: ["10", "20", "30", "50"],
+    }}
         />
       )}
 
