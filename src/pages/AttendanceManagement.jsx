@@ -187,6 +187,7 @@ export default function AttendanceManagement() {
   const [attendanceModalVisible, setAttendanceModalVisible] = useState(false);
 const [qrPreviewVisible, setQrPreviewVisible] = useState(false);
 const [selectedQr, setSelectedQr] = useState(null);
+const [searchText, setSearchText] = useState("");
 
   // ✅ Fetch all students (modify API if needed)
   const fetchStudents = async () => {
@@ -340,13 +341,35 @@ const [selectedQr, setSelectedQr] = useState(null);
 
   return (
     <div style={{ padding: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
       <h2>🎓 Student Attendance Management</h2>
+<input
+      type="text"
+      placeholder="Search student by name..."
+      value={searchText}
+      onChange={(e) => setSearchText(e.target.value)}
+      style={{
+        padding: "8px 12px",
+        width: "250px",
+        borderRadius: "6px",
+        border: "1px solid #ccc"
+      }}
+    />
+  </div>
 
       {loading ? (
         <Spin />
       ) : (
         <Table
-          dataSource={students}
+          {/* dataSource={students} */}
+            <Table
+  dataSource={
+    students.filter(student =>
+      student.username
+        ?.toLowerCase()
+        .includes(searchText.toLowerCase())
+    )
+  }
           columns={columns}
           rowKey="id"
           pagination={{ pageSize: 10 }}
