@@ -369,22 +369,6 @@ const filteredStudents = students.filter(student =>
       {loading ? (
         <Spin />
       ) : (
-{/* <Table
-  dataSource={
-    students.filter(student =>
-      student.username
-        ?.toLowerCase()
-        .includes(searchText.toLowerCase())
-    )
-  }
-          columns={columns}
-          rowKey="id"
-pagination={{
-      pageSize: 10,
-      showSizeChanger: true,
-      pageSizeOptions: ["10", "20", "30", "50"],
-    }}
-        /> */}
       <Table
   dataSource={filteredStudents}
   columns={columns}
