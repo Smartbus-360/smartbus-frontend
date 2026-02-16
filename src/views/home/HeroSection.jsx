@@ -421,22 +421,26 @@ useEffect(() => {
 //     />
 //   </div>
 // )} */}
- {articles.length > 0 && (
-  <div className="w-full flex justify-center mt-4">
-    <img
-      key={articles[activeArticleIndex].id}
-      src={`https://api.smartbus360.com${articles[activeArticleIndex].imageUrl}`}
-      alt={articles[activeArticleIndex].title}
-      className="
-        w-full
-        max-h-[600px]
-        object-contain
-        transition-opacity
-        duration-1000
-        rounded-xl
-        shadow-2xl
-      "
-    />
+{articles.length > 0 && (
+  <div className="w-full flex justify-center mt-4 relative h-[600px] overflow-hidden">
+    {articles.map((article, index) => (
+      <img
+        key={article.id}
+        src={`https://api.smartbus360.com${article.imageUrl}`}
+        alt={article.title}
+        className={`
+          absolute
+          w-full
+          h-full
+          object-contain
+          rounded-xl
+          shadow-2xl
+          transition-opacity
+          duration-1000
+          ${index === activeArticleIndex ? "opacity-100" : "opacity-0"}
+        `}
+      />
+    ))}
   </div>
 )}
 
