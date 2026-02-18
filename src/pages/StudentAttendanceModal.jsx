@@ -25,7 +25,7 @@ export default function StudentAttendanceModal({ visible, onCancel, student }) {
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/api/attendance/student-export/${student.id}`,
+      `${import.meta.env.VITE_API_BASE_URL}/attendance/student-export/${student.id}`,
       {
         method: "GET",
         headers: {
