@@ -6,6 +6,14 @@ export default function StudentAttendanceModal({ visible, onCancel, student }) {
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  <Button
+  type="primary"
+  style={{ marginBottom: 15 }}
+  onClick={() => handleDownloadExcel()}
+>
+  Download Excel
+</Button>
+
   const fetchAttendance = async () => {
     setLoading(true);
     try {
@@ -17,6 +25,39 @@ export default function StudentAttendanceModal({ visible, onCancel, student }) {
       setLoading(false);
     }
   };
+
+  const handleDownloadExcel = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/attendance/student-export/${student.id}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to download");
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `attendance_${student.username}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+  } catch (err) {
+    message.error("Failed to download Excel");
+  }
+};
 
   useEffect(() => {
     if (visible) fetchAttendance();
