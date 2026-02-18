@@ -263,15 +263,24 @@ export default function ManageAttendanceTakers() {
             <Input placeholder="Enter email" />
           </Form.Item>
 
-          {!editingTaker && (
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[{ required: true, message: "Please enter password" }]}
-            >
-              <Input.Password placeholder="Enter password" />
-            </Form.Item>
-          )}
+<Form.Item
+  label={editingTaker ? "New Password (Optional)" : "Password"}
+  name="password"
+  rules={
+    editingTaker
+      ? []
+      : [{ required: true, message: "Please enter password" }]
+  }
+>
+  <Input.Password
+    placeholder={
+      editingTaker
+        ? "Leave empty to keep old password"
+        : "Enter password"
+    }
+  />
+</Form.Item>
+
 
           <Form.Item label="Phone" name="phone">
             <Input placeholder="Enter phone number" />
