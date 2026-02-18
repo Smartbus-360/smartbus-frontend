@@ -6,13 +6,7 @@ export default function StudentAttendanceModal({ visible, onCancel, student }) {
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  <Button
-  type="primary"
-  style={{ marginBottom: 15 }}
-  onClick={() => handleDownloadExcel()}
->
-  Download Excel
-</Button>
+  
 
   const fetchAttendance = async () => {
     setLoading(true);
@@ -79,6 +73,14 @@ export default function StudentAttendanceModal({ visible, onCancel, student }) {
       footer={null}
       title={`Attendance History - ${student.username}`}
     >
+      <Button
+  type="primary"
+  style={{ marginBottom: 15 }}
+  onClick={() => handleDownloadExcel()}
+>
+  Download Excel
+</Button>
+
       {loading ? (
         <Spin />
       ) : (
