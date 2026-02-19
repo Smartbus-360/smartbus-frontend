@@ -35,7 +35,7 @@ export function Contact() {
         setMessage("Please fill all rquired field");
       }
 
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/join-us`, {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/admin/join-us`, {
         fullName,
         companyName,
         email,
