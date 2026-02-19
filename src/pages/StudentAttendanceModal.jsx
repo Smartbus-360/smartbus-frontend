@@ -22,7 +22,7 @@ export default function StudentAttendanceModal({ visible, onCancel, student }) {
 
   const handleDownloadExcel = async () => {
   try {
-    const token = localStorage.getItem("token");
+const token = sessionStorage.getItem("authToken");
 
     const response = await fetch(
       `${import.meta.env.VITE_API_BASE_URL}/admin/attendance/student-export/${student.id}`,
