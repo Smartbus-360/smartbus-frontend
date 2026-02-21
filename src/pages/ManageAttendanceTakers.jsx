@@ -12,7 +12,7 @@ export default function ManageAttendanceTakers() {
 
   const [qrModal, setQrModal] = useState({ visible: false, data: null });
   const [qrLoading, setQrLoading] = useState(false);
-  const [qrStatus, setQrStatus] = useState({}); 
+  // const [qrStatus, setQrStatus] = useState({}); 
 
   // ✅ Fetch all attendance-takers
   const fetchTakers = async () => {
@@ -87,7 +87,7 @@ export default function ManageAttendanceTakers() {
         data: res.data.data, // { token, qrData }
       });
       message.success("QR generated successfully");
-      setQrStatus((prev) => ({ ...prev, [takerId]: true }));
+      // setQrStatus((prev) => ({ ...prev, [takerId]: true }));
     } catch (err) {
       message.error("Failed to generate QR");
     } finally {
@@ -107,7 +107,7 @@ export default function ManageAttendanceTakers() {
             attendanceTakerId: takerId,
           });
           message.success("QR revoked successfully");
-          setQrStatus((prev) => ({ ...prev, [takerId]: false }));
+          // setQrStatus((prev) => ({ ...prev, [takerId]: false }));
         } catch (err) {
           message.error("Failed to revoke QR");
         }
@@ -169,14 +169,14 @@ export default function ManageAttendanceTakers() {
       ),
     },
     {
-      title: "QR Status",
-      key: "qrstatus",
-      render: (_, record) => (
-        <Tag color={qrStatus[record.id] ? "green" : "red"}>
-          {qrStatus[record.id] ? "Active" : "Revoked"}
-        </Tag>
-      ),
-    },
+  title: "QR Status",
+  key: "qrstatus",
+  render: (_, record) => (
+    <Tag color={record.isQrActive ? "green" : "red"}>
+      {record.isQrActive ? "Active" : "Revoked"}
+    </Tag>
+  ),
+},
     {
       title: "QR Actions",
       key: "qractions",
