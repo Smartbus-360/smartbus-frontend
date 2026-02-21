@@ -87,6 +87,7 @@ export default function ManageAttendanceTakers() {
         data: res.data.data, // { token, qrData }
       });
       message.success("QR generated successfully");
+      await fetchTakers();
       // setQrStatus((prev) => ({ ...prev, [takerId]: true }));
     } catch (err) {
       message.error("Failed to generate QR");
@@ -107,6 +108,7 @@ export default function ManageAttendanceTakers() {
             attendanceTakerId: takerId,
           });
           message.success("QR revoked successfully");
+await fetchTakers();
           // setQrStatus((prev) => ({ ...prev, [takerId]: false }));
         } catch (err) {
           message.error("Failed to revoke QR");
